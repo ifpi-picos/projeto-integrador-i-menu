@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PAGINA DE LOGIN</title>
-  <link rel="stylesheet" href="css/slogin.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bodyL">
   <div class="wrapper">
     <form action="#">
-      <h2>Seja bem vindo ao iMenu!</h2>
+      <h2 id="welcome" >Seja bem vindo ao iMenu!</h2>
         <div class="input-field">
         <input type="text" required>
         <label>Insira seu email</label>
@@ -21,13 +21,13 @@
       <div class="forget">
         <label for="remember">
           <input type="checkbox" id="remember">
-          <p>Lembrar senha</p>
+          <p id="pH">Lembrar senha</p>
         </label>
-        <a href="#">Esqueceu sua senha?</a>
+        <a id="aL" href="#">Esqueceu sua senha?</a>
       </div>
-      <button><a href="index.html">Dono de restaurante</a></button>
+      <button id="loginB"><a href="home.html">Dono de restaurante</a></button>
       <div class="register">
-        <p>É um cliente? <a href="index.html">Registre-se aqui</a></p>
+        <p id="pH">É um cliente? <a href="home.html">Registre-se aqui</a></p>
       </div>
     </form>
   </div>
