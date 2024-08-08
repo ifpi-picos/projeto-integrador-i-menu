@@ -1,35 +1,299 @@
 <!DOCTYPE html>
-<html>
+<!-- Coding by CodingLab | www.codinglabweb.com  -->
+<html class="htmlH" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PAGINA DE LOGIN</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iMenu Inicio</title>
+
+    <!-- Swiper JS CSS-->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Scroll Reveal -->
+    <link rel="stylesheet" href="js/script.js">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+        
+    <!-- CSS -->
+  <!--  <link rel="stylesheet" href="css/style.css"> -->
+
 </head>
-<body class="bodyL">
-  <div class="wrapper">
-    <form action="#">
-      <h2 id="welcome" >Seja bem vindo ao iMenu!</h2>
-        <div class="input-field">
-        <input type="text" required>
-        <label>Insira seu email</label>
-      </div>
-      <div class="input-field">
-        <input type="password" required>
-        <label>Insira sua senha</label>
-      </div>
-      <div class="forget">
-        <label for="remember">
-          <input type="checkbox" id="remember">
-          <p id="pH">Lembrar senha</p>
-        </label>
-        <a id="aL" href="#">Esqueceu sua senha?</a>
-      </div>
-      <button id="loginB"><a href="home.html">Dono de restaurante</a></button>
-      <div class="register">
-        <p id="pH">É um cliente? <a href="home.html">Registre-se aqui</a></p>
-      </div>
-    </form>
-  </div>
+<body class="BodyH">
+
+    <header class="header">
+            <nav class="nav container flex">
+                <div class="logo">
+                <img id="logoapp" onclick="goperfil()" src="images/icone-app.png">
+                <h2 id="title" >iMenu</h2>
+                </div>
+                <div class="perfil_content">
+                    <a href="#" class="logo-content flex">
+                        <img id="perfil" src="images/perfil.png">
+                        <span class="logo-text"> <a href="perfil.html">User</a></span>
+                    </a>
+                </div>
+                    <div class="menu-content">
+                            <ul id="ulH" class="menu-list flex">
+                                    <li id="LiHeaderH" ><a href="#home" class="nav-link active-navlink">Inicio</a></li>
+                                    <li id="LiHeaderH" ><a href="#about" class="nav-link">Sugestões</a></li>
+                                    <li id="LiHeaderH" ><a href="#menu" class="nav-link">Pesquisas</a></li>
+                                    <li id="LiHeaderH" ><a href="editorcard.html" class="nav-link">Cardápios</a></li>
+                            </ul>
+
+                         <!--   <div class="media-icons flex">
+
+                            </div>
+
+                            <i class='bx bx-x navClose-btnn'></i>-->
+                        </div>
+
+
+                       <!-- <i class='bx bx-menu navOpen-btn'></i> -->
+                </nav>
+        
+    </header>
+
+<!-- Home Section -->
+    <main>
+        <section class="home" id="home">
+                <div class="home-content">
+                        <div class="swiper mySwiper">
+                                <div class="swiper-wrapper">
+                                        <div class="swiper-slide">
+                                                <img src="images/restaurante 5.jpeg" alt="" class="home-img">
+
+                                                <div class="home-details">
+                                                        <div class="home-text">
+                                                                <h4 class="homeSubtitle">Sabores de qualidade pra você <br>
+                                                                e pra toda sua familia</h4>
+                                                                <h2 class="homeTitle">Sabores do Oriente</h2>
+                                                        </div>
+
+                                                        <button class="button">Ver Cardápio</button>
+                                                </div>
+                                        </div>
+
+                                        <div class="swiper-slide">
+                                                <img src="images/restaurante 4.jpeg" alt="" class="home-img">
+
+                                                <div class="home-details">
+                                                        <div class="home-text">
+                                                                <h4 class="homeSubtitle">churraco perfeito, momentos <br>inesquecíveis</h4>
+                                                                <h2 class="homeTitle"><br>Grill & Chill</h2>
+                                                        </div>
+
+                                                        <button class="button">Ver Cardápio</button>
+                                                </div>
+                                        </div>
+
+                                        <div class="swiper-slide">
+                                                <img src="images/restaurante 3.jpeg" alt="" class="home-img">
+
+                                                <div class="home-details">
+                                                        <div class="home-text">
+                                                                <h4 class="homeSubtitle">O gosto do campo<br>na sua mesa</h4>
+                                                                <h2 class="homeTitle">Sabor da Terra</h2>
+                                                        </div>
+
+                                                        <button class="button">Ver Cardápio</button>
+                                                </div>
+                                        </div>
+                                </div>
+
+                                <div class="swiper-button-next swiper-navBtn"></div>
+                                <div class="swiper-button-prev swiper-navBtn"></div>
+                                <div class="swiper-pagination"></div>                               
+                                
+
+   
+                        </div>
+                </div>
+        </section>
+
+    
+<!-- About Section -->
+        <section class="section about" id="about">
+                <div class="about-content container">
+                        <div class="about-imageContent">
+                                <img src="images/menu3.jpeg" alt="" class="about-img">
+                        </div>
+
+                        <div class="about-details">
+                                <div class="about-text">
+                                        <h4 class="content-subtitle"><i>Fastfood</i></h4>
+                                        <h2 class="content-title">O melhor cardápio<br> da região</h2>
+                                        <p class="content-description">Somos um restaurante que vende
+                                                pizza e hamburguer, trabalhamos com encomendas também.</p>
+
+                                        <ul id="ulH" class="about-lists flex">
+                                                <li class="about-list">Brazil</li>
+                                                <li class="about-list dot">.</li>
+                                                <li class="about-list">PI</li>
+                                                <li class="about-list dot">.</li>
+                                                <li class="about-list">Picos</li>
+                                        </ul>
+                                </div>
+
+                                <div class="about-buttons flex">
+                                        <button class="button">Sobre nós</button>
+                                        <a href="#" class="about-link flex">
+                                                
+                                        </a>
+                                </div>
+                        </div>
+
+                </div>
+        </section>
+
+    
+<!-- Menu Section -->
+        <section class="section menu" id="menu">
+            <div class="menu-container container">
+                    <div class="meu-text">
+                            <h4 class="section-subtitle"><i>Menus</i></h4>
+                            <h2 class="section-title">Suas ultimas pesquisas</h2>
+                            <p class="section-description">
+                              Como você procurou por "hambúrguers" nos seus ultimos cardápios, aqui estão mais algumas sugestões de restaurantes com hambúrguers no cardápio próximos a você.
+                            </p>
+                    </div>
+
+                    <div class="menu-content">
+                            <div class="menu-items">
+                                    <div class="menu-item flex">
+                                            <img src="images/menu2.jpeg" alt="" class="menu-img">
+
+                                            <div class="menuItem-details">
+                                                    <h4 class="menuItem-topic">Hambúrguer clássico</h4>
+                                                    <p class="menuItem-des">Tomate, alface, duas carnes artesanais e queijo</p>
+                                            </div>
+
+                                            <div class="menuItem-price flex">
+                                                    <span class="discount-price">R$18.99</span>
+                                                    <span class="real-price">R$20.66</span>
+                                            </div>
+                                    </div>
+                                    <div class="menu-item flex">
+                                            <img src="images/menu3.jpeg" alt="" class="menu-img">
+
+                                            <div class="images/menu4.jpeg">
+                                                    <h4 class="menuItem-topic">Hambúrguer Kids</h4>
+                                                    <p class="menuItem-des">Carne, molho especial, cheddar, salada e cebola</p>
+                                            </div>
+
+                                            <div class="menuItem-price flex">
+                                                    <span class="discount-price">R$18.99</span>
+                                                    <span class="real-price">R$20.66</span>
+                                            </div>
+                                    </div>
+                                    <div class="menu-item flex">
+                                            <img src="images/menu5.jpeg" alt="" class="menu-img">
+
+                                            <div class="menuItem-details">
+                                                    <h4 class="menuItem-topic">X-Bacon</h4>
+                                                    <p class="menuItem-des">Molho BBQ, bacon, tomate, cebola e carne artesanal</p>
+                                            </div>
+
+                                            <div class="menuItem-price flex">
+                                                    <span class="discount-price">R$18.99</span>
+                                                    <span class="real-price">R$20.66</span>
+                                            </div>
+                                    </div>
+                                    <div class="menu-item flex">
+                                            <img src="images/menu6.jpeg" alt="" class="menu-img">
+
+                                            <div class="menuItem-details">
+                                                    <h4 class="menuItem-topic">Hamburgão</h4>
+                                                    <p class="menuItem-des">Duas carnes grandes, muito cheddar, ketchup, bacon e presunto</p>
+                                            </div>
+
+                                            <div class="menuItem-price flex">
+                                                    <span class="discount-price">R$18.99</span>
+                                                    <span class="real-price">R$20.66</span>
+                                            </div>
+                                    </div>
+                            </div>
+
+                            <div class="time-table">
+                                    <span class="time-topic">Descontos de hoje</span>
+
+                                    <ul id="ulH" class="time-lists">
+                                            <li class="time-list flex">
+                                                    <span class="open-day">Hamburgão</span>
+                                                    <span class="open-time">Pague dois e leve três</span>
+                                            </li>
+                                            <li class="time-list flex">
+                                                    <span class="open-day">Bistrô Delicias</span>
+                                                    <span class="open-time">15% off de desconto</span>
+                                            </li>
+                                            <li class="time-list flex">
+                                                    <span class="open-day">Sabores Do Oriente</span>
+                                                    <span class="open-time">Crianças pagam menos</span>
+                                            </li>
+                                            <li class="time-list flex">
+                                                    <span class="open-day">Cantinho Gourmet</span>
+                                                    <span class="open-time">Desconto para familia</span>
+                                            </li>
+                                            <li class="time-list flex">
+                                                    <span class="open-day">Nikido Sushi</span>
+                                                    <span class="open-time">Promoção para grupo</span>
+                                            </li>
+                                            <li class="time-list flex">
+                                                    <span class="open-day">Borcelle Confeitarias</span>
+                                                    <span class="open-time">Programa de fidelidade</span>
+                                            </li>
+                                            <li class="time-list flex">
+                                                    <span class="open-day">Faustino Hambúrgueria</span>
+                                                    <span class="open-time">Desconto para novos clientes</span>
+                                            </li>
+                                    </ul>
+                            </div>
+                    </div>
+            </div>
+        </section>
+
+    
+<!-- Restaurantes visitados recentemente -->
+        <section class="section brand">
+            <div class="brand-container container">
+                    <h4 class="section-subtitle"><i>Restaurantes visitados recentemente</i></h4>
+
+                    <div class="brand-images">
+                            <div class="brand-image">
+                                    <img id="logo-rest" src="images/cantinho-gourmet.jpeg" alt="" class="brand-img">
+                            </div>
+                            <div class="brand-image">
+                                    <img id="logo-rest" src="images/sabores-do-oriente.jpeg" alt="" class="brand-img">
+                            </div>
+                            <div class="brand-image">
+                                    <img id="logo-rest" src="images/bistro-delicias.jpeg" alt="" class="brand-img">
+                            </div>
+                            <div class="brand-image">
+                                    <img id="logo-rest" src="images/borcelle-logo.jpeg" alt="" class="brand-img">
+                            </div>
+                            <div class="brand-image">
+                                    <img id="logo-rest" src="images/faustinho-logo.jpeg" alt="" class="brand-img">
+                            </div>
+                    </div>
+            </div>
+        </section>
+
+    
+<!-- Scroll Up -->
+        <a href="#home" class="scrollUp-btn flex">
+               <i class='bx bx-up-arrow-alt scrollUp-icon'></i>
+        </a>
+
+</main>
+
+<!-- Swiper JS -->
+<script src="js/swiper-bundle.min.js"></script>
+
+<!-- Scroll Reveal -->
+<script src="js/script.js"></script>
+
+<!-- JavaScript -->
+    <script src="js/script.js"></script>
 </body>
 </html>

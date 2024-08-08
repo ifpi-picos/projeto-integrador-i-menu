@@ -196,6 +196,12 @@ form {
   border-radius: 25px;
 }
 
+.perfil_content{
+ display: flex; 
+ width: 20%;
+ align-items: center;
+}
+
 .menu-img{
   border-radius: 25%;
 }
