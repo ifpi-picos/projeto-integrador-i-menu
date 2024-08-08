@@ -386,12 +386,18 @@ img{
   padding: 0 16rem;
 }
 /* Header */
+
+#header-cont{
+  display: flex;
+  justify-content: space-between;
+}
 .header{
   position: fixed;
   top: 0;
   left: 0;
   height: 7rem;
   width: 100%;
+  background: purple;
   z-index: var(--z-fixed);
   transition: var(--tran-0-5);
 }
@@ -406,7 +412,6 @@ img{
   position: relative;
   height: 100%;
   align-items: center;
-  justify-content: space-between;
 }
 .logo-icon,
 .logo-text,
