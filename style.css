@@ -397,7 +397,6 @@ img{
   left: 0;
   height: 7rem;
   width: 100%;
-  background: purple;
   z-index: var(--z-fixed);
   transition: var(--tran-0-5);
 }
@@ -407,6 +406,29 @@ img{
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
+#button-acount{
+  cursor: pointer;
+  margin: 10px;
+  width: 120px;
+  height: 30px;
+  background-color: #b87c6000;
+  border: none;
+  color: white;
+  border-radius: 30%;
+  font-family: arial;
+  font-size: 15px;
+}
+#button-enter{
+  cursor: pointer;
+  width: 100px;
+  height: 30px;
+  background-color: #613520;
+  border: none;
+  color: white;
+  border-radius: 3rem;
+  font-family: arial;
+  font-size: 15px;
+}
 /* nav */
 .nav{
   position: relative;
