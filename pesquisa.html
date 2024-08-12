@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Filterable Image Gallery Bootstrap</title>
+    <link rel="stylesheet" href="pesquisa.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Images Filter Buttons Section -->
+      <div class="row mt-5" id="filter-buttons">
+        <div class="col-12">
+          <button class="btn mb-2 me-1 active" data-filter="all">Todos</button>
+          <button class="btn mb-2 mx-1" data-filter="Bebidas">Bebidas</button>
+          <button class="btn mb-2 mx-1" data-filter="Refeições">Refeições</button>
+          <button class="btn mb-2 mx-1" data-filter="Sobremesas">Sobremesas</button>
+        </div>
+      </div>
+
+      <!-- Filterable Images / Cards Section -->
+      <div class="row px-2 mt-4 gap-3" id="filterable-cards">
+        <div class="card p-0" data-name="Bebidas">
+          <img src="images/cardapio 1.jpg" alt="img" />
+          <div class="card-body">
+            <div class="tamanho">
+            </div>
+          </div>
+        </div>
+        <div class="card p-0" data-name="Bebidas">
+          <img src="images/cardapio 2.jpg" alt="img" />
+          <div class="card-body">
+            <div class="tamanho">
+            </div>
+          </div>
+        </div>
+        <div class="card p-0" data-name="Bebidas">
+          <img src="images/cardapio 3.jpg" alt="img" />
+          <div class="card-body">
+            <div class="tamanho">
+            </div>
+          </div>
+        </div>
+        <div class="card p-0" data-name="Bebidas">
+          <img src="images/cardapio 4.jpg" alt="img" />
+          <div class="card-body">
+            <div class="tamanho">
+            </div>
+          </div>
+        </div>
+        <div class="card p-0" data-name="Refeições">
+          <img src="images/cardapio 5.jpg" alt="img" />
+          <div class="card-body">
+            <div class="tamanho">
+            </div>
+          </div>
+        </div>
+        <div class="card p-0" data-name="Refeições">
+          <img src="images/cardapio 6.jpg" alt="img" />
+          <div class="card-body">
+            <div class="tamanho">
+            </div>
+          </div>
+        </div>
+        <div class="card p-0" data-name="Refeições">
+          <img src="images/cardapio 8.jpg" alt="img" />
+          <div class="card-body">
+            <div class="tamanho">
+            </div>
+          </div>
+        </div>
+        <div class="card p-0" data-name="Sobremesas">
+          <img src="images/cardapio 7.jpg" alt="img" />
+          <div class="card-body">
+          </div>
+          <div class="tamanho">
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
