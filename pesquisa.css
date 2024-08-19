@@ -5,12 +5,26 @@
   font-family: "Poppins", sans-serif;
 }
 
+#barP{
+  margin-left: 290px;
+  width: 300px;
+}
+
 body {
-  background: #f1f1f1 !important;
+  background-image: url(images/fundnovo.jpg) !important;
+  background-size: cover;
 }
 
 body .container {
   max-width: 1100px;
+}
+
+#headerP{
+  display: flex;
+}
+
+#filter-buttons{
+  display: flex;
 }
 
 #filter-buttons button {
@@ -24,8 +38,8 @@ body .container {
 }
 
 #filter-buttons button.active {
-  color: #fff;
-  background: #6c757d;
+  color: #cfc9c7;
+  background: #3b1d0f;
 }
 
 #filterable-cards .card {
@@ -37,8 +51,8 @@ body .container {
   display: none;
 }
 
-.tamanho-c1 {
-  max-width: 50px
+#barraP{
+
 }
 
 @media (max-width: 600px) {
