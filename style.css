@@ -98,7 +98,6 @@ form {
   margin: 25px 0 35px 0;
   color: #3B1D0F;;
 }
-
 #remember {
   accent-color: #3B1D0F;;
 }
@@ -583,6 +582,7 @@ display: none;
 .home-img{
   height: 100%;
   width: 100%;
+  filter: brightness(70%);
 }
 
 /* swiper button */

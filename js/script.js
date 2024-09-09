@@ -3,6 +3,9 @@
 function voltar(){
     window.location.replace("home.html");
 }
+function retorno(){
+    window.location.replace("cliente.html");
+}
 
 function localizacao(){
     window.location.replace("https://www.google.com.br/maps/place/Instituto+Federal+do+Piau%C3%AD+-+IFPI+-+Campus+Picos/@-7.0703191,-41.4048579,17z/data=!3m1!4b1!4m6!3m5!1s0x79c1adfe6fee63d:0xf13ece540943492!8m2!3d-7.0703191!4d-41.402283!16s%2Fg%2F11b7q0vxvd?entry=ttu");
@@ -11,7 +14,9 @@ function localizacao(){
 function goperfil(){
     window.location.replace("perfil.html");
 }
-
+function goperfiluser(){
+	window.location.replace("perfiluser.html")
+}
 
 // Swiper js //
 

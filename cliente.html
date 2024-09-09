@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/scrollreveal"></script>
     <title>iMenu Inicio</title>
 
     <!-- Swiper JS CSS-->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Scroll Reveal -->
+    <link rel="stylesheet" href="js/script.js">
 
     <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
@@ -22,16 +24,15 @@
     <header class="header">
             <nav class="nav container flex" id="header-cont">
                 <div class="logo">
-                <img id="logoapp" onclick="goperfil()" src="images/icone-app.png">
+                <img id="logoapp" src="images/icone-app.png">
                 <h2 id="title" >iMenu</h2>
                 </div>
                     <div class="menu-content">
                             <ul id="ulH" class="menu-list flex">
                                     <li id="LiHeaderH" ><a href="#home" class="nav-link active-navlink">Inicio</a></li>
                                     <li id="LiHeaderH" ><a href="#about" class="nav-link">Sugestões</a></li>
-                                    <li id="LiHeaderH" ><a href="#menu" class="nav-link">Pesquisas</a></li>
+                                    <li id="LiHeaderH" ><a href="#menu" class="nav-link">Descontos</a></li>
                                     <li id="LiHeaderH" ><a href="pesquisa.html" class="nav-link">Cardápios</a></li>
-                                    <li id="LiHeaderH" ><a href="editorcard.html" class="nav-link">Editor</a></li>
                             </ul>
 
                          <!--   <div class="media-icons flex">
@@ -42,10 +43,9 @@
                         </div>
                         <div class="perfil_content">
                                 <a href="#" class="logo-content flex">
-                                    <img id="perfil" src="images/perfil.png">
+                                    <img id="perfil" onclick="goperfiluser()" src="images/profileImg3.jpg">
                                 </a>
-                                <a href="cadastro.html"><button id="button-acount">Cadastrar</button></a>
-                                <a href="login2.html"> <button id="button-enter">Entrar</button> </a>
+
                         </div>
 
                        <!-- <i class='bx bx-menu navOpen-btn'></i> -->
@@ -151,9 +151,9 @@
             <div class="menu-container container">
                     <div class="meu-text">
                             <h4 class="section-subtitle"><i>Menus</i></h4>
-                            <h2 class="section-title">Suas ultimas pesquisas</h2>
+                            <h2 class="section-title">Descontos</h2>
                             <p class="section-description">
-                              Como você procurou por "hambúrguers" nos seus ultimos cardápios, aqui estão mais algumas sugestões de restaurantes com hambúrguers no cardápio próximos a você.
+                                Melhores descontos próximos a você
                             </p>
                     </div>
 
