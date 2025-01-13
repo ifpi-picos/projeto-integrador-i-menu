@@ -7,6 +7,11 @@
   font-family: "Open Sans", sans-serif;
 }
 
+.buttons_normais{
+  size: 2000px;
+  background-color: red;
+}
+
 #pH{
   font-size: 15px;
 }

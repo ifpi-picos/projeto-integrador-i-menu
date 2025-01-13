@@ -26,38 +26,25 @@
                <div class="slider-tab"></div>
             </div>
             <div class="form-inner">
-               <form action="#" class="login">
+               <form action="#" id="formulario" class="signup">
                   <div class="field">
-                     <input type="text" placeholder="Endereço de Email" required>
+                     <input type="text" id="nome" placeholder="Endereço de Email" required>
                   </div>
                   <div class="field">
-                     <input type="password" placeholder="Senha" required>
+                     <input type="password" id="senha" placeholder="Senha" required>
                   </div>
                   <div class="field btn">
                      <div class="btn-layer"></div>
-                     <a href="login2.html"> Cadastre-se </a>
-                  </div>
-               </form>
-               <form action="#" class="signup">
-                  <div class="field">
-                     <input type="text" placeholder="Endereço de Email" required>
-                  </div>
-                  <div class="field">
-                     <input type="password" placeholder="Senha" required>
-                  </div>
-                  <div class="field btn">
-                     <div class="btn-layer"></div>
-                     <a href="login2.html"> Cadastre-se </a>
+                     <button class="buttons_normais" id="create"> Cadastre-se </button>
                   </div>
                </form>
             </div>
          </div>
       </div>
+      <script src="script_server.js"></script>
       <script>
          const loginText = document.querySelector(".title-text .login");
          const loginForm = document.querySelector("form.login");
-         const loginBtn = document.querySelector("label.login");
-         const signupBtn = document.querySelector("label.signup");
          const signupLink = document.querySelector("form .signup-link a");
          signupBtn.onclick = (()=>{
            loginForm.style.marginLeft = "-50%";

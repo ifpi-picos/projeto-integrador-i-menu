@@ -3472,3 +3472,18 @@ chooseImgBtn.addEventListener("click", () => fileInput.click());
 	return ScrollReveal;
 
 }));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

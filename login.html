@@ -8,14 +8,14 @@
 </head>
 <body class="bodyL">
   <div class="wrapper">
-    <form action="#">
+    <form id="formulario" action="#">
       <h2 id="welcome" >Seja bem vindo ao iMenu!</h2>
         <div class="input-field">
-        <input type="text" required>
+        <input type="text" id="nomeL" required>
         <label>Insira seu email</label>
       </div>
       <div class="input-field">
-        <input type="password" required>
+        <input type="password" id="senhaL" required>
         <label>Insira sua senha</label>
       </div>
       <div class="forget">
@@ -23,11 +23,54 @@
         </label>
         <a id="aL" href="#">Esqueceu sua senha?</a>
       </div>
-      <button id="loginB"><a href="home.html">Dono de restaurante</a></button>
+      <button id="submit">Dono de restaurante</button>
       <div class="register">
         <p id="pH">Não tem uma conta? <a href="home.html">Registre-se aqui</a></p>
       </div>
     </form>
   </div>
+  <script>
+    
+
+// Função para validar login
+document.getElementById("submit").addEventListener("click", async function (event) {
+  event.preventDefault(); // Impede o recarregamento da página
+
+  const usernameL = document.getElementById("nomeL").value;
+  const passwordL = document.getElementById("senhaL").value;
+
+  if (!usernameL || !passwordL) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+  }
+
+  try {
+      const response = await fetch("http://localhost:3002/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: usernameL, password: passwordL }), // Corrigido aqui!
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+          // Armazena o ID do usuário no LocalStorage
+          localStorage.setItem("user", JSON.stringify({
+              id: result.id,
+              name: usernameL,
+          }));
+
+          alert("Login bem-sucedido!");
+          window.location.href = "index.html"; // Redireciona para a página principal
+      } else {
+          alert(result.message || "Erro no login.");
+      }
+  } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      alert("Erro de conexão com o servidor.");
+  }
+});
+
+  </script>
 </body>
 </html>
