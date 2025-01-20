@@ -8,8 +8,29 @@
 }
 
 .buttons_normais{
-  size: 2000px;
-  background-color: red;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 22px;
+  color: black;
+  background: white;
+}
+.buttons_normais:hover{
+  color: #2e2e2e;
+  background: rgb(241, 241, 241);
+}
+
+#submit{
+  border-radius: 5px;
+  border: none;
+  font-family: Arial;
+  color: #000;
+  background: white;
+  cursor: pointer;
+}
+
+#submit:hover{
+  background: rgb(235, 235, 235);
+  color: #1d1d1d;
 }
 
 #pH{

@@ -13,6 +13,7 @@ html,body{
   background: -webkit-linear-gradient(left, #CFC9C1, #CFC9C7);
   background-image: url(images/fundoo.jpeg);
 }
+
 ::selection{
   background: #de470c;
   color: #1fff4f;
