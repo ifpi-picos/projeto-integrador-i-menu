@@ -18,7 +18,7 @@ document.getElementById("create").addEventListener("click", async function () {
     }
     
     try {
-        const response = await fetch("http://localhost:3002/users", {
+        const response = await fetch("https://projeto-integrador-i-menu.onrender.com/users", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: username, password }),
@@ -71,7 +71,7 @@ document.getElementById("submit").addEventListener("click", async function (even
     }
 
     try {
-        const response = await fetch("http://localhost:3002/login", {
+        const response = await fetch("https://projeto-integrador-i-menu.onrender.com/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: usernameL, password: passwordL }), // Corrigido aqui!
