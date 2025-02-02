@@ -12,7 +12,7 @@ async function criaruser() {
         };
     
         try {
-            const response = await fetch("http://localhost:3005/create", { // ✅ URL corrigida!
+            const response = await fetch("https://imenu-backend.onrender.com/create", { // ✅ URL corrigida!
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json" // ✅ Agora o servidor sabe que é JSON
@@ -42,7 +42,7 @@ async function criaruser() {
         };
     
         try {
-            const response = await fetch("http://localhost:3005/login", { // ✅ URL corrigida!
+            const response = await fetch("https://imenu-backend.onrender.com/login", { // ✅ URL corrigida!
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json" // ✅ Agora o servidor sabe que é JSON
