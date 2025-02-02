@@ -29,20 +29,23 @@
             <div class="form-inner">
                <form action="#" id="formulario" class="signup">
                   <div class="field">
-                     <input type="text" id="nome" placeholder="Endereço de Email" required>
+                     <input type="text" id="nome" placeholder="Username" required>
+                  </div>
+                  <div class="field">
+                     <input type="email" id="email" placeholder="Endereço de Email" required>
                   </div>
                   <div class="field">
                      <input type="password" id="senha" placeholder="Senha" required>
                   </div>
                   <div class="field btn">
                      <div class="btn-layer"></div>
-                     <button class="buttons_normais" id="create"> Cadastre-se </button>
+                     <button type="button" class="buttons_normais" id="create" onclick="criaruser()"> Cadastre-se </button>
                   </div>
                </form>
             </div>
          </div>
       </div>
-      <script src="script_server.js"></script>
+      <script src="js/server_script.js"></script>
       <script>
          const loginText = document.querySelector(".title-text .login");
          const loginForm = document.querySelector("form.login");
