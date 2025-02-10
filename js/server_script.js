@@ -1,3 +1,4 @@
+const webservice = "https://imenu-backend-ty06.onrender.com"
 async function criaruser() {
 
     var nome = document.getElementById("nome").value;
@@ -12,7 +13,7 @@ async function criaruser() {
         };
     
         try {
-            const response = await fetch("https://imenu-backend.onrender.com/create", { // ✅ URL corrigida!
+            const response = await fetch(webservice+"/create", { // ✅ URL corrigida!
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json" // ✅ Agora o servidor sabe que é JSON
@@ -42,7 +43,7 @@ async function criaruser() {
         };
     
         try {
-            const response = await fetch("https://imenu-backend.onrender.com/login", { // ✅ URL corrigida!
+            const response = await fetch(webservice+"/login", { // ✅ URL corrigida!
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json" // ✅ Agora o servidor sabe que é JSON
