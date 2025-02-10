@@ -1,50 +1,37 @@
 body {
+    font-family: "Open Sans", sans-serif;
     margin: 0;
-    font-family: Arial, sans-serif;
+    padding: 0;
+    display: flex;
 }
-
-.cabecalho {
-    background-color: #C6BEBB;
-    padding: 10px;
+.sidebar {
+    width: 30%;
+    background-color: #4a2e1f;
+    color: white;
+    padding: 20px;
+}
+.map-container {
+    width: 70%;
+}
+#map {
+    height: 100vh;
+    width: 100%;
+}
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #d7c6af;
+    padding: 10px 20px;
 }
-
-.cabecalho-links a {
+.nav a {
+    margin-right: 15px;
     text-decoration: none;
     color: black;
-    margin: 0 10px;
-}
-
-.cabecalho-acoes {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.cabecalho-acoes a {
-    text-decoration: none;
-    color: #5c2d14;
     font-weight: bold;
 }
-
-
-.cabecalho-botao {
-    background-color: #5c2d14;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 50px; /* Agora o botão é mais circular */
-    cursor: pointer;
-}
-
-#mapa {
-    height: 500px;
-    width: 100%;
-}
-
-.logo-imenu {
-    cursor: pointer;
-    height: 40px;
+.login-buttons a {
+    text-decoration: none;
+    margin-left: 10px;
+    color: black;
 }

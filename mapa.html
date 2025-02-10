@@ -8,58 +8,78 @@
     <link rel="stylesheet" href="mapa.css">
 </head>
 <body>
-    <header class="cabecalho">
-        <img id="logoapp" src="images/icone-app.png" class="logo-imenu" alt="Logo iMenu">
-        <nav class="cabecalho-links">
-            <a href="index.html">Início</a>
-            <a href="index.html">Sugestões</a>
-            <a href="index.html">Histórico</a>
-            <a href="pesquisa.html">Pesquisar</a>
-            <a href="mapa.html">Mapa</a>
-        </nav>
-        <div class="cabecalho-acoes">
-            <a href="cadastro.html">Cadastrar</a>
-            <a href="login.html">
-                <button class="cabecalho-botao">Entrar</button>
-              </a>
+    <div class="sidebar">
+        <h2>Restaurantes perto de você!</h2>
+        <p id="date"></p>
+        <p>📍 Picos - PI</p>
+        <hr>
+        <p>Restaurantes na sua região</p>
+        <h3>77</h3>
+        <p>Bares na sua região</p>
+        <h3>65</h3>
+        <hr>
+        <h2>Nossos restaurantes parceiros!</h2>
+        <p>Verona Pizza</p>
+        <p>Lanchonete e Espetinho: Nosso Sabor</p>
+        <p>Lanchonete Só coxinha</p>
+    </div>
+    <div class="map-container">
+        <div class="header">
+            <div class="nav">
+                <a href="index.html">Início</a>
+                <a href="index.html">Sugestões</a>
+                <a href="index.html">Histórico</a>
+                <a href="pesquisa.html">Pesquisar</a>
+                <a href="mapa.html">Mapa</a>
+            </div>
+            <div class="login-buttons">
+                <a href="login.html">Entrar</a>
+                <a href="cadastro.html">Cadastrar</a>
+            </div>
         </div>
-    </header>
-    
-    <div id="mapa"></div>
-    
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-ajax@0.5.0/dist/leaflet.ajax.min.js"></script>
+        <div id="map"></div>
+    </div>
     <script>
-        var mapa = L.map('mapa').setView([-7.0079, -41.4664], 13);
+        document.getElementById('date').textContent = new Date().toLocaleDateString('pt-BR', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+    </script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([-7.0079, -41.4664], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapa);
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-        var iconeRestaurante = L.icon({
+        var fastFoodIcon = L.icon({
             iconUrl: 'https://png.pngtree.com/png-vector/20221130/ourmid/pngtree-restaurant-location-pin-icon-in-gold-yellow-color-png-image_6485373.png',
             iconSize: [32, 32],
             iconAnchor: [16, 32],
             popupAnchor: [0, -32]
         });
 
-        var urlOverpass = "https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];area(id:3600302661)->.searchArea;nwr[\"amenity\"=\"fast_food\"](area.searchArea);out geom;";
+        var overpassUrl = "https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];area(id:3600302661)->.searchArea;nwr[\"amenity\"=\"fast_food\"](area.searchArea);out geom;";
 
-        fetch(urlOverpass)
-            .then(response => response.json())
-            .then(data => {
-                data.elements.forEach(function(elemento) {
-                    if (elemento.type === 'node' && elemento.tags.amenity === 'fast_food') {
-                        L.marker([elemento.lat, elemento.lon], { icon: iconeRestaurante }).addTo(mapa)
-                            .bindPopup("<b>Restaurante Fast Food</b><br/>" + (elemento.tags.name || "Sem nome"));
-                    } else if (elemento.type === 'way' && elemento.tags.amenity === 'fast_food') {
-                        var coordenadas = elemento.geometry.map(function(geo) {
-                            return [geo.lat, geo.lon];
-                        });
-                        L.polygon(coordenadas).addTo(mapa)
-                            .bindPopup("<b>Restaurante Fast Food</b><br/>" + (elemento.tags.name || "Sem nome"));
-                    }
+fetch(overpassUrl)
+    .then(response => response.json())
+    .then(data => {
+       
+        data.elements.forEach(function(element) {
+            
+            if (element.type === 'node' && element.tags.amenity === 'fast_food') {
+                L.marker([element.lat, element.lon], { icon: fastFoodIcon }).addTo(map)
+                    .bindPopup("<b>Fast Food</b><br/>" + (element.tags.name || "Sem nome"));
+            }
+
+            else if (element.type === 'way' && element.tags.amenity === 'fast_food') {
+                var coords = element.geometry.map(function(geo) {
+                    return [geo.lat, geo.lon];
                 });
-            });
+                L.polygon(coords).addTo(map)
+                    .bindPopup("<b>Fast Food</b><br/>" + (element.tags.name || "Sem nome"));
+            }
+        });
+    })
     </script>
 </body>
 </html>
