@@ -37,29 +37,35 @@ async function criaruser() {
 
     async function logar() {
         var email = document.getElementById("email").value;
+        var senha = document.getElementById("senha").value;
     
         const novoUsuario = {
-            email: email
+            email: email,
+            password: senha
         };
     
         try {
-            const response = await fetch(webservice+"/login", { // ✅ URL corrigida!
+            const response = await fetch(webservice+"/login", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json" // ✅ Agora o servidor sabe que é JSON
+                    "Content-Type": "application/json" // Especificando que o corpo é JSON
                 },
-                body: JSON.stringify(novoUsuario)
+                body: JSON.stringify(novoUsuario) // Enviando os dados como JSON
             });
     
-            const data = await response.json(); // ✅ Convertendo resposta para JSON
-            
+            const data = await response.json(); // Convertendo a resposta para JSON
+    
             if (response.ok) {
                 alert("Usuário logado com sucesso!");
-                window.location.href = "../index.html"
+                // Aqui você pode armazenar o token JWT (se estiver retornando) no localStorage ou sessionStorage
+                localStorage.setItem('auth_token', data.token); // Exemplo de como armazenar o token
+                window.location.href = "../index.html"; // Redireciona para a página principal
             } else {
-                alert("Erro ao logar com o usuário: " + data.message);
+                alert("Erro ao logar com o usuário: " + (data.message || "Mensagem não encontrada"));
             }
         } catch (err) {
-            alert("Erro ao logar com o usuário: " + err);
+            // Captura erros inesperados, como falhas de rede ou problemas com a requisição
+            alert("Erro ao logar com o usuário: " + err.message);
         }
     }
+    
