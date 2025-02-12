@@ -18,20 +18,24 @@ body {
     width: 100%;
 }
 .header {
+    width: 100%;
+    position: fixed;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #d7c6af;
     padding: 10px 20px;
+    text-align: center;
 }
 .nav a {
-    margin-right: 15px;
+    margin-right: 30px;
     text-decoration: none;
     color: black;
-    font-weight: bold;
+    
 }
-.login-buttons a {
-    text-decoration: none;
-    margin-left: 10px;
-    color: black;
+
+.sidebar img {
+    display: block;
+    margin-bottom: 10px;
 }
+
