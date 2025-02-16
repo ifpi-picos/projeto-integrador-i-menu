@@ -98,7 +98,7 @@ async function criaruser() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("Erro ao buscar o usuário:", errorData.message);
-                alert(`Erro: ${errorData.message}`);
+                //alert(`Erro: ${errorData.message}`);
                 const conta = document.getElementById("conta")
                 conta.remove()
                 const mapa = document.getElementById("mapaAba");
