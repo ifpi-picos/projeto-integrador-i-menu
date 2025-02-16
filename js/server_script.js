@@ -71,13 +71,45 @@ async function criaruser() {
         }
     }
     
-    function verificarToken() {
+    async function verificarToken() {
         const token = localStorage.getItem("auth_token");
     
         if (token) {
-            // Redireciona para a página de índice se já tiver um token
-            window.location.href = "index.html";
+            try {
+                const response = await fetch(webservice+"/dados", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}` // Enviando o token no cabeçalho
+                    }
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    document.getElementById("username").innerText = `${data.name}`;
+    
+                    const cadastrarB = document.getElementById("button-acount");
+                    const LogarB = document.getElementById("button-enter");
+                    cadastrarB?.remove(); // Adicionando verificação de null
+                    LogarB?.remove(); // Adicionando verificação de null
+    
+                    if (data.dono === true) {
+                        const mapa = document.getElementById("mapaAba");
+                        mapa?.remove(); // Adicionando verificação de null
+                    } else {
+                        const editor = document.getElementById("editorAba");
+                        editor?.remove(); // Adicionando verificação de null
+                    }
+                    window.location.href = "index.html";
+                } else {
+                    console.error("Erro ao buscar o usuário:", data.message);
+                }
+            } catch (err) {
+                console.error("Erro ao buscar o usuário:", err);
+            }
+        } else {
+            console.log("Token não encontrado.");
         }
     }
-
-    //verificarToken();
+    
+    verificarToken();
