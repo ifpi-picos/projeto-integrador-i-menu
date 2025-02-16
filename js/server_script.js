@@ -4,12 +4,14 @@ async function criaruser() {
     var nome = document.getElementById("nome").value;
     var email = document.getElementById("email").value;
     var senha = document.getElementById("senha").value;
+    var dono = document.getElementById("dono").checked;
         // Pegando os valores DENTRO da função, para garantir que sejam atualizados corretamente
     
         const novoUsuario = {
             name: nome,
             email: email,
-            password: senha
+            password: senha,
+            dono: dono
         };
     
         try {
@@ -78,4 +80,4 @@ async function criaruser() {
         }
     }
 
-    verificarToken();
+    //verificarToken();
