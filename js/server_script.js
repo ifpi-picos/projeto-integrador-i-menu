@@ -73,7 +73,6 @@ async function criaruser() {
     
     async function verificarToken() {
         const token = localStorage.getItem("auth_token");
-    
         console.log("Token encontrado:", token); // Verifique se o token está sendo recuperado corretamente.
     
         if (token) {
@@ -85,7 +84,11 @@ async function criaruser() {
                     }
                 });
     
-                if (response.ok) {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Erro ao buscar o usuário:", errorData.message);
+                    alert(`Erro: ${errorData.message}`); // Mostra o erro de forma visível para o usuário
+                } else {
                     const data = await response.json();
                     console.log("Dados recebidos do servidor:", data); // Verifique o conteúdo de data
     
@@ -105,10 +108,10 @@ async function criaruser() {
                         editor.remove();
                     }
     
-                    window.location.href = "index.html"; // Redirecionamento após carregar os dados
-                } else {
-                    const errorData = await response.json();
-                    console.error("Erro ao buscar o usuário:", errorData.message);
+                    // Evitar o redirecionamento repetido
+                    if (window.location.pathname !== "/index.html") {
+                        window.location.href = "index.html"; // Redirecionamento após carregar os dados
+                    }
                 }
             } catch (err) {
                 console.error("Erro ao buscar o usuário:", err);
@@ -120,4 +123,5 @@ async function criaruser() {
     
     // Chama a função assíncrona
     verificarToken();
+    
     
