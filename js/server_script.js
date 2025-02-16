@@ -27,7 +27,7 @@ async function criaruser() {
             
             if (response.ok) {
                 alert("Usuário criado com sucesso!");
-                window.location.href = "../index.html"
+                window.location.href = "../login.html"
             } else {
                 alert("Erro ao criar usuário: " + data.message);
             }

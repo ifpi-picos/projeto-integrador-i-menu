@@ -7,6 +7,10 @@
   font-family: "Open Sans", sans-serif;
 }
 
+#username{
+  color: #000;
+  font-weight: bold;
+}
 .buttons_normais{
   border-radius: 5px;
   cursor: pointer;
