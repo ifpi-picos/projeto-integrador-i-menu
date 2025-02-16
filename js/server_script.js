@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-qfa2.onrender.com"
+const webservice = "https://imenu-backend-qfa2.onrender.com" //"localhost:3006" 
 async function criaruser() {
 
     var nome = document.getElementById("nome").value;
@@ -27,7 +27,7 @@ async function criaruser() {
             
             if (response.ok) {
                 alert("Usuário criado com sucesso!");
-                window.location.href = "../login.html"
+                window.location.href = "./login.html"
             } else {
                 alert("Erro ao criar usuário: " + data.message);
             }
@@ -60,8 +60,9 @@ async function criaruser() {
             if (response.ok) {
                 alert("Usuário logado com sucesso!");
                 // Aqui você pode armazenar o token JWT (se estiver retornando) no localStorage ou sessionStorage
-                localStorage.setItem('auth_token', data.token); // Exemplo de como armazenar o token
-                window.location.href = "../index.html"; // Redireciona para a página principal
+                localStorage.setItem('auth_token', data.token);
+                verificarToken() // Exemplo de como armazenar o token
+                window.location.href = "./index.html"; // Redireciona para a página principal
             } else {
                 alert("Erro ao logar com o usuário: " + (data.message || "Mensagem não encontrada"));
             }
@@ -73,55 +74,50 @@ async function criaruser() {
     
     async function verificarToken() {
         const token = localStorage.getItem("auth_token");
-        console.log("Token encontrado:", token); // Verifique se o token está sendo recuperado corretamente.
+        console.log("Token encontrado:", token);
     
-        if (token) {
-            try {
-                const response = await fetch(webservice+"/dados", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}` // Enviando o token no cabeçalho
-                    }
-                });
-    
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error("Erro ao buscar o usuário:", errorData.message);
-                    alert(`Erro: ${errorData.message}`); // Mostra o erro de forma visível para o usuário
-                } else {
-                    const data = await response.json();
-                    console.log("Dados recebidos do servidor:", data); // Verifique o conteúdo de data
-    
-                    // Exibindo o nome do usuário na página
-                    document.getElementById("username").innerText = `${data.name}`;
-    
-                    const cadastrarB = document.getElementById("button-acount");
-                    const LogarB = document.getElementById("button-enter");
-                    cadastrarB.remove();
-                    LogarB.remove();
-    
-                    if (data.dono === true) {
-                        const mapa = document.getElementById("mapaAba");
-                        mapa.remove();
-                    } else {
-                        const editor = document.getElementById("editorAba");
-                        editor.remove();
-                    }
-    
-                    // Evitar o redirecionamento repetido
-                    if (window.location.pathname !== "/index.html") {
-                        window.location.href = "index.html"; // Redirecionamento após carregar os dados
-                    }
-                }
-            } catch (err) {
-                console.error("Erro ao buscar o usuário:", err);
-            }
-        } else {
+        if (!token) {
             console.log("Token não encontrado.");
+            return;
+        }
+    
+        try {
+            const response = await fetch(webservice + "/dados", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Erro ao buscar o usuário:", errorData.message);
+                alert(`Erro: ${errorData.message}`);
+            } else {
+                const data = await response.json();
+                console.log("Dados recebidos do servidor:", data);
+    
+                document.getElementById("username").innerText = `${data.name}`;
+    
+                const cadastrarB = document.getElementById("button-acount");
+                const LogarB = document.getElementById("button-enter");
+                if (cadastrarB) cadastrarB.remove();
+                if (LogarB) LogarB.remove();
+    
+                if (data.dono === true) {
+                    const mapa = document.getElementById("mapaAba");
+                    if (mapa) mapa.remove();
+                } else {
+                    const editor = document.getElementById("editorAba");
+                    if (editor) editor.remove();
+                }
+            }
+        } catch (err) {
+            console.error("Erro ao buscar o usuário:", err);
         }
     }
     
-    // Chama a função assíncrona
-    verificarToken();
+    // Chama a função APENAS uma vez ao carregar a página
+    window.onload = verificarToken;
     
     
