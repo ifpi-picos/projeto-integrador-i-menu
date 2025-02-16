@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-ty06.onrender.com"
+const webservice = "http://localhost:3006"
 async function criaruser() {
 
     var nome = document.getElementById("nome").value;
@@ -69,3 +69,13 @@ async function criaruser() {
         }
     }
     
+    function verificarToken() {
+        const token = localStorage.getItem("auth_token");
+    
+        if (token) {
+            // Redireciona para a página de índice se já tiver um token
+            window.location.href = "index.html";
+        }
+    }
+
+    verificarToken();
