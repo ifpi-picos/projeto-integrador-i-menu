@@ -74,35 +74,41 @@ async function criaruser() {
     async function verificarToken() {
         const token = localStorage.getItem("auth_token");
     
+        console.log("Token encontrado:", token); // Verifique se o token está sendo recuperado corretamente.
+    
         if (token) {
             try {
-                const response = await fetch(webservice+"/dados", {
+                const response = await fetch("http://localhost:3006/dados", {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}` // Enviando o token no cabeçalho
                     }
                 });
     
-                const data = await response.json();
-    
                 if (response.ok) {
+                    const data = await response.json();
+                    console.log("Dados recebidos do servidor:", data); // Verifique o conteúdo de data
+    
+                    // Exibindo o nome do usuário na página
                     document.getElementById("username").innerText = `${data.name}`;
     
                     const cadastrarB = document.getElementById("button-acount");
                     const LogarB = document.getElementById("button-enter");
-                    cadastrarB?.remove(); // Adicionando verificação de null
-                    LogarB?.remove(); // Adicionando verificação de null
+                    cadastrarB.remove();
+                    LogarB.remove();
     
                     if (data.dono === true) {
                         const mapa = document.getElementById("mapaAba");
-                        mapa?.remove(); // Adicionando verificação de null
+                        mapa.remove();
                     } else {
                         const editor = document.getElementById("editorAba");
-                        editor?.remove(); // Adicionando verificação de null
+                        editor.remove();
                     }
-                    window.location.href = "index.html";
+    
+                    window.location.href = "index.html"; // Redirecionamento após carregar os dados
                 } else {
-                    console.error("Erro ao buscar o usuário:", data.message);
+                    const errorData = await response.json();
+                    console.error("Erro ao buscar o usuário:", errorData.message);
                 }
             } catch (err) {
                 console.error("Erro ao buscar o usuário:", err);
@@ -112,4 +118,6 @@ async function criaruser() {
         }
     }
     
+    // Chama a função assíncrona
     verificarToken();
+    
