@@ -108,8 +108,18 @@ async function criaruser() {
             } else {
                 const data = await response.json();
                 console.log("Dados recebidos do servidor:", data);
-    
-                document.getElementById("username").innerText = `${data.name}`;
+                if (window.location.pathname.includes("index.html")) {
+                    document.getElementById("username").innerText = `${data.name}`;
+                }
+                if (window.location.pathname.includes("perfil.html")) {
+                    document.getElementById("P-username").innerText = `${data.name}`;
+                    const spanElement = document.getElementById("spanP");
+                    spanElement.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
+                    if(data.dono === true){
+                        const localicon = document.getElementsByClassName("localizacaoicon");
+                        localicon.remove()
+                    }
+                }
     
                 const cadastrarB = document.getElementById("button-acount");
                 const LogarB = document.getElementById("button-enter");
