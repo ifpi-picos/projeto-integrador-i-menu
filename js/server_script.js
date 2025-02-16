@@ -78,6 +78,12 @@ async function criaruser() {
     
         if (!token) {
             console.log("Token não encontrado.");
+            const conta = document.getElementById("conta")
+            conta.remove()
+            const mapa = document.getElementById("mapaAba");
+            if (mapa) mapa.remove();
+            const editor = document.getElementById("editorAba");
+            if (editor) editor.remove();
             return;
         }
     
@@ -93,6 +99,12 @@ async function criaruser() {
                 const errorData = await response.json();
                 console.error("Erro ao buscar o usuário:", errorData.message);
                 alert(`Erro: ${errorData.message}`);
+                const conta = document.getElementById("conta")
+                conta.remove()
+                const mapa = document.getElementById("mapaAba");
+                if (mapa) mapa.remove();
+                const editor = document.getElementById("editorAba");
+                if (editor) editor.remove();
             } else {
                 const data = await response.json();
                 console.log("Dados recebidos do servidor:", data);
