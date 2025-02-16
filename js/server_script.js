@@ -77,7 +77,7 @@ async function criaruser() {
     
         if (token) {
             try {
-                const response = await fetch("http://localhost:3006/dados", {
+                const response = await fetch(webservice+"/dados", {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}` // Enviando o token no cabeçalho
