@@ -67,7 +67,7 @@ body {
 /* Estilização da parte de Cadastro */
 .form-container {
     width: 80%; /* Aumentei a largura */
-    height: 85vh; /* Defini uma altura proporcional à tela */
+    height: 70vh; /* Defini uma altura proporcional à tela */
     background: rgba(0, 0, 0, 0); /* Fundo levemente mais escuro */
     backdrop-filter: blur(5px); /* Efeito vidro fosco */
     padding: 50px; /* Mais espaço interno */
