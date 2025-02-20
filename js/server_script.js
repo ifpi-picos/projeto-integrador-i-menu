@@ -117,7 +117,9 @@ async function criaruser() {
                     spanElement.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
                     if(data.dono === true){
                         const localicon = document.getElementsByClassName("localizacaoicon");
-                        localicon.remove()
+                        for (let i = 0; i < localicon.length; i++) {
+                            localicon[i].remove();
+                        }
                     }
                 }
     
