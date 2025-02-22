@@ -18,9 +18,9 @@
          </div>
          <div class="form-container">
             <div class="slide-controls">
-               <label class="slide login" for="dono">
-                  <input type="checkbox" id="dono">
-                  <span class="toggle-btn">Dono de Restaurante</span>
+               <label class="slide login" style="background: #3B1D0F; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s;">
+                  <input type="checkbox" id="dono" onchange="toggleRole()" style="display: none;">
+                  <span class="toggle-btn" id="toggle-text">Cliente</span>
                </label>
                <div class="slider-tab"></div>
             </div>
@@ -45,21 +45,16 @@
       </div>
       <script src="js/server_script.js"></script>
       <script>
-         const loginText = document.querySelector(".title-text .login");
-         const loginForm = document.querySelector("form.login");
-         const signupLink = document.querySelector("form .signup-link a");
-         signupBtn.onclick = (()=>{
-           loginForm.style.marginLeft = "-50%";
-           loginText.style.marginLeft = "-50%";
-         });
-         loginBtn.onclick = (()=>{
-           loginForm.style.marginLeft = "0%";
-           loginText.style.marginLeft = "0%";
-         });
-         signupLink.onclick = (()=>{
-           signupBtn.click();
-           return false;
-         });
+         function toggleRole() {
+             const toggleText = document.getElementById("toggle-text");
+             const donoCheckbox = document.getElementById("dono");
+
+             if (donoCheckbox.checked) {
+                 toggleText.textContent = "Dono de Restaurante";
+             } else {
+                 toggleText.textContent = "Cliente";
+             }
+         }
       </script>
    </body>
 </html>
