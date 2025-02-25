@@ -8,39 +8,28 @@
    </head>
    <body>
       <div class="wrapper">
-         <div class="title-text">
-            <div class="title login">
-               Cadastre-se no iMenu!
-            </div>
-            <div class="title signup">
-               Tá esperando o que para se cadastrar?
-            </div>
+         <div class="title">Cadastre-se no iMenu!</div>
+         <div class="slide-controls">
+            <label>
+               <input type="checkbox" id="dono" onchange="toggleRole()" style="display: none;">
+               <span id="toggle-text">Cliente</span>
+            </label>
          </div>
          <div class="form-container">
-            <div class="slide-controls">
-               <label class="slide login" style="background: #3B1D0F; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s;">
-                  <input type="checkbox" id="dono" onchange="toggleRole()" style="display: none;">
-                  <span class="toggle-btn" id="toggle-text">Cliente</span>
-               </label>
-               <div class="slider-tab"></div>
-            </div>
-            <div class="form-inner">
-               <form action="#" id="formulario" class="signup">
-                  <div class="field">
-                     <input type="text" id="nome" placeholder="Username" required>
-                  </div>
-                  <div class="field">
-                     <input type="email" id="email" placeholder="Endereço de Email" required>
-                  </div>
-                  <div class="field">
-                     <input type="password" id="senha" placeholder="Senha" required>
-                  </div>
-                  <div class="field btn">
-                     <div class="btn-layer"></div>
-                     <button type="button" class="buttons_normais" id="create" onclick="criaruser()"> Cadastre-se </button>
-                  </div>
-               </form>
-            </div>
+            <form action="#" id="formulario">
+               <div class="field">
+                  <input type="text" id="nome" placeholder="Username" required>
+               </div>
+               <div class="field">
+                  <input type="email" id="email" placeholder="Endereço de Email" required>
+               </div>
+               <div class="field">
+                  <input type="password" id="senha" placeholder="Senha" required>
+               </div>
+               <div class="field btn">
+                  <button type="button" class="buttons_normais" id="create" onclick="criaruser()">Cadastre-se</button>
+               </div>
+            </form>
          </div>
       </div>
       <script src="js/server_script.js"></script>
@@ -48,12 +37,7 @@
          function toggleRole() {
              const toggleText = document.getElementById("toggle-text");
              const donoCheckbox = document.getElementById("dono");
-
-             if (donoCheckbox.checked) {
-                 toggleText.textContent = "Dono de Restaurante";
-             } else {
-                 toggleText.textContent = "Cliente";
-             }
+             toggleText.textContent = donoCheckbox.checked ? "Dono de Restaurante" : "Cliente";
          }
       </script>
    </body>

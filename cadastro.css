@@ -1,168 +1,81 @@
-/* Reset básico */
-* {
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-body {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: url('images/fundoo.jpeg') no-repeat center center/cover;
-}
-
-.wrapper {
-    width: 850px;
-    display: flex;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    padding: 20px;
-}
-
-/* Estilização da parte de Login */
-.title-text {
-    width: 50%;
-    background: #3B1D0F;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    background: url('images/background-cad.png') no-repeat center center/cover;
+    font-family: 'Poppins', sans-serif;
+ }
+ 
+ .wrapper {
+    background: rgba(255, 255, 255, 0.123);
+    padding: 40px;
+    border-radius: 12px;
     text-align: center;
-    padding: 50px;
-}
-
-.title-text .login {
-    font-size: 24px;
+    color: rgb(255, 255, 255);
+    width: 400px;
+    backdrop-filter: blur(3px);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+ }
+ 
+ .title {
+    font-size: 26px;
     font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.title-text p {
-    font-size: 14px;
-    opacity: 0.9;
-}
-
-/* Novo bloco de boas-vindas */
-.welcome-section {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.welcome-section h2 {
-    font-size: 22px;
+    margin-bottom: 25px;
     color: #3B1D0F;
-    margin-bottom: 5px;
-}
-
-.welcome-section p {
-    font-size: 14px;
-    color: #777;
-}
-
-/* Estilização da parte de Cadastro */
-.form-container {
-    width: 80%;
-    height: 70vh;
-    background: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(5px);
-    padding: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.form-container h2 {
-    color: #3B1D0F;
+ }
+ 
+ .slide-controls {
     margin-bottom: 20px;
-}
-
-.form-container .field {
-    width: 100%;
-    margin-bottom: 15px;
-    position: relative;
-}
-
-.field input {
-    width: 100%;
-    padding: 10px;
-    padding-left: 35px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    font-size: 14px;
-}
-
-.field i {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #777;
-}
-
-/* Botões */
-.field.btn {
-    width: 100%;
-}
-
-.buttons_normais {
-    width: 100%;
-    padding: 10px;
+ }
+ 
+ .slide-controls label {
     background: #3B1D0F;
-    border: none;
     color: white;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.buttons_normais:hover {
-    background: #3B1D0F;
-}
-
-/* Melhorando o botão "Dono" */
-.slide-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.slide.login {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background: #3B1D0F;
     padding: 8px 15px;
     border-radius: 5px;
-    transition: 0.3s;
-}
-
-.slide.login:hover {
-    background: #3B1D0F;
-}
-
-/* Ocultando o checkbox padrão */
-#dono {
-    display: none;
-}
-
-/* Ajuste para remover o fundo branco e apenas mudar o texto */
-.toggle-btn {
-    color: white;
-    font-weight: bold;
     cursor: pointer;
-}
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+ }
+ 
+ .field {
+    margin-top: 15px;
+    text-align: center;
+ }
+ 
+ .field input {
+    width: 85%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 16px;
+ }
+ 
+ .field input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+ }
+ 
+ .buttons_normais {
+    background: #3B1D0F;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+    margin-top: 20px;
+    width: 100%;
+ }
+ 
+ .buttons_normais:hover {
+    background: #5a2e1b;
+ }
+ 
