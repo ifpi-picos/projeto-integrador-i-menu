@@ -1633,3 +1633,54 @@ display: none;
   padding-top: 30px;
   font-size: 20px;
 }
+
+.crop-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 1000;
+  display: none;  
+  width: 90%;
+  height: 80%;
+}
+
+
+#image-to-crop {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.save-cropped-img {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  background-color: #3B1D0F;
+  color: white;
+  border: 1px solid #3B1D0F;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+}
+
+.save-cropped-img:hover {
+  background-color: #6C757D;
+}
+.cancel-crop {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  background-color: #6c757d;
+  color: white;
+  border: 1px solid #6c757d;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+}
+
+.cancel-crop:hover {
+  background-color: #5a6369;
+}

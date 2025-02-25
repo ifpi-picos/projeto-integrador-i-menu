@@ -7,7 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
-  </head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
+  </head> 
   <body class="editorbody">
     <div class="containerE disable">
         <h2>Editar cardápio</h2>
@@ -38,6 +41,11 @@
                         <button id="vertical"><i class='bx bx-reflect-horizontal' ></i></button>
                     </div>
                 </div>
+                <div class="crop-container" style="display: none;">
+                    <img id="image-to-crop" src="" alt="Imagem a ser recortada">
+                    <button class="save-cropped-img">Salvar Imagem Recortada</button>
+                    <button class="cancel-crop">Cancelar</button>
+                </div>
             </div>
             <div class="preview-img">
                 <img src="imagens/icone-app.png" alt="preview-img">
@@ -45,15 +53,15 @@
         </div>
         <div class="controls">
             <button class="reset-filter">Resetar</button>
+            <button class="crop-img">Recortar Imagem</button>
             <div class="row">
                 <input type="file" class="file-input" accept="image/*" hidden>
                 <button class="choose-img">Escolher imagem</button>
                 <button class="save-img">Salvar</button>
             </div>
         </div>
-    </div>
-
+        
     <script src="js/jeditor.js"></script>
-    
+
   </body>
 </html>

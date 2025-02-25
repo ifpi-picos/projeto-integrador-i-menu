@@ -8,7 +8,11 @@ previewImg = document.querySelector(".preview-img img"),
 resetFilterBtn = document.querySelector(".reset-filter"),
 chooseImgBtn = document.querySelector(".choose-img"),
 saveImgBtn = document.querySelector(".save-img");
+const cropBtn = document.querySelector(".crop-img"); 
+const cropContainer = document.querySelector(".crop-container"); 
+const imageToCrop = document.querySelector("#image-to-crop");  
 
+let cropper;  
 let brightness = "100", saturation = "100", inversion = "0", grayscale = "0";
 let rotate = 0, flipHorizontal = 1, flipVertical = 1;
 
@@ -83,7 +87,37 @@ rotateOptions.forEach(option => {
         applyFilter();
     });
 });
+cropBtn.addEventListener("click", () => {
+    cropContainer.style.display = "block";  
+    if (previewImg.src) {
+        imageToCrop.src = previewImg.src;  
+        cropper = new Cropper(imageToCrop, {
+            aspectRatio: 1,  
+            viewMode: 1,  
+            autoCropArea: 0.65,  
+            responsive: true,
+        });
+    }
+});
+const saveCroppedImage = () => {
+    if (cropper) {
+        const canvas = cropper.getCroppedCanvas();
+        const croppedImage = canvas.toDataURL();
+        const link = document.createElement("a");
+        link.download = "imagem_recortada.jpg";  
+        link.href = croppedImage;
+        link.click();
+    }
+};
 
+document.querySelector(".save-cropped-img").addEventListener("click", saveCroppedImage);
+document.querySelector(".cancel-crop").addEventListener("click", () => {
+    cropContainer.style.display = "none";
+    if (cropper) {
+        cropper.destroy();  
+    }
+    previewImg.src = previewImg.src;  
+});
 const resetFilter = () => {
     brightness = "100"; saturation = "100"; inversion = "0"; grayscale = "0";
     rotate = 0; flipHorizontal = 1; flipVertical = 1;
