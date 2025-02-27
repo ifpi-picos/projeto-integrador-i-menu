@@ -1,0 +1,142 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 250px;
+    background: #3b1d0f;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.logo {
+    font-size: 24px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.nav-button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    text-align: left;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.nav-button img {
+    width: 40px;
+    height: 40px;
+}
+
+.nav-button.active, .nav-button:hover {
+    background: #664637;
+    border-radius: 5px;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background: #cfc9c7
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: gray;
+}
+
+.search-box input {
+    padding: 8px 8px 8px 30px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.promo-banner {
+    width: 95%;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.promo-banner img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.register-button {
+    background: #3b1d0f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-button {
+    background: none;
+    color: #3b1d0f;
+    border: 2px solid #3b1d0f;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cards {
+    display: flex;
+    gap: 10px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    flex: 1;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+#perfil{
+    width: 50px;
+    height: 50px;
+}
+
+#conta{
+    text-decoration: none;
+    color: black;
+
+    display: flex;
+}
