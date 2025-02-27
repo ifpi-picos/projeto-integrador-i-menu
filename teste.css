@@ -86,12 +86,6 @@ body {
     align-items: center;
 }
 
-.promo-banner img {
-    width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
-}
 
 .auth-buttons {
     display: flex;
@@ -139,4 +133,30 @@ body {
     color: black;
 
     display: flex;
+}
+
+.promo-banner {
+    position: relative;
+    width: 95%;
+    margin-bottom: 20px;
+}
+
+.promo-banner img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.mascote-container {
+    position: absolute;
+    top: -50px; /* Ajuste fino para a altura desejada */
+    right: 450px; /* Ajuste fino para a posição horizontal */
+    width: 100px; /* Ajuste o tamanho do mascote */
+    height: auto;
+}
+
+.mascote {
+    width: 100%;
+    height: auto;
 }
