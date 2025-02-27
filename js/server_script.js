@@ -1,4 +1,4 @@
-const webservice = "http://localhost:3006" //"https://imenu-backend-qfa2.onrender.com"
+const webservice =  "https://imenu-backend-qfa2.onrender.com" //"http://localhost:3006"
 async function criaruser() {
 
     var nome = document.getElementById("nome").value;
