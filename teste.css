@@ -38,6 +38,7 @@ body {
     align-items: center;
     gap: 10px;
     color: white;
+    text-decoration: none;
 }
 
 .nav-button img {
@@ -151,7 +152,7 @@ body {
 .mascote-container {
     position: absolute;
     top: -50px; /* Ajuste fino para a altura desejada */
-    right: 450px; /* Ajuste fino para a posição horizontal */
+    right: 425px; /* Ajuste fino para a posição horizontal */
     width: 100px; /* Ajuste o tamanho do mascote */
     height: auto;
 }
