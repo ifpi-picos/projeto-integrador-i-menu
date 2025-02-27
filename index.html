@@ -10,29 +10,27 @@
     <div class="container">
         <!-- Sidebar -->
         <aside class="sidebar">
+            <button id="toggleSidebar" class="nav-button">
+                <img src="images/sidebar.png" alt="Menu">
+            </button>
             <h1 class="logo">iMenu</h1>
             <nav>
                 <a href="index.html" class="nav-button">
-                    <img src="images/home.png" alt="Início"> Início
+                    <img src="images/home.png" alt="Início"> <p>Início</p>
                 </a>
-                
                 <a href="pesquisa.html" class="nav-button">
-                    <img src="images/card.png" alt="Meus Menus"> Menus
+                    <img src="images/card.png" alt="Meus Menus"> <p>Menus</p>
                 </a>
-                
                 <button id="mapaAba" onclick="localizacao()" class="nav-button">
-                    <img src="images/local.png" alt="Mapa"> Mapa
+                    <img src="images/local.png" alt="Mapa"> <p>Mapa</p>
                 </button>
-                
                 <button id="editorAba" onclick="goeditor()" class="nav-button">
-                    <img src="images/editor.png" alt="Editor"> Editor
+                    <img src="images/editor.png" alt="Editor"> <p>Editor</p>
                 </button>
-                
                 <a href="#" class="nav-button">
-                    <img src="images/config.png" alt="Configurações"> Configurações
+                    <img src="images/config.png" alt="Configurações"> <p>Configurações</p>
                 </a>
             </nav>
-            
         </aside>
         
         <!-- Main Content -->
@@ -43,10 +41,10 @@
                     <input type="text" placeholder="Buscar...">
                 </div>
                 <div class="auth-buttons">
-                <a href="#" id="conta" class="logo-content flex">
-                    <img id="perfil" src="images/perfil.png" onclick="goperfil()">
-                    <p id="username" onclick="goperfil()"></p>
-                </a>
+                    <a href="#" id="conta" class="logo-content flex">
+                        <img id="perfil" src="images/perfil.png" onclick="goperfil()">
+                        <p id="username" onclick="goperfil()"></p>
+                    </a>
                     <button onclick="goecadastro()" class="register-button">Cadastrar</button>
                     <button onclick="gologin()" class="login-button">Entrar</button>
                 </div>
@@ -82,5 +80,16 @@
     </div>
     <script src="js/server_script.js"></script>
     <script src="js/script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+    const sidebar = document.querySelector(".sidebar");
+    const toggleButton = document.getElementById("toggleSidebar");
+
+    toggleButton.addEventListener("click", function() {
+        sidebar.classList.toggle("expanded");
+    });
+});
+
+    </script>
 </body>
 </html>

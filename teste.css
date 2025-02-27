@@ -1,44 +1,83 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/* Reset e Configuração Geral */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     height: 100vh;
+    background: #f4f4f4;
 }
 
-
+/* Layout Principal */
 .container {
     display: flex;
     width: 100%;
 }
 
+/* Sidebar */
 .sidebar {
-    width: 250px;
+    width: 200px;
     background: #3b1d0f;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
 }
 
+/* Sidebar Contraída */
+.sidebar.expanded {
+    width: 60px;
+}
+
+.sidebar.expanded .nav-button p {
+    display: none;
+}
+
+/* Botão de Toggle */
+#toggleSidebar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+#toggleSidebar img {
+    width: 30px;
+}
+
+/* Logo */
 .logo {
     font-size: 24px;
     color: #ffffff;
     font-weight: bold;
+    margin-bottom: 20px;
 }
 
+/* Navegação */
 .nav-button {
     width: 100%;
     padding: 10px;
     margin: 5px 0;
     border: none;
-    text-align: left;
     background: none;
     cursor: pointer;
-    font-size: 16px;
     display: flex;
     align-items: center;
     gap: 10px;
     color: white;
     text-decoration: none;
+    font-size: 16px;
+    transition: background 0.3s;
 }
 
 .nav-button img {
@@ -51,19 +90,15 @@ body {
     border-radius: 5px;
 }
 
+/* Conteúdo Principal */
 .content {
     flex: 1;
     padding: 20px;
-    background: #cfc9c7
+    background: #cfc9c7;
+    overflow-y: auto;
 }
 
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
+/* Barra de Pesquisa */
 .search-box {
     position: relative;
 }
@@ -81,39 +116,65 @@ body {
     border: 1px solid #ddd;
 }
 
-.promo-banner {
-    width: 95%;
-    margin-bottom: 20px;
-    align-items: center;
-}
-
-
+/* Botões de Autenticação */
 .auth-buttons {
     display: flex;
     gap: 10px;
+    align-items: center;
+}
+
+.register-button, .login-button {
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .register-button {
     background: #3b1d0f;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
 .login-button {
     background: none;
     color: #3b1d0f;
     border: 2px solid #3b1d0f;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
+/* Seção de Promoção */
+.promo-banner {
+    width: 95%;
+    margin-bottom: 20px;
+    position: relative;
+    
+}
+
+.promo-banner img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Mascote */
+.mascote-container {
+    position: absolute;
+    top: -50px;
+    right: 425px;
+    width: 100px;
+    height: auto;
+}
+
+.mascote {
+    width: 100%;
+    height: auto;
+}
+
+/* Cards de Cardápios */
 .cards {
     display: flex;
     gap: 10px;
+    margin-bottom: 20px;
 }
 
 .card {
@@ -124,40 +185,42 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-#perfil{
-    width: 50px;
-    height: 50px;
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+
+    .sidebar .nav-button p {
+        display: none;
+    }
+
+    .content {
+        padding: 10px;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cards {
+        flex-direction: column;
+    }
 }
 
-#conta{
-    text-decoration: none;
-    color: black;
-
+.topbar {
     display: flex;
-}
-
-.promo-banner {
-    position: relative;
-    width: 95%;
-    margin-bottom: 20px;
-}
-
-.promo-banner img {
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
+    padding-bottom: 20px; /* Adiciona espaçamento abaixo da barra */
 }
 
-.mascote-container {
-    position: absolute;
-    top: -50px; /* Ajuste fino para a altura desejada */
-    right: 425px; /* Ajuste fino para a posição horizontal */
-    width: 100px; /* Ajuste o tamanho do mascote */
-    height: auto;
-}
-
-.mascote {
-    width: 100%;
-    height: auto;
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-left: auto; /* Empurra para o canto direito */
 }
