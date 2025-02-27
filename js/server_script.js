@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-qfa2.onrender.com" //"localhost:3006" 
+const webservice = "http://localhost:3006" //"https://imenu-backend-qfa2.onrender.com"
 async function criaruser() {
 
     var nome = document.getElementById("nome").value;
@@ -27,7 +27,7 @@ async function criaruser() {
             
             if (response.ok) {
                 alert("Usuário criado com sucesso!");
-                window.location.href = "./login.html"
+                window.location.href = "./VerEmail.html"
             } else {
                 alert("Erro ao criar usuário: " + data.message);
             }
@@ -36,7 +36,7 @@ async function criaruser() {
         }
     }
 
-
+    if(window.location.pathname.includes("VerEmail.html")){}
     async function logar() {
         var email = document.getElementById("email").value;
         var senha = document.getElementById("senha").value;
