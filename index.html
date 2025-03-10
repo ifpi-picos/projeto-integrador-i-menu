@@ -41,12 +41,12 @@
                     <input type="text" placeholder="Buscar...">
                 </div>
                 <div class="auth-buttons">
-                    <a href="#" id="conta" class="logo-content flex">
-                        <img id="perfil" src="images/perfil.png" onclick="goperfil()">
-                        <p id="username" onclick="goperfil()"></p>
+                    <a href="perfil.html" id="perfil-link">
+                        <img id="perfil" src="images/perfil.png">
+                        <p id="username"></p>
                     </a>
-                    <button onclick="goecadastro()" class="register-button">Cadastrar</button>
-                    <button onclick="gologin()" class="login-button">Entrar</button>
+                    <button id="button-acount" onclick="goecadastro()" class="register-button">Cadastrar</button>
+                    <button id="button-enter" onclick="gologin()" class="login-button">Entrar</button>
                 </div>
             </header>
             
@@ -78,18 +78,20 @@
             </section>
         </main>
     </div>
+    
     <script src="js/server_script.js"></script>
     <script src="js/script.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-    const sidebar = document.querySelector(".sidebar");
-    const toggleButton = document.getElementById("toggleSidebar");
+        const sidebar = document.querySelector(".sidebar");
+        const toggleButton = document.getElementById("toggleSidebar");
 
-    toggleButton.addEventListener("click", function() {
-        sidebar.classList.toggle("expanded");
-    });
-});
+        toggleButton.addEventListener("click", function() {
+            sidebar.classList.toggle("expanded");
+        });
 
+        verificarToken();
+      });
     </script>
 </body>
 </html>

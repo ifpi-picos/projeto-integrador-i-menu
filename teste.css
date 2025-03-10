@@ -224,3 +224,30 @@ body {
     align-items: center;
     margin-left: auto; /* Empurra para o canto direito */
 }
+
+#perfil {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#perfil-link {
+    text-decoration: none; /* Remove o sublinhado */
+    color: inherit; /* Mantém a cor padrão do texto */
+    display: flex; /* Para alinhar imagem e nome lado a lado */
+    align-items: center; /* Alinha verticalmente */
+    gap: 8px; /* Espaçamento entre foto e nome */
+    cursor: pointer; /* Mostra que é clicável */
+}
+
+#perfil-link:hover {
+    opacity: 0.8; /* Efeito ao passar o mouse */
+}
+
+#perfil {
+    width: 40px; /* Ajuste o tamanho da imagem */
+    height: 40px;
+    border-radius: 50%; /* Deixa a foto redonda */
+}
+
