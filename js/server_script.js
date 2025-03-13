@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-pd3a.onrender.com"; //"http://localhost:3006"
+const webservice = "http://localhost:3006" //"https://imenu-backend-pd3a.onrender.com"
 
 // Criar usuário
 async function criaruser() {
@@ -75,7 +75,7 @@ async function verificarToken() {
     const token = localStorage.getItem("auth_token");
     console.log("Token encontrado:", token);
 
-    const conta = document.getElementById("conta");
+    const conta = document.getElementById("perfil-link");
     const mapa = document.getElementById("mapaAba");
     const editor = document.getElementById("editorAba");
     const cadastrarB = document.getElementById("button-acount");
@@ -141,5 +141,31 @@ async function verificarToken() {
     }
 }
 
-// Chamar a função ao carregar a página
-window.onload = verificarToken;
+
+async function VerEmail() {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    try {
+        const response = await fetch(webservice + "/dados", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 403) { 
+            console.warn("Redirecionando para página de verificação de e-mail...");
+            window.location.href = "./EmailnoVer.html";
+        }
+
+    } catch (err) {
+        console.error("Erro ao verificar e-mail:", err);
+    }
+}
+
+// ✅ Garante que as duas funções são chamadas no `onload`
+window.onload = () => {
+    verificarToken();
+    setTimeout(VerEmail, 500);  // Pequeno delay para evitar conflito
+};
