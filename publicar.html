@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicação de Cardápio</title>
+    <link rel="stylesheet" href="publicar.css" />
+</head>
+<body>
+    <div class="container">
+        <button class="confirm-button">✔</button>
+        <label class="upload-box">
+            <input type="file" accept="image/*" onchange="previewImage(event)">
+            <span id="upload-text">Escolha um arquivo</span>
+            <img id="preview" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
+        </label>
+        <div class="form-section">
+            <label>Título</label>
+            <input type="text" placeholder="Adicione um título">
+            <label>Descrição</label>
+            <textarea placeholder="Adicione uma descrição detalhada"></textarea>
+            <label>Link</label>
+            <input type="text" placeholder="Adicione um link">
+            <label>Interesses marcados</label>
+            <input type="text" placeholder="Procure uma tag">
+            <div class="radio-group">
+                <label><input type="radio" name="privacidade" value="publico"> Público</label>
+                <label><input type="radio" name="privacidade" value="privado" checked> Privado</label>
+            </div>
+        </div>
+    </div>
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview').style.display = 'block';
+                    document.getElementById('upload-text').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>
