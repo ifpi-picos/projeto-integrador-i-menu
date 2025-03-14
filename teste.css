@@ -5,7 +5,6 @@ html, body {
     overflow-x: hidden;
 }
 
-/* Reset e Configuração Geral */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -15,13 +14,11 @@ body {
     background: #f4f4f4;
 }
 
-/* Layout Principal */
 .container {
     display: flex;
     width: 100%;
 }
 
-/* Sidebar */
 .sidebar {
     width: 200px;
     background: #3b1d0f;
@@ -34,7 +31,6 @@ body {
     position: relative;
 }
 
-/* Sidebar Contraída */
 .sidebar.expanded {
     width: 60px;
 }
@@ -43,7 +39,6 @@ body {
     display: none;
 }
 
-/* Botão de Toggle */
 #toggleSidebar {
     background: none;
     border: none;
@@ -55,7 +50,6 @@ body {
     width: 30px;
 }
 
-/* Logo */
 .logo {
     font-size: 24px;
     color: #ffffff;
@@ -63,7 +57,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* Navegação */
 .nav-button {
     width: 100%;
     padding: 10px;
@@ -90,7 +83,6 @@ body {
     border-radius: 5px;
 }
 
-/* Conteúdo Principal */
 .content {
     flex: 1;
     padding: 20px;
@@ -98,7 +90,6 @@ body {
     overflow-y: auto;
 }
 
-/* Barra de Pesquisa */
 .search-box {
     position: relative;
 }
@@ -116,7 +107,6 @@ body {
     border: 1px solid #ddd;
 }
 
-/* Botões de Autenticação */
 .auth-buttons {
     display: flex;
     gap: 10px;
@@ -141,12 +131,10 @@ body {
     border: 2px solid #3b1d0f;
 }
 
-/* Seção de Promoção */
 .promo-banner {
     width: 95%;
     margin-bottom: 20px;
     position: relative;
-    
 }
 
 .promo-banner img {
@@ -156,11 +144,10 @@ body {
     border-radius: 10px;
 }
 
-/* Mascote */
 .mascote-container {
     position: absolute;
     top: -50px;
-    right: 425px;
+    right: 10%;
     width: 100px;
     height: auto;
 }
@@ -170,9 +157,9 @@ body {
     height: auto;
 }
 
-/* Cards de Cardápios */
 .cards {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 10px;
     margin-bottom: 20px;
 }
@@ -180,13 +167,11 @@ body {
 .card {
     background: white;
     padding: 20px;
-    flex: 1;
     text-align: center;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .sidebar {
         width: 60px;
@@ -204,10 +189,6 @@ body {
         flex-direction: column;
         align-items: center;
     }
-
-    .cards {
-        flex-direction: column;
-    }
 }
 
 .topbar {
@@ -215,14 +196,14 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding-bottom: 20px; /* Adiciona espaçamento abaixo da barra */
+    padding-bottom: 20px;
 }
 
 .auth-buttons {
     display: flex;
     gap: 10px;
     align-items: center;
-    margin-left: auto; /* Empurra para o canto direito */
+    margin-left: auto;
 }
 
 #perfil {
@@ -233,21 +214,25 @@ body {
 }
 
 #perfil-link {
-    text-decoration: none; /* Remove o sublinhado */
-    color: inherit; /* Mantém a cor padrão do texto */
-    display: flex; /* Para alinhar imagem e nome lado a lado */
-    align-items: center; /* Alinha verticalmente */
-    gap: 8px; /* Espaçamento entre foto e nome */
-    cursor: pointer; /* Mostra que é clicável */
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
 }
 
 #perfil-link:hover {
-    opacity: 0.8; /* Efeito ao passar o mouse */
+    opacity: 0.8;
 }
 
 #perfil {
-    width: 40px; /* Ajuste o tamanho da imagem */
+    width: 40px;
     height: 40px;
-    border-radius: 50%; /* Deixa a foto redonda */
+    border-radius: 50%;
+}
+
+#editorAba, #mapaAba {
+    display: none;
 }
 
