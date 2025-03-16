@@ -113,6 +113,17 @@ async function verificarToken() {
                 if (data.foto) {
                     document.getElementById("perfil").src = data.foto;
                 }
+
+                // Lógica corrigida para mapa e editor
+                if (data.dono) {
+                    // Se for dono, remove o mapa
+                    if (mapa) mapa.remove();
+                    if (editor) editor.style.display = "flex"; // Garante que o editor está visível
+                } else {
+                    // Se não for dono, remove o editor
+                    if (editor) editor.remove();
+                    if (mapa) mapa.style.display = "flex"; // Garante que o mapa está visível
+                }
             }
 
             if (window.location.pathname.includes("perfil.html")) {
@@ -129,18 +140,11 @@ async function verificarToken() {
 
             if (cadastrarB) cadastrarB.style.display = "none";
             if (logarB) logarB.style.display = "none";
-
-            if (data.dono) {
-                if (mapa) mapa.remove();
-            } else {
-                if (editor) editor.remove();
-            }
         }
     } catch (err) {
         console.error("Erro ao buscar usuário:", err);
     }
 }
-
 
 async function VerEmail() {
     const token = localStorage.getItem("auth_token");
