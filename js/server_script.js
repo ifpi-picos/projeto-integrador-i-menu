@@ -158,6 +158,9 @@ async function VerEmail() {
             console.warn("Redirecionando para página de verificação de e-mail...");
             window.location.href = "./EmailnoVer.html";
         }
+        if(window.location.pathname.includes("EmailnoVer.html" && response.status !== 403)){
+            window.location.href = "./index.html";
+        }
 
     } catch (err) {
         console.error("Erro ao verificar e-mail:", err);
