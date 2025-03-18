@@ -19,6 +19,21 @@ body {
     width: 100%;
 }
 
+#posts-recentes{
+    display: flex;
+    margin: 10px;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.post{
+    border: 1px solid brown;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
 .sidebar {
     width: 200px;
     background: #3b1d0f;

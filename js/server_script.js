@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" // "http://localhost:3006"
+const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006"
 
 // Criar usuário
 async function criaruser() {
@@ -176,11 +176,6 @@ async function VerEmail() {
     }
 }
 
-window.onload = () => {
-    verificarToken();
-    setTimeout(VerEmail, 500);
-};
-
 async function postar() {
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
@@ -220,3 +215,43 @@ async function postar() {
         alert("Erro ao criar o post. Tente novamente.");
     }
 }
+
+async function carregarUltimosPosts() {
+    try {
+        const response = await fetch(`${webservice}/recent`);
+        if (!response.ok) {
+            throw new Error(`Erro: ${response.statusText}`);
+        }
+        const posts = await response.json();
+        console.log("Últimos posts:", posts);
+
+        const postsContainer = document.getElementById("posts-recentes");
+        if (postsContainer) {
+            postsContainer.innerHTML = "";
+            posts.forEach(post => {
+                const postElement = document.createElement("div");
+                postElement.className = "post";
+                postElement.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>
+                    <p><strong>Autor:</strong> ${post.author.name}</p>
+                    <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank">${post.sociallink}</a></p>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        }
+    } catch (err) {
+        console.error("Erro ao carregar posts:", err);
+        alert("Erro ao carregar posts. Tente novamente.");
+    }
+}
+
+window.onload = () => {
+    carregarUltimosPosts();
+};
+
+window.onload = () => {
+    verificarToken();
+    setTimeout(VerEmail, 500);
+    carregarUltimosPosts();
+};
