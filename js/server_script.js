@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006"
+const webservice = "http://localhost:3006" //"https://imenu-backend-yp5c.onrender.com"
 
 // Criar usuário
 async function criaruser() {
@@ -176,3 +176,52 @@ window.onload = () => {
     verificarToken();
     setTimeout(VerEmail, 500);  // Pequeno delay para evitar conflito
 };
+
+
+
+async function postar() {
+    // Obter valores dos campos
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+    const link = document.getElementById("linksocial").value;
+    const public = document.getElementById("public").checked;
+
+    // Criar objeto com os dados do post
+    const novoPost = {
+        title: title,
+        content: content,
+        sociallink: link,
+        publice: public
+    };
+
+    // Obter o token do localStorage
+    const token = localStorage.getItem("auth_token");
+
+    try {
+        // Enviar requisição para o backend
+        const response = await fetch(`${webservice}/post`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(novoPost)
+        });
+
+        // Verificar se a requisição foi bem-sucedida
+        if (!response.ok) {
+            throw new Error(`Erro: ${response.statusText}`);
+        }
+
+        // Processar a resposta
+        const data = await response.json();
+        console.log("Post criado com sucesso:", data);
+
+        // Redirecionar ou exibir mensagem de sucesso
+        alert("Post criado com sucesso!");
+        window.location.href = "./index.html"; // Redirecionar para a página inicial
+    } catch (err) {
+        console.error("Erro ao criar o post:", err);
+        alert("Erro ao criar o post. Tente novamente.");
+    }
+}

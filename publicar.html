@@ -16,19 +16,21 @@
         </label>
         <div class="form-section">
             <label>Título</label>
-            <input type="text" placeholder="Adicione um título">
+            <input id="title" type="text" placeholder="Adicione um título">
             <label>Descrição</label>
-            <textarea placeholder="Adicione uma descrição detalhada"></textarea>
+            <textarea id="content" placeholder="Adicione uma descrição detalhada"></textarea>
             <label>Link</label>
-            <input type="text" placeholder="Adicione um link">
+            <input type="text" id="linksocial" placeholder="Adicione um link">
             <label>Interesses marcados</label>
             <input type="text" placeholder="Procure uma tag">
             <div class="radio-group">
-                <label><input type="radio" name="privacidade" value="publico"> Público</label>
-                <label><input type="radio" name="privacidade" value="privado" checked> Privado</label>
-            </div>
+                <label><input type="radio" name="privacidade" id="public" value="publico"> Público</label>
+                <label><input type="radio" name="privacidade" id="private" value="privado" checked> Privado</label>
+            </div> 
+            <button onclick="postar()">Postar</button>
         </div>
     </div>
+    <script src="js/server_script.js"></script>
     <script>
         function previewImage(event) {
             const file = event.target.files[0];
