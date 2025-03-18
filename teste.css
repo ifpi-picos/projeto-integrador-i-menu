@@ -211,7 +211,15 @@ body {
         flex-direction: column;
         align-items: center;
     }
-}
+
+    .mascote-container {
+            top: 60%;
+            width: 80px; /* Reduz o tamanho */
+            transform: translate(-50%, -120%);
+        }
+    }
+    
+
 
 .topbar {
     display: flex;
