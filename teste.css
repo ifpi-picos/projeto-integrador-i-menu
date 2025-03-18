@@ -57,20 +57,40 @@ body {
     margin-bottom: 20px;
 }
 
-.nav-button {
+.nav-button{
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     padding: 10px;
     margin: 5px 0;
     border: none;
     background: none;
     cursor: pointer;
-    display: flex;
-    align-items: center;
     gap: 10px;
     color: white;
     text-decoration: none;
     font-size: 16px;
     transition: background 0.3s;
+}
+
+.nav-button img {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0; /* Evita que a imagem diminua */
+}
+
+.nav-button p {
+    display: block;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap; /* Impede quebra de linha */
+    display: inline-block; /* Mantém o texto ao lado do ícone */
+}
+
+.nav-button:hover {
+    background: #664637;
+    border-radius: 5px;
 }
 
 .nav-button img {
@@ -146,11 +166,13 @@ body {
 
 .mascote-container {
     position: absolute;
-    top: -50px;
-    right: 10%;
-    width: 100px;
+    top: 50%; /* Centraliza verticalmente */
+    left: 50%; /* Centraliza horizontalmente */
+    transform: translate(-50%, -145%); /* Ajusta o centro */
+    width: 120px; /* Ajuste conforme necessário */
     height: auto;
 }
+
 
 .mascote {
     width: 100%;
@@ -232,7 +254,7 @@ body {
     border-radius: 50%;
 }
 
-#editorAba, #mapaAba {
+#editorAba, #mapaAba, #publicarAba {
     display: none;
 }
 

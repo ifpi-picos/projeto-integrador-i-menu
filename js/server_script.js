@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006"
+const webservice = "https://imenu-backend-yp5c.onrender.com" // "http://localhost:3006"
 
 // Criar usuário
 async function criaruser() {
@@ -80,11 +80,13 @@ async function verificarToken() {
     const editor = document.getElementById("editorAba");
     const cadastrarB = document.getElementById("button-acount");
     const logarB = document.getElementById("button-enter");
-
+    const publicar = document.getElementById("publicarAba");
+    
     if (!token) {
         console.log("Token não encontrado. Ajustando UI...");
         if (conta) conta.remove();
         if (mapa) mapa.remove();
+        if (publicar) publicar.remove();
         if (editor) editor.remove();
         if (cadastrarB) cadastrarB.style.display = "block";
         if (logarB) logarB.style.display = "block";
@@ -104,6 +106,7 @@ async function verificarToken() {
             if (conta) conta.remove();
             if (mapa) mapa.remove();
             if (editor) editor.remove();
+            if (publicar) publicar.remove();
         } else {
             const data = await response.json();
             console.log("Usuário autenticado:", data);
@@ -114,15 +117,17 @@ async function verificarToken() {
                     document.getElementById("perfil").src = data.foto;
                 }
 
-                // Lógica corrigida para mapa e editor
                 if (data.dono) {
-                    // Se for dono, remove o mapa
                     if (mapa) mapa.remove();
-                    if (editor) editor.style.display = "flex"; // Garante que o editor está visível
+                    if (editor) editor.style.display = "flex";
+                    if (publicar) {
+                        publicar.style.display = "block";
+                        publicar.onclick = () => window.location.href = "publicar.html";
+                    }
                 } else {
-                    // Se não for dono, remove o editor
                     if (editor) editor.remove();
-                    if (mapa) mapa.style.display = "flex"; // Garante que o mapa está visível
+                    if (mapa) mapa.style.display = "flex";
+                    if (publicar) publicar.remove();
                 }
             }
 
@@ -171,22 +176,17 @@ async function VerEmail() {
     }
 }
 
-// ✅ Garante que as duas funções são chamadas no `onload`
 window.onload = () => {
     verificarToken();
-    setTimeout(VerEmail, 500);  // Pequeno delay para evitar conflito
+    setTimeout(VerEmail, 500);
 };
 
-
-
 async function postar() {
-    // Obter valores dos campos
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
     const link = document.getElementById("linksocial").value;
     const public = document.getElementById("public").checked;
 
-    // Criar objeto com os dados do post
     const novoPost = {
         title: title,
         content: content,
@@ -194,11 +194,9 @@ async function postar() {
         publice: public
     };
 
-    // Obter o token do localStorage
     const token = localStorage.getItem("auth_token");
 
     try {
-        // Enviar requisição para o backend
         const response = await fetch(`${webservice}/post`, {
             method: "POST",
             headers: {
@@ -208,18 +206,15 @@ async function postar() {
             body: JSON.stringify(novoPost)
         });
 
-        // Verificar se a requisição foi bem-sucedida
         if (!response.ok) {
             throw new Error(`Erro: ${response.statusText}`);
         }
 
-        // Processar a resposta
         const data = await response.json();
         console.log("Post criado com sucesso:", data);
 
-        // Redirecionar ou exibir mensagem de sucesso
         alert("Post criado com sucesso!");
-        window.location.href = "./index.html"; // Redirecionar para a página inicial
+        window.location.href = "./index.html";
     } catch (err) {
         console.error("Erro ao criar o post:", err);
         alert("Erro ao criar o post. Tente novamente.");

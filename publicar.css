@@ -99,21 +99,6 @@ input, textarea {
     box-shadow: 0 0 0 2px #3b1d1a;
 }
 
-.confirm-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: 2px solid black;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 20px;
-}
 
 /* 📱 Responsividade para telas menores (máximo de 600px, celulares) */
 @media (max-width: 600px) {
@@ -157,3 +142,28 @@ input, textarea {
         width: 100%;
     }
 }
+
+button {
+    background-color: #3b1d1a; /* Cor do upload-box para manter consistência */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #5a2d28;
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(1px);
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
