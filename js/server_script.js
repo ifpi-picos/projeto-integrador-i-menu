@@ -235,7 +235,7 @@ async function carregarUltimosPosts() {
                     <h3>${post.title}</h3>
                     <p id="post-content">${post.content}</p>
                     <p><strong>Autor:</strong> ${post.author.name}</p>
-                    <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank">${post.sociallink}</a></p>
+                    <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank" rel="noopener noreferrer">${post.sociallink}</a></p>
                 `;
                 postsContainer.appendChild(postElement);
             });
