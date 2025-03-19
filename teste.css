@@ -7,8 +7,6 @@ html, body {
 
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
     display: flex;
     height: 100vh;
     background: #f4f4f4;
@@ -19,32 +17,36 @@ body {
     width: 100%;
 }
 
-#posts-recentes{
+#posts-recentes {
     display: flex;
     margin: 10px;
     width: 100%;
-    justify-content: space-around;
+    flex-wrap: wrap; /* Permite que os posts quebrem linha em telas menores */
+    justify-content: space-evenly; /* Distribui os posts uniformemente */
 }
 
-.post{
+.post {
     border: 1px solid brown;
     border-radius: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    max-width: 19vw;
+    padding: 10px;
+    margin: 10px;
+    max-width: 25vw; /* Largura máxima de cada post */
+    min-width: 200px; /* Largura mínima para garantir que os posts não fiquem pequenos demais */
+    box-sizing: border-box; /* Para garantir que o padding não ultrapasse a largura definida */
+    flex-grow: 1; /* Permite que os posts cresçam em telas maiores */
 }
 
-#post-content{
+#post-content {
     color: black;
-    font-family: arial;
+    font-family: Arial, sans-serif;
     max-height: 15vh;
     overflow-y: auto;
-
 }
 
 #post-content::-webkit-scrollbar {
     display: none; /* Esconde a barra de rolagem no Chrome, Edge e Safari */
 }
+
 .sidebar {
     width: 200px;
     background: #3b1d0f;
@@ -83,7 +85,7 @@ body {
     margin-bottom: 20px;
 }
 
-.nav-button{
+.nav-button {
     width: 100%;
     display: flex;
     align-items: center;
@@ -103,25 +105,20 @@ body {
 .nav-button img {
     width: 40px;
     height: 40px;
-    flex-shrink: 0; /* Evita que a imagem diminua */
+    flex-shrink: 0;
 }
 
 .nav-button p {
     display: block;
     margin: 0;
     padding: 0;
-    white-space: nowrap; /* Impede quebra de linha */
-    display: inline-block; /* Mantém o texto ao lado do ícone */
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .nav-button:hover {
     background: #664637;
     border-radius: 5px;
-}
-
-.nav-button img {
-    width: 40px;
-    height: 40px;
 }
 
 .nav-button.active, .nav-button:hover {
@@ -192,13 +189,12 @@ body {
 
 .mascote-container {
     position: absolute;
-    top: 50%; /* Centraliza verticalmente */
-    left: 50%; /* Centraliza horizontalmente */
-    transform: translate(-50%, -145%); /* Ajusta o centro */
-    width: 120px; /* Ajuste conforme necessário */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -145%);
+    width: 120px;
     height: auto;
 }
-
 
 .mascote {
     width: 100%;
@@ -239,13 +235,21 @@ body {
     }
 
     .mascote-container {
-            top: 60%;
-            width: 80px; /* Reduz o tamanho */
-            transform: translate(-50%, -120%);
-        }
+        top: 60%;
+        width: 80px;
+        transform: translate(-50%, -120%);
     }
-    
 
+    #posts-recentes {
+        flex-direction: column; /* Torna os posts verticais em telas pequenas */
+        align-items: center;
+    }
+
+    .post {
+        max-width: 90%; /* Ajusta a largura dos posts para telas menores */
+        margin: 5px 0;
+    }
+}
 
 .topbar {
     display: flex;
@@ -291,4 +295,3 @@ body {
 #editorAba, #mapaAba, #publicarAba {
     display: none;
 }
-
