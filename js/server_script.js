@@ -233,7 +233,7 @@ async function carregarUltimosPosts() {
                 postElement.className = "post";
                 postElement.innerHTML = `
                     <h3>${post.title}</h3>
-                    <p>${post.content}</p>
+                    <p id="post-content">${post.content}</p>
                     <p><strong>Autor:</strong> ${post.author.name}</p>
                     <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank">${post.sociallink}</a></p>
                 `;

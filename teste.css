@@ -34,7 +34,17 @@ body {
     max-width: 19vw;
 }
 
+#post-content{
+    color: black;
+    font-family: arial;
+    max-height: 15vh;
+    overflow-y: auto;
 
+}
+
+#post-content::-webkit-scrollbar {
+    display: none; /* Esconde a barra de rolagem no Chrome, Edge e Safari */
+}
 .sidebar {
     width: 200px;
     background: #3b1d0f;
