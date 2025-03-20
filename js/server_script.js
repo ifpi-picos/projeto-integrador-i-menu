@@ -181,12 +181,14 @@ async function postar() {
     const content = document.getElementById("content").value;
     const link = document.getElementById("linksocial").value;
     const public = document.getElementById("public").checked;
+    const capa = document.getElementById("linkimg").checked;  
 
     const novoPost = {
         title: title,
         content: content,
         sociallink: link,
-        publice: public
+        publice: public,
+        capa: capa
     };
 
     const token = localStorage.getItem("auth_token");
@@ -236,7 +238,7 @@ async function carregarUltimosPosts() {
                     <p id="post-content">${post.content}</p>
                     <p><strong>Autor:</strong> ${post.author.name}</p>
                     <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank" rel="noopener noreferrer">${post.sociallink}</a></p>
-                `;
+                    <img id="capa-post" src="${post.capa}">`;
                 postsContainer.appendChild(postElement);
             });
         }
