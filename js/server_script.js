@@ -181,7 +181,7 @@ async function postar() {
     const content = document.getElementById("content").value;
     const link = document.getElementById("linksocial").value;
     const public = document.getElementById("public").checked;
-    const capa = document.getElementById("linkimg").checked;  
+    const capa = document.getElementById("linkimg").value;  
 
     const novoPost = {
         title: title,
@@ -233,12 +233,16 @@ async function carregarUltimosPosts() {
             posts.forEach(post => {
                 const postElement = document.createElement("div");
                 postElement.className = "post";
+                if (post.capa) {
+                    postElement.style.backgroundImage = `url('${post.capa}')`;
+                    postElement.style.backgroundSize = "cover"; // Ajusta a imagem ao tamanho da div
+                    postElement.style.backgroundPosition = "center"; // Centraliza a imagem
+                }
                 postElement.innerHTML = `
                     <h3>${post.title}</h3>
                     <p id="post-content">${post.content}</p>
                     <p><strong>Autor:</strong> ${post.author.name}</p>
-                    <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank" rel="noopener noreferrer">${post.sociallink}</a></p>
-                    <img id="capa-post" src="${post.capa}">`;
+                    <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank" rel="noopener noreferrer">${post.sociallink}</a></p>`;
                 postsContainer.appendChild(postElement);
             });
         }

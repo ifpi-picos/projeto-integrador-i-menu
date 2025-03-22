@@ -21,6 +21,7 @@ body {
     display: flex;
     margin: 10px;
     width: 100%;
+    height: 35vh;
     flex-wrap: wrap; /* Permite que os posts quebrem linha em telas menores */
     justify-content: space-evenly; /* Distribui os posts uniformemente */
 }
@@ -30,6 +31,7 @@ body {
     border-radius: 10px;
     padding: 10px;
     margin: 10px;
+    transition: transform 0.3s ease;
     max-width: 25vw; /* Largura máxima de cada post */
     min-width: 200px; /* Largura mínima para garantir que os posts não fiquem pequenos demais */
     box-sizing: border-box; /* Para garantir que o padding não ultrapasse a largura definida */
@@ -41,6 +43,13 @@ body {
     font-family: Arial, sans-serif;
     max-height: 15vh;
     overflow-y: auto;
+}
+
+.post:hover{
+    size: 1.1;
+    cursor: pointer;
+    border: 2px solid rgb(129, 33, 33);
+    transform: scale(1.05);
 }
 
 #post-content::-webkit-scrollbar {
