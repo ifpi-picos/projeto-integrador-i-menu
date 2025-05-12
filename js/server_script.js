@@ -230,22 +230,36 @@ async function carregarUltimosPosts() {
         const postsContainer = document.getElementById("posts-recentes");
         if (postsContainer) {
             postsContainer.innerHTML = "";
+            
             posts.forEach(post => {
+                // Cria o container principal do post
                 const postElement = document.createElement("div");
-                postElement.className = "post";
+                postElement.className = "post-container"; // Adicione esta classe para estilização
+                
+                // Cria a div da imagem (se existir capa)
                 if (post.capa) {
-                    postElement.style.backgroundImage = `url('${post.capa}')`;
-                    postElement.style.backgroundSize = "cover"; // Ajusta a imagem ao tamanho da div
-                    postElement.style.backgroundPosition = "center"; // Centraliza a imagem
+                    const imgContainer = document.createElement("div");
+                    imgContainer.className = "post";
+                    imgContainer.style.backgroundImage = `url('${post.capa}')`;
+                    imgContainer.style.backgroundSize = "cover";
+                    imgContainer.style.backgroundPosition = "center";
+                    postElement.appendChild(imgContainer);
                 }
-                postElement.innerHTML = `
-                    <h3>${post.title}</h3>
-                    <p id="post-content">${post.content}</p>
-                    <p><strong>Autor:</strong> ${post.author.name}</p>
-                    <p><strong>Link:</strong> <a href="${post.sociallink}" target="_blank" rel="noopener noreferrer">${post.sociallink}</a></p>`;
+                
+                // Cria a div das informações
+                const infoContainer = document.createElement("div");
+                infoContainer.className = "post-info";
+                infoContainer.innerHTML = `
+                    <p>${post.title}</p>
+                    <p class="post-content">${post.content}</p>
+                    <p>Autor: ${post.author?.name || 'Desconhecido'}</p>
+                `;
+                
+                postElement.appendChild(infoContainer);
                 postsContainer.appendChild(postElement);
             });
         }
+        
     } catch (err) {
         console.error("Erro ao carregar posts:", err);
         alert("Erro ao carregar posts. Tente novamente.");

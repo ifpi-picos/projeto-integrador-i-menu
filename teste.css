@@ -15,7 +15,50 @@ a {
     text-decoration: none;
     color: inherit;
 }
-  
+
+/*Cardapios publicados recentemente*/
+
+#posts-recentes{
+    height: 50vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    scrollbar-width: none;
+}
+.post-info{
+    display: flex;
+    flex-direction: row;
+    height: 10%;
+    margin-left: 10px;
+    font-weight: bold;
+    width: 96%;
+    justify-content: space-between;
+}
+
+.post-info p{
+    
+}
+.post{
+    border-bottom: 2px solid black;
+    border-right: 1px solid black;
+    width: 35vw;
+    height: 90%;
+    margin: 10px 10px 0px 10px;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    max-width: 40vw; /* Largura máxima de cada post */
+    box-sizing: border-box; /* Para garantir que o padding não ultrapasse a largura definida */
+    
+}
+
+.post:hover{
+    size: 1.1;
+    cursor: pointer;
+    border: 2px solid rgb(129, 33, 33);
+    transform: scale(1.05);
+}
+
 /* Header */
 header {
     display: flex;
