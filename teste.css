@@ -1,306 +1,361 @@
-html, body {
+/* Reset básico */
+* {
     margin: 0;
     padding: 0;
-    height: 100%;
-    overflow-x: hidden;
+    box-sizing: border-box;
 }
-
+  
 body {
     font-family: Arial, sans-serif;
+    color: #3E2723;
+    background-color: #F9F5F0;
+}
+  
+a {
+    text-decoration: none;
+    color: inherit;
+}
+  
+/* Header */
+header {
     display: flex;
-    height: 100vh;
-    background: #f4f4f4;
-}
-
-.container {
-    display: flex;
-    width: 100%;
-}
-
-#posts-recentes {
-    display: flex;
-    margin: 10px;
-    width: 100%;
-    height: 35vh;
-    flex-wrap: wrap; /* Permite que os posts quebrem linha em telas menores */
-    justify-content: space-evenly; /* Distribui os posts uniformemente */
-}
-
-.post {
-    border: 1px solid brown;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10px;
-    transition: transform 0.3s ease;
-    max-width: 25vw; /* Largura máxima de cada post */
-    min-width: 200px; /* Largura mínima para garantir que os posts não fiquem pequenos demais */
-    box-sizing: border-box; /* Para garantir que o padding não ultrapasse a largura definida */
-    flex-grow: 1; /* Permite que os posts cresçam em telas maiores */
-}
-
-#post-content {
-    color: black;
-    font-family: Arial, sans-serif;
-    max-height: 15vh;
-    overflow-y: auto;
-}
-
-.post:hover{
-    size: 1.1;
-    cursor: pointer;
-    border: 2px solid rgb(129, 33, 33);
-    transform: scale(1.05);
-}
-
-#post-content::-webkit-scrollbar {
-    display: none; /* Esconde a barra de rolagem no Chrome, Edge e Safari */
-}
-
-.sidebar {
-    width: 200px;
-    background: #3b1d0f;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    transition: width 0.3s ease;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    position: relative;
-}
-
-.sidebar.expanded {
-    width: 60px;
-}
-
-.sidebar.expanded .nav-button p {
-    display: none;
-}
-
-#toggleSidebar {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-}
-
-#toggleSidebar img {
-    width: 30px;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .logo {
-    font-size: 24px;
-    color: #ffffff;
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 20px;
+    color: #7B3F00;
+}
+
+/* Navegação horizontal personalizada */
+.horizontal-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 2rem;
+    background-color: #fff;
 }
 
 .nav-button {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 10px;
-    margin: 5px 0;
-    border: none;
     background: none;
+    border: none;
+    font-size: 0.95rem;
     cursor: pointer;
-    gap: 10px;
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    transition: background 0.3s;
-}
-
-.nav-button img {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-}
-
-.nav-button p {
-    display: block;
-    margin: 0;
-    padding: 0;
-    white-space: nowrap;
-    display: inline-block;
+    color: #7B3F00;
+    padding: 0.25rem 0.75rem;
+    transition: background 0.2s ease;
 }
 
 .nav-button:hover {
-    background: #664637;
-    border-radius: 5px;
+    background: rgba(123, 63, 0, 0.1);
+    border-radius: 4px;
 }
 
-.nav-button.active, .nav-button:hover {
-    background: #664637;
-    border-radius: 5px;
+.nav-button p {
+    margin: 0;
 }
 
-.content {
-    flex: 1;
-    padding: 20px;
-    background: #cfc9c7;
-    overflow-y: auto;
-}
-
-.search-box {
+/* Hero / Busca */
+.hero {
+    background: url('images/background-cad.png') center/cover no-repeat;
     position: relative;
+    padding: 4rem 2rem;
+    text-align: center;
 }
-
-.search-box i {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: gray;
+  
+.hero h1 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1rem;
 }
-
-.search-box input {
-    padding: 8px 8px 8px 30px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-
-.auth-buttons {
+  
+.search-bar {
+    max-width: 500px;
+    margin: 0 auto;
     display: flex;
-    gap: 10px;
-    align-items: center;
+}
+  
+.search-bar input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px 0 0 4px;
+}
+  
+.search-bar button {
+    padding: 0 1rem;
+    border: none;
+    background: #7B3F00;
+    color: #fff;
+    border-radius: 0 4px 4px 0;
 }
 
-.register-button, .login-button {
-    padding: 10px 15px;
-    border-radius: 5px;
+/* Categorias rápidas */
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+}
+  
+.category {
+    background: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     cursor: pointer;
 }
 
-.register-button {
-    background: #3b1d0f;
-    color: white;
-    border: none;
+/* Cards principais */
+.main-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+  
+.card {
+    flex: 1 1 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+  
+.card.red {
+    background: #7B3F00;
+    color: #fff;
+}
+  
+.card.green {
+    background: #B08968;
+    color: #fff;
+}
+  
+.card img {
+    width: 30%;
+    height: 150px;
+    object-fit: scale-down;
+    margin-left: 1rem;
+}
+  
+.card .card-content {
+    padding: 1rem;
+    flex: 1;
+}
+  
+.card .btn-card {
+    margin-top: 1rem;
+    background: rgba(255, 255, 255, 0.2);
 }
 
-.login-button {
-    background: none;
-    color: #3b1d0f;
-    border: 2px solid #3b1d0f;
+/* Seções de destaque */
+.section {
+    margin: 2rem 0;
+}
+  
+.section h2 {
+    margin-left: 2rem;
+    font-size: 1.5rem;
+}
+  
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 1rem 2rem;
+}
+  
+.carousel::-webkit-scrollbar {
+    display: none;
+}
+  
+.carousel-item {
+    min-width: 150px;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.promo-banner {
-    width: 95%;
-    margin-bottom: 20px;
+/* Efeito hover nas imagens dos restaurantes */
+.carousel-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    border-radius: 90px;
+}
+
+.carousel-item:hover img {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+
+/* Banners promo */
+.promos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0 2rem;
+}
+  
+.promo {
+    flex: 1;
+    min-width: 200px;
+    border-radius: 6px;
+    overflow: hidden;
     position: relative;
 }
-
-.promo-banner img {
+  
+.promo img {
     width: 100%;
-    max-height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
+    display: block;
 }
 
-.mascote-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -145%);
-    width: 120px;
-    height: auto;
-}
-
-.mascote {
-    width: 100%;
-    height: auto;
-}
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        width: 60px;
-    }
-
-    .sidebar .nav-button p {
-        display: none;
-    }
-
-    .content {
-        padding: 10px;
-    }
-
-    .topbar {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .mascote-container {
-        top: 60%;
-        width: 80px;
-        transform: translate(-50%, -120%);
-    }
-
-    #posts-recentes {
-        flex-direction: column; /* Torna os posts verticais em telas pequenas */
-        align-items: center;
-    }
-
-    .post {
-        max-width: 90%; /* Ajusta a largura dos posts para telas menores */
-        margin: 5px 0;
-    }
-}
-
-.topbar {
+/* Footer chamadas */
+.footer-cta {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    background: #fff;
+    padding: 2rem;
+}
+  
+.cta {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    flex: 1 1 250px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+  
+.cta img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+}
+  
+.cta .btn {
+    margin-top: 1rem;
+    background: #7B3F00;
+    color: #fff;
 }
 
+/* Ajustando os botões de entrar e criar conta */
+header > div {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-red {
+    background: #7B3F00;
+    color: #fff;
+}
+
+/* Estilos para os botões de autenticação */
 .auth-buttons {
     display: flex;
-    gap: 10px;
+    gap: 1rem;
     align-items: center;
-    margin-left: auto;
 }
 
+/* Estilo do botão "Cadastrar" */
+.register-button {
+    background-color: #4E2C1E;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Estilo do botão "Entrar" */
+.login-button {
+    background-color: transparent;
+    color: #4E2C1E;
+    border: 2px solid #4E2C1E;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Estilos para perfil e nome de usuário */
 #perfil {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 #perfil-link {
-    text-decoration: none;
-    color: inherit;
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
+    gap: 0.5rem;
 }
 
-#perfil-link:hover {
-    opacity: 0.8;
+#username {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #4E2C1E;
 }
 
-#perfil {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
+/* Mobile view */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+  
+    .carousel-item {
+        min-width: 120px;
+    }
 
-#editorAba, #mapaAba, #publicarAba {
-    display: none;
+    header > div {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .auth-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .auth-buttons button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
 }

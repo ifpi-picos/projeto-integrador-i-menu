@@ -1,91 +1,112 @@
-<!-- HTML Atualizado para Responsividade -->
-<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html> 
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iMenu</title>
-    <link rel="stylesheet" href="teste.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>iMenu</title>
+  <link rel="stylesheet" href="teste.css" />
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <button id="toggleSidebar" class="nav-button" aria-label="Toggle Sidebar">
-                <img src="images/sidebar.png" alt="Menu">
-            </button>
-            <h1 class="logo">iMenu</h1>
-            <nav>
-                <a href="index.html" class="nav-button">
-                    <img src="images/home.png" alt="Início"> <p>Início</p>
-                </a>
-                <a href="pesquisa.html" class="nav-button">
-                    <img src="images/card.png" alt="Meus Menus"> <p>Menus</p>
-                </a>
-                <button id="mapaAba" onclick="localizacao()" class="nav-button">
-                    <img src="images/local.png" alt="Mapa"> <p>Mapa</p>
-                </button>
-                <a href="publicar.html" id="publicarAba" onclick="gopublicar()" class="nav-button">
-                    <img src="images/publicar.png" alt="Publicar"><p>Publicar</p>
-                </a>
-                
-                <button id="editorAba" onclick="goeditor()" class="nav-button">
-                    <img src="images/editor.png" alt="Editor"> <p>Editor</p>
-                </button>
-                <a href="#" class="nav-button">
-                    <img src="images/config.png" alt="Configurações"> <p>Configurações</p>
-                </a>
-            </nav>
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="content">
-            <header class="topbar">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Buscar...">
-                </div>
-                <div class="auth-buttons">
-                    <a href="perfil.html" id="perfil-link">
-                        <img id="perfil" src="images/perfil.png">
-                        <p id="username"></p>
-                    </a>
-                    <button id="button-acount" onclick="goecadastro()" class="register-button">Cadastrar</button>
-                    <button id="button-enter" onclick="gologin()" class="login-button">Entrar</button>
-                </div>
-            </header>
-            
-            <!-- Promoção / Banner -->
-            <section class="promo-banner">
-                <img src="images/Bem-vindo ao iMenu - cliente.png" alt="Promoção Especial">
-                <div class="mascote-container">
-                    <img src="images/mascote.png" alt="Mascote" class="mascote">
-                </div>
-            </section>
-
-            <!-- Cardápios -->
-            <section class="dashboard">
-                <h2>Cardápios criados recentemente</h2>
-                <div id="posts-recentes">
-
-                </div>
-            </section>
-        </main>
+  <header>
+    <div class="logo">iMenu</div>
+    <header>
+        <nav class="horizontal-nav">
+            <a href="index.html" class="nav-button"><p>Início</p></a>
+            <a href="pesquisa.html" class="nav-button"><p>Menus</p></a>
+            <button id="mapaAba" onclick="localizacao()" class="nav-button"><p>Mapa</p></button>
+            <a href="publicar.html" id="publicarAba" onclick="gopublicar()" class="nav-button"><p>Publicar</p></a>
+            <button id="editorAba" onclick="goeditor()" class="nav-button"><p>Editor</p></button>
+            <a href="#" class="nav-button"><p>Perfil</p></a>
+          </nav>      
+      </header>
+      <div class="auth-buttons">
+        <a href="perfil.html" id="perfil-link">
+            <img id="perfil" src="images/perfil.png">
+            <p id="username"></p>
+        </a>
+        <button id="button-acount" onclick="goecadastro()" class="register-button">Cadastrar</button>
+        <button id="button-enter" onclick="gologin()" class="login-button">Entrar</button>
     </div>
     
-    <script src="js/server_script.js"></script>
-    <script src="js/script.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const sidebar = document.querySelector(".sidebar");
-        const toggleButton = document.getElementById("toggleSidebar");
+    </div>
+  </header>
 
-        toggleButton.addEventListener("click", function() {
-            sidebar.classList.toggle("expanded");
-        });
+  <section class="hero">
+    <h1>Faça mercado no iMenu</h1>
+    <div class="search-bar">
+      <input type="text" placeholder="Em qual endereço você está?" />
+      <button>Ver restaurantes próximos</button>
+    </div>
+  </section>
 
-        verificarToken();
+  <div class="categories">
+    <div class="category">Frios</div>
+    <div class="category">Laticínios</div>
+    <div class="category">Bebidas</div>
+    <div class="category">Massas frescas</div>
+    <div class="category">Padaria</div>
+    <div class="category">Carnes</div>
+    <div class="category">Cerveja</div>
+  </div>
+
+  <div class="main-cards">
+    <div class="card red">
+      <img src="images/drink.png" alt="Restaurante" />
+      <div class="card-content">
+        <h3>Bares</h3>
+        <button class="btn btn-card">Ver opções</button>
+      </div>
+    </div>
+    <div class="card green">
+      <img src="images/hambu.png" alt="Mercado" />
+      <div class="card-content">
+        <h3>Restaurantes</h3>
+        <button class="btn btn-card">Ver opções</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <h2>Cardápios criados recentemente</h2>
+  </section>
+
+  <section class="section promos">
+    <div class="promo"><img src="images/off-banner.webp" alt="Promo" /></div>
+    <div class="promo"><img src="images/off-banner2.webp" alt="Promo" /></div>
+    <div class="promo"><img src="images/off-banner3.webp" alt="Promo" /></div>
+  </section>
+
+  <section class="section">
+    <h2>Restaurantes Famosos</h2>
+    <div class="carousel">
+      <div class="carousel-item">
+        <img src="images/bistro-delicias.jpeg" alt="Restaurante 1" class="restaurant-image">
+        <p>Bistro Delicias</p>
+      </div>
+      <div class="carousel-item">
+        <img src="images/borcelle-logo.jpeg" alt="Restaurante 2" class="restaurant-image">
+        <p>Borcelle</p>
+      </div>
+      <div class="carousel-item">
+        <img src="images/cantinho-gourmet.jpeg" alt="Restaurante 3" class="restaurant-image">
+        <p>Cantinho Gourmet</p>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/server_script.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const sidebar = document.querySelector(".sidebar");
+      const toggleButton = document.getElementById("toggleSidebar");
+
+      toggleButton.addEventListener("click", function() {
+          sidebar.classList.toggle("expanded");
       });
-    </script>
+
+      verificarToken();
+    });
+  </script>
 </body>
 </html>
