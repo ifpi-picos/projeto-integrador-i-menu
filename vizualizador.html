@@ -40,7 +40,7 @@
 
         try {
           const webservice ="https://imenu-backend-yp5c.onrender.com" // "http://localhost:3006"
-            const response = await fetch(`http://localhost:3006/posts/${postId}`);
+            const response = await fetch(`http://${webservice}/posts/${postId}`);
             
             if (!response.ok) {
                 throw new Error(`Erro: ${response.status}`);
