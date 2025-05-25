@@ -53,3 +53,18 @@ button {
   font-size: 1rem;
   color: #6E4F3A;
 }
+
+.post-container{
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+
+}
+/*imagem do cardapio*/
+
+#post-image{
+  width: 80vw;
+  background-size: cover;
+  height: 40vh;
+
+}

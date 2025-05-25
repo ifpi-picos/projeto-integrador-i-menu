@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006"
+const webservice ="https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006" 
 
 // Criar usuário
 async function criaruser() {
@@ -221,32 +221,38 @@ async function postar() {
 async function carregarUltimosPosts() {
     try {
         const response = await fetch(`${webservice}/recent`);
-        if (!response.ok) {
-            throw new Error(`Erro: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Erro: ${response.statusText}`);
+        
         const posts = await response.json();
-        console.log("Últimos posts:", posts);
+        console.log("Posts recebidos:", posts); // Verifique a estrutura dos dados aqui
 
         const postsContainer = document.getElementById("posts-recentes");
         if (postsContainer) {
             postsContainer.innerHTML = "";
             
             posts.forEach(post => {
-                // Cria o container principal do post
                 const postElement = document.createElement("div");
-                postElement.className = "post-container"; // Adicione esta classe para estilização
+                postElement.className = "post-container";
                 
-                // Cria a div da imagem (se existir capa)
+                // Verifique como o ID está vindo no objeto post
+                const postId = post.id || post._id; // Tenta ambos os formatos
+                console.log("ID do post:", postId); // Verifique no console
+                
+                if (!postId) {
+                    console.error("Post sem ID:", post);
+                    return; // Pula posts sem ID
+                }
+
+                postElement.onclick = () => abrirPost(postId);
+                
+                // Restante do seu código...
                 if (post.capa) {
                     const imgContainer = document.createElement("div");
                     imgContainer.className = "post";
                     imgContainer.style.backgroundImage = `url('${post.capa}')`;
-                    imgContainer.style.backgroundSize = "cover";
-                    imgContainer.style.backgroundPosition = "center";
                     postElement.appendChild(imgContainer);
                 }
                 
-                // Cria a div das informações
                 const infoContainer = document.createElement("div");
                 infoContainer.className = "post-info";
                 infoContainer.innerHTML = `
@@ -259,12 +265,27 @@ async function carregarUltimosPosts() {
                 postsContainer.appendChild(postElement);
             });
         }
-        
     } catch (err) {
         console.error("Erro ao carregar posts:", err);
         alert("Erro ao carregar posts. Tente novamente.");
     }
 }
+
+// Função para abrir o post completo
+function abrirPost(postId) {
+    console.log("Tentando abrir post com ID:", postId); // Adicione este log
+    if (!postId || postId === 'undefined') {
+        console.error('ID inválido:', postId);
+        alert('Erro: Post não encontrado');
+        return;
+    }
+    window.location.href = `vizualizador.html?id=${postId}`;
+}
+
+
+
+// CARREGAR INFORMAÇÕES DO CARDAPIO NA TELA DE VISUALIZAÇÕES
+
 
 window.onload = () => {
     carregarUltimosPosts();
@@ -275,3 +296,4 @@ window.onload = () => {
     setTimeout(VerEmail, 500);
     carregarUltimosPosts();
 };
+

@@ -41,6 +41,7 @@ a {
     border-bottom: 2px solid black;
     border-right: 1px solid black;
     width: 35vw;
+    background-size: cover;
     height: 90%;
     margin: 10px 10px 0px 10px;
     border-radius: 10px;

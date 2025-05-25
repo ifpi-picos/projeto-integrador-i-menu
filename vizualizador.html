@@ -1,46 +1,81 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Visualizar Cardápio</title>
-  <link rel="stylesheet" href="vizu.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Post - iMenu</title>
+    <link rel="stylesheet" href="vizu.css">
 </head>
 <body>
-  <div class="container">
-    <button onclick="history.back()">← Voltar</button>
-    <div id="visualizacao"></div>
-  </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+    <main class="post-container">
+        <div class="post-header">
+            <h1 id="post-title">none</h1>
+            <p class="post-author" id="post-author"></p>
+        </div>
+        
+        <div class="post-image" id="post-image"></div>
+        
+        <div class="post-content">
+            <p id="post-content"></p>
+            <a href="#" id="post-link" class="social-link">Ver rede social</a>
+        </div>
+        
+        <button onclick="window.history.back()" class="btn">Voltar</button>
+    </main>
 
-    if (id) {
-      fetch(`http://localhost:3000/api/cardapios/${id}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Erro ao buscar cardápio.");
-          }
-          return response.json();
-        })
-        .then(cardapio => {
-          document.getElementById("visualizacao").innerHTML = `
-            <div class="detalhe-cardapio">
-              <img src="${cardapio.imagem}" alt="${cardapio.nome}">
-              <h1>${cardapio.nome}</h1>
-              <h3>por ${cardapio.autor}</h3>
-              <p>${cardapio.descricao}</p>
-            </div>
-          `;
-        })
-        .catch(error => {
-          console.error(error);
-          document.getElementById("visualizacao").innerHTML = `<p>Erro ao carregar cardápio.</p>`;
-        });
-    } else {
-      document.getElementById("visualizacao").innerHTML = `<p>ID do cardápio não especificado.</p>`;
+    <script src="js/server_script.js"></script>
+<script>
+    async function carregarPost() {
+        // Pega o ID da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        
+        // Verifica se o ID existe
+        if (!postId || postId === 'undefined') {
+            alert('Post não encontrado: ID inválido');
+            window.location.href = 'index.html';
+            return;
+        }
+
+        try {
+          const webservice ="https://imenu-backend-yp5c.onrender.com" // "http://localhost:3006"
+            const response = await fetch(`http://localhost:3006/posts/${postId}`);
+            
+            if (!response.ok) {
+                throw new Error(`Erro: ${response.status}`);
+            }
+            
+            const post = await response.json();
+            
+            // Preenche os dados
+            document.getElementById('post-title').textContent = post.title || 'Sem título';
+            document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
+            document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
+            
+            if (post.capa) {
+                document.getElementById('post-image').style.backgroundImage = `url('${post.capa}')`;
+            }
+            
+            if (post.sociallink) {
+                const link = document.getElementById('post-link');
+                link.href = post.sociallink;
+                link.textContent = 'Visitar rede social';
+                link.style.display = 'inline-block';
+            }
+            else{
+              const link = document.getElementById('post-link');
+              link.remove()
+            }
+        } catch (error) {
+            console.error('Erro ao carregar post:', error);
+            alert('Erro ao carregar post. Tente novamente.');
+            window.location.href = 'index.html';
+        }
     }
-  </script>
+
+    // Executa quando a página carrega
+    window.onload = carregarPost;
+</script>
 </body>
 </html>
