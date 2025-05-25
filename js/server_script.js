@@ -66,6 +66,7 @@ async function logar() {
 // Verificar token e atualizar UI
 async function verificarToken() {
     const token = localStorage.getItem("auth_token");
+
     const conta = document.getElementById("perfil-link");
     const mapa = document.getElementById("mapaAba");
     const editor = document.getElementById("editorAba");
@@ -73,11 +74,18 @@ async function verificarToken() {
     const logarB = document.getElementById("button-enter");
     const publicar = document.getElementById("publicarAba");
 
+    const perfilSidebar = document.getElementById("perfilSidebar");
+    const publicarSidebar = document.getElementById("publicarSidebar");
+    const editorSidebar = document.getElementById("editorSidebar");
+
     if (!token) {
         if (conta) conta.remove();
         if (mapa) mapa.remove();
-        if (publicar) publicar.remove();
         if (editor) editor.remove();
+        if (publicar) publicar.remove();
+        if (perfilSidebar) perfilSidebar.style.display = "none";
+        if (publicarSidebar) publicarSidebar.style.display = "none";
+        if (editorSidebar) editorSidebar.style.display = "none";
         if (cadastrarB) cadastrarB.style.display = "block";
         if (logarB) logarB.style.display = "block";
         return;
@@ -94,44 +102,54 @@ async function verificarToken() {
             if (mapa) mapa.remove();
             if (editor) editor.remove();
             if (publicar) publicar.remove();
-        } else {
-            const data = await response.json();
-
-            if (window.location.pathname.includes("index.html")) {
-                document.getElementById("username").innerText = data.name;
-                if (data.foto) {
-                    document.getElementById("perfil").src = data.foto;
-                }
-
-                if (data.dono) {
-                    if (mapa) mapa.remove();
-                    if (editor) editor.style.display = "flex";
-                    if (publicar) {
-                        publicar.style.display = "block";
-                        publicar.onclick = () => window.location.href = "publicar.html";
-                    }
-                } else {
-                    if (editor) editor.remove();
-                    if (mapa) mapa.style.display = "flex";
-                    if (publicar) publicar.remove();
-                }
-            }
-
-            if (window.location.pathname.includes("perfil.html")) {
-                document.getElementById("P-username").innerText = data.name;
-                document.getElementById("spanP").innerText = data.dono ? "Dono de Restaurante" : "Cliente";
-
-                if (data.dono) {
-                    const localIcons = document.getElementsByClassName("localizacaoicon");
-                    for (let i = 0; i < localIcons.length; i++) {
-                        localIcons[i].remove();
-                    }
-                }
-            }
-
-            if (cadastrarB) cadastrarB.style.display = "none";
-            if (logarB) logarB.style.display = "none";
+            if (perfilSidebar) perfilSidebar.style.display = "none";
+            if (publicarSidebar) publicarSidebar.style.display = "none";
+            if (editorSidebar) editorSidebar.style.display = "none";
+            return;
         }
+
+        const data = await response.json();
+
+        if (window.location.pathname.includes("index.html")) {
+            document.getElementById("username").innerText = data.name;
+            if (data.foto) {
+                document.getElementById("perfil").src = data.foto;
+            }
+
+            if (data.dono) {
+                if (mapa) mapa.remove();
+                if (editor) editor.style.display = "flex";
+                if (publicar) {
+                    publicar.style.display = "block";
+                    publicar.onclick = () => window.location.href = "publicar.html";
+                }
+                if (publicarSidebar) publicarSidebar.style.display = "block";
+                if (editorSidebar) editorSidebar.style.display = "block";
+            } else {
+                if (editor) editor.remove();
+                if (mapa) mapa.style.display = "flex";
+                if (publicar) publicar.remove();
+                if (publicarSidebar) publicarSidebar.style.display = "none";
+                if (editorSidebar) editorSidebar.style.display = "none";
+            }
+
+            if (perfilSidebar) perfilSidebar.style.display = "block";
+        }
+
+        if (window.location.pathname.includes("perfil.html")) {
+            document.getElementById("P-username").innerText = data.name;
+            document.getElementById("spanP").innerText = data.dono ? "Dono de Restaurante" : "Cliente";
+
+            if (data.dono) {
+                const localIcons = document.getElementsByClassName("localizacaoicon");
+                for (let i = 0; i < localIcons.length; i++) {
+                    localIcons[i].remove();
+                }
+            }
+        }
+
+        if (cadastrarB) cadastrarB.style.display = "none";
+        if (logarB) logarB.style.display = "none";
     } catch (err) {
         console.error("Erro ao buscar usuário:", err);
     }
@@ -154,7 +172,6 @@ async function VerEmail() {
         if (window.location.pathname.includes("EmailnoVer.html") && response.status !== 403) {
             window.location.href = "./index.html";
         }
-
     } catch (err) {
         console.error("Erro ao verificar e-mail:", err);
     }
@@ -240,7 +257,6 @@ async function carregarUltimosPosts() {
     }
 }
 
-// Abrir post completo
 function abrirPost(postId) {
     if (!postId || postId === 'undefined') {
         alert('Erro: Post não encontrado');
@@ -249,9 +265,6 @@ function abrirPost(postId) {
     window.location.href = `vizualizador.html?id=${postId}`;
 }
 
-// -----------------------------
-// FUNÇÃO PARA SALVAR AVALIAÇÃO
-// -----------------------------
 async function salvarAvaliacao(postId, nota) {
     const token = localStorage.getItem("auth_token");
     if (!token) {
@@ -281,18 +294,6 @@ async function salvarAvaliacao(postId, nota) {
     }
 }
 
-// -----------------------------
-// INICIALIZAÇÃO
-// -----------------------------
-window.onload = () => {
-    verificarToken();
-    setTimeout(VerEmail, 500);
-    carregarUltimosPosts();
-};
-
-// -----------------------------
-// FUNÇÃO PARA BUSCAR MÉDIA DE AVALIAÇÕES
-// -----------------------------
 async function buscarMediaAvaliacao(postId) {
     try {
         const response = await fetch(`${webservice}/avaliacoes/media/${postId}`);
@@ -306,9 +307,6 @@ async function buscarMediaAvaliacao(postId) {
     }
 }
 
-// -----------------------------
-// EXIBIR MÉDIA DE AVALIAÇÃO (para vizualizador.html)
-// -----------------------------
 async function carregarMediaPost() {
     const params = new URLSearchParams(window.location.search);
     const postId = params.get("id");
@@ -323,17 +321,13 @@ async function carregarMediaPost() {
     }
 }
 
-// -----------------------------
-// INICIALIZAÇÃO
-// -----------------------------
+// Inicialização
 window.onload = () => {
     verificarToken();
     setTimeout(VerEmail, 500);
     carregarUltimosPosts();
 
-    // Carrega média se estiver no vizualizador
     if (window.location.pathname.includes("vizualizador.html")) {
         carregarMediaPost();
     }
 };
-

@@ -1,4 +1,4 @@
-/* Reset básico */
+/* Reset básico */ 
 * {
     margin: 0;
     padding: 0;
@@ -17,16 +17,22 @@ a {
 }
 
 /*Cardapios publicados recentemente*/
-
-#posts-recentes{
+#posts-recentes {
     height: 50vh;
     width: 100%;
     display: flex;
     flex-direction: row;
     overflow-x: scroll;
-    scrollbar-width: none;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE e Edge */
+    scroll-snap-type: x mandatory;
 }
-.post-info{
+
+#posts-recentes::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.post-info {
     display: flex;
     flex-direction: row;
     height: 10%;
@@ -36,23 +42,22 @@ a {
     justify-content: space-between;
 }
 
-
-.post{
+.post {
     border-bottom: 2px solid black;
     border-right: 1px solid black;
     width: 35vw;
+    max-width: 40vw;
     background-size: cover;
     height: 90%;
-    margin: 10px 10px 0px 10px;
+    margin: 10px;
     border-radius: 10px;
     transition: transform 0.3s ease;
-    max-width: 40vw; /* Largura máxima de cada post */
-    box-sizing: border-box; /* Para garantir que o padding não ultrapasse a largura definida */
-    
+    box-sizing: border-box;
+    scroll-snap-align: start;
+    flex: 0 0 auto;
 }
 
-.post:hover{
-    size: 1.1;
+.post:hover {
     cursor: pointer;
     border: 2px solid rgb(129, 33, 33);
     transform: scale(1.05);
@@ -85,6 +90,9 @@ header {
     gap: 1.5rem;
     padding: 1rem 2rem;
     background-color: #fff;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .nav-button {
@@ -95,6 +103,7 @@ header {
     color: #7B3F00;
     padding: 0.25rem 0.75rem;
     transition: background 0.2s ease;
+    flex: 0 0 auto;
 }
 
 .nav-button:hover {
@@ -376,7 +385,7 @@ header > div {
     .hero h1 {
         font-size: 1.5rem;
     }
-  
+
     .carousel-item {
         min-width: 120px;
     }
@@ -400,5 +409,135 @@ header > div {
         width: 100%;
         margin-bottom: 0.5rem;
     }
+
+    .post {
+        width: 80vw;
+        max-width: 90vw;
+    }
+
+    .card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .card img {
+        width: 100%;
+        height: auto;
+        margin: 0;
+    }
+
+    .card .card-content {
+        padding: 1rem;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .search-bar input,
+    .search-bar button {
+        width: 100%;
+        border-radius: 4px;
+    }
+
+    .section h2 {
+        font-size: 1.25rem;
+        margin-left: 1rem;
+    }
+
+    .categories {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .category {
+        width: 90%;
+        text-align: center;
+    }
 }
 
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 220px;
+  background-color: #4E2C1E;
+  color: white;
+  padding-top: 4rem;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 999;
+}
+
+.sidebar.expanded {
+  transform: translateX(0);
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+.sidebar nav a {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.sidebar nav a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.toggle-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  background-color: #7B3F00;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Esconde header em telas pequenas, mostra sidebar */
+@media (max-width: 768px) {
+  header {
+    display: none;
+  }
+
+  .toggle-btn {
+    display: block;
+  }
+
+  .sidebar {
+    display: block;
+  }
+}
+
+/* Mostra header e esconde sidebar em telas grandes */
+@media (min-width: 769px) {
+  .toggle-btn,
+  .sidebar {
+    display: none;
+  }
+
+  header {
+    display: flex;
+  }
+}
+
+.menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
