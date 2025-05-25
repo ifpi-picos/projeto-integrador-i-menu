@@ -1,82 +1,158 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizar Post - iMenu</title>
-    <link rel="stylesheet" href="vizu.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizar Post - iMenu</title>
+  <link rel="stylesheet" href="vizu.css">
+
 </head>
 <body>
 
-    <main class="post-container">
-        <div class="post-header">
-            <h1 id="post-title">none</h1>
-            <p class="post-author" id="post-author"></p>
-        </div>
-        
-        <div class="post-image" id="post-image"></div>
-        
-        <div class="post-content">
-            <p id="post-content"></p>
-            <a href="#" id="post-link" class="social-link">Ver rede social</a>
-        </div>
-        
-        <button onclick="window.history.back()" class="btn">Voltar</button>
-    </main>
+<main class="post-container">
+  <div class="post-card">
+    <div class="post-header">
+      <h1 id="post-title">none</h1>
+      <p class="post-author" id="post-author"></p>
+    </div>
 
-    <script src="js/server_script.js"></script>
+    <div class="post-image" id="post-image"></div>
+
+    <p id="media-avaliacao">Carregando média...</p>
+    <div class="rating">
+      <span class="star" data-value="1">★</span>
+      <span class="star" data-value="2">★</span>
+      <span class="star" data-value="3">★</span>
+      <span class="star" data-value="4">★</span>
+      <span class="star" data-value="5">★</span>
+    </div>
+
+    <div class="post-content">
+      <p id="post-content"></p>
+      <a href="#" id="post-link" class="social-link">Ver rede social</a>
+    </div>
+
+    <button onclick="window.history.back()" class="btn">← Voltar</button>
+  </div>
+</main>
+
 <script>
-    async function carregarPost() {
-        // Pega o ID da URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
-        
-        // Verifica se o ID existe
-        if (!postId || postId === 'undefined') {
-            alert('Post não encontrado: ID inválido');
-            window.location.href = 'index.html';
-            return;
-        }
+  const webservice = "https://imenu-backend-yp5c.onrender.com";
 
-        try {
-          const webservice ="https://imenu-backend-yp5c.onrender.com" // "http://localhost:3006"
-            const response = await fetch(`${webservice}/posts/${postId}`);
-            
-            if (!response.ok) {
-                throw new Error(`Erro: ${response.status}`);
-            }
-            
-            const post = await response.json();
-            
-            // Preenche os dados
-            document.getElementById('post-title').textContent = post.title || 'Sem título';
-            document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
-            document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
-            
-            if (post.capa) {
-                document.getElementById('post-image').style.backgroundImage = `url('${post.capa}')`;
-            }
-            
-            if (post.sociallink) {
-                const link = document.getElementById('post-link');
-                link.href = post.sociallink;
-                link.textContent = 'Visitar rede social';
-                link.style.display = 'inline-block';
-                link.target = '_blank';
-            }
-            else{
-              const link = document.getElementById('post-link');
-              link.remove()
-            }
-        } catch (error) {
-            console.error('Erro ao carregar post:', error);
-            alert('Erro ao carregar post. Tente novamente.');
-            window.location.href = 'index.html';
-        }
+  async function carregarPost() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+
+    if (!postId || postId === 'undefined') {
+      alert('Post não encontrado: ID inválido');
+      window.location.href = 'index.html';
+      return;
     }
 
-    // Executa quando a página carrega
-    window.onload = carregarPost;
+    try {
+      const response = await fetch(`${webservice}/posts/${postId}`);
+      if (!response.ok) throw new Error(`Erro: ${response.status}`);
+      const post = await response.json();
+
+      document.getElementById('post-title').textContent = post.title || 'Sem título';
+      document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
+      document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
+
+      if (post.capa) {
+        document.getElementById('post-image').style.backgroundImage = `url('${post.capa}')`;
+      }
+
+      const link = document.getElementById('post-link');
+      if (post.sociallink) {
+        link.href = post.sociallink;
+        link.textContent = 'Visitar rede social';
+        link.style.display = 'inline-block';
+        link.target = '_blank';
+      } else {
+        link.remove();
+      }
+
+      await carregarMedia(postId);
+      ativarAvaliacao(postId);
+
+    } catch (error) {
+      console.error('Erro ao carregar post:', error);
+      alert('Erro ao carregar post. Tente novamente.');
+      window.location.href = 'index.html';
+    }
+  }
+
+  async function carregarMedia(postId) {
+    try {
+      const res = await fetch(`${webservice}/avaliacoes/media/${postId}`);
+      const data = await res.json();
+      const media = data.media || 0;
+      document.getElementById("media-avaliacao").innerText = `Média de avaliação: ${media.toFixed(1)} ★`;
+    } catch (err) {
+      document.getElementById("media-avaliacao").innerText = "Erro ao carregar média.";
+    }
+  }
+
+  function ativarAvaliacao(postId) {
+    const stars = document.querySelectorAll('.star');
+    let selectedRating = 0;
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', () => {
+        highlightStars(+star.dataset.value);
+      });
+
+      star.addEventListener('mouseout', () => {
+        highlightStars(selectedRating);
+      });
+
+      star.addEventListener('click', async () => {
+        selectedRating = +star.dataset.value;
+        highlightStars(selectedRating);
+        await salvarAvaliacao(postId, selectedRating);
+        await carregarMedia(postId);
+      });
+    });
+
+    function highlightStars(rating) {
+      stars.forEach(star => {
+        const val = +star.dataset.value;
+        star.classList.toggle('hover', val <= rating);
+        star.classList.toggle('selected', val <= rating);
+      });
+    }
+  }
+
+  async function salvarAvaliacao(postId, nota) {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      alert("Você precisa estar logado para avaliar.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${webservice}/avaliar/${postId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ nota })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Avaliação salva com sucesso!");
+      } else {
+        alert("Erro ao salvar avaliação: " + (data.message || "Erro desconhecido"));
+      }
+    } catch (err) {
+      alert("Erro ao salvar avaliação. Tente novamente.");
+    }
+  }
+
+  window.onload = carregarPost;
 </script>
+
 </body>
 </html>

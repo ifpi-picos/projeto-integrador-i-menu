@@ -3,46 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iMenu</title>
+    <title>iMenu - Mapa</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="mapa.css">
 </head>
 <body>
     <div class="sidebar">
         <a href="index.html">
-            <img src="images/mapa-seta.png" alt="Voltar" style="width: 30px; height: auto; cursor: pointer;">
+         <a href="index.html" class="btn-voltar">
+    <img src="images/mapa-seta.png" alt="Voltar"> Início
+</a>
+
         </a>
-        <h2>Restaurantes perto de você!</h2>
+        <h2>🍽️ Restaurantes próximos</h2>
         <p id="date"></p>
         <p>📍 Picos - PI</p>
-        <hr>
-        <p>Restaurantes na sua região</p>
-        <h3>77</h3>
-        <p>Bares na sua região</p>
-        <h3>65</h3>
-        <hr>
-        <h2>Nossos restaurantes parceiros!</h2>
-        <p>Verona Pizza</p>
-        <p>Lanchonete e Espetinho: Nosso Sabor</p>
-        <p>Lanchonete Só coxinha</p>
+
+        <div class="info-box">
+            <p>🍔 Restaurantes</p>
+            <h3>77</h3>
+            <p>🍻 Bares</p>
+            <h3>65</h3>
+        </div>
+
+        <h3>⭐ Parceiros</h3>
+        <ul>
+            <li>Verona Pizza</li>
+            <li>Espetinho Nosso Sabor</li>
+            <li>Só Coxinha</li>
+        </ul>
     </div>
+
     <div class="map-container">
         <div class="header">
             <div class="nav">
                 <a href="index.html">Início</a>
-                <a href="index.html">Sugestões</a>
-                <a href="index.html">Histórico</a>
-                <a href="pesquisa.html">Pesquisar</a>
-                <a href="mapa.html">Mapa</a>
+                <a href="index.html">Menus</a>
+                <a href="mapa.html" class="active">Mapa</a>
+                <a href="perfil.html">Perfil</a>
             </div>
         </div>
         <div id="map"></div>
     </div>
+
     <script>
         document.getElementById('date').textContent = new Date().toLocaleDateString('pt-BR', {
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         });
     </script>
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
         var map = L.map('map').setView([-7.0079, -41.4664], 13);
@@ -63,10 +72,10 @@
             .then(response => response.json())
             .then(data => {
                 data.elements.forEach(function(element) {
-                    if (element.type === 'node' && element.tags.amenity === 'fast_food') {
+                    if (element.type === 'node') {
                         L.marker([element.lat, element.lon], { icon: fastFoodIcon }).addTo(map)
                             .bindPopup("<b>Fast Food</b><br/>" + (element.tags.name || "Sem nome"));
-                    } else if (element.type === 'way' && element.tags.amenity === 'fast_food') {
+                    } else if (element.type === 'way') {
                         var coords = element.geometry.map(function(geo) {
                             return [geo.lat, geo.lon];
                         });
@@ -78,7 +87,3 @@
     </script>
 </body>
 </html>
-
-
-
-

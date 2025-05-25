@@ -1,4 +1,4 @@
-const webservice ="https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006" 
+const webservice = "https://imenu-backend-yp5c.onrender.com";
 
 // Criar usuário
 async function criaruser() {
@@ -17,14 +17,12 @@ async function criaruser() {
     try {
         const response = await fetch(webservice + "/create", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(novoUsuario)
         });
 
         const data = await response.json();
-        
+
         if (response.ok) {
             alert("Usuário criado com sucesso!");
             window.location.href = "./login.html";
@@ -41,17 +39,12 @@ async function logar() {
     var email = document.getElementById("email").value;
     var senha = document.getElementById("senha").value;
 
-    const usuario = {
-        email: email,
-        password: senha
-    };
+    const usuario = { email: email, password: senha };
 
     try {
         const response = await fetch(webservice + "/login", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(usuario)
         });
 
@@ -73,17 +66,14 @@ async function logar() {
 // Verificar token e atualizar UI
 async function verificarToken() {
     const token = localStorage.getItem("auth_token");
-    console.log("Token encontrado:", token);
-
     const conta = document.getElementById("perfil-link");
     const mapa = document.getElementById("mapaAba");
     const editor = document.getElementById("editorAba");
     const cadastrarB = document.getElementById("button-acount");
     const logarB = document.getElementById("button-enter");
     const publicar = document.getElementById("publicarAba");
-    
+
     if (!token) {
-        console.log("Token não encontrado. Ajustando UI...");
         if (conta) conta.remove();
         if (mapa) mapa.remove();
         if (publicar) publicar.remove();
@@ -96,20 +86,16 @@ async function verificarToken() {
     try {
         const response = await fetch(webservice + "/dados", {
             method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
+            headers: { "Authorization": `Bearer ${token}` }
         });
 
         if (!response.ok) {
-            console.error("Erro ao buscar usuário.");
             if (conta) conta.remove();
             if (mapa) mapa.remove();
             if (editor) editor.remove();
             if (publicar) publicar.remove();
         } else {
             const data = await response.json();
-            console.log("Usuário autenticado:", data);
 
             if (window.location.pathname.includes("index.html")) {
                 document.getElementById("username").innerText = data.name;
@@ -158,16 +144,14 @@ async function VerEmail() {
     try {
         const response = await fetch(webservice + "/dados", {
             method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
+            headers: { "Authorization": `Bearer ${token}` }
         });
 
-        if (response.status === 403) { 
-            console.warn("Redirecionando para página de verificação de e-mail...");
+        if (response.status === 403) {
             window.location.href = "./EmailnoVer.html";
         }
-        if(window.location.pathname.includes("EmailnoVer.html" && response.status !== 403)){
+
+        if (window.location.pathname.includes("EmailnoVer.html") && response.status !== 403) {
             window.location.href = "./index.html";
         }
 
@@ -180,15 +164,15 @@ async function postar() {
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
     const link = document.getElementById("linksocial").value;
-    const public = document.getElementById("public").checked;
-    const capa = document.getElementById("linkimg").value;  
+    const publice = document.getElementById("public").checked;
+    const capa = document.getElementById("linkimg").value;
 
     const novoPost = {
-        title: title,
-        content: content,
+        title,
+        content,
         sociallink: link,
-        publice: public,
-        capa: capa
+        publice,
+        capa
     };
 
     const token = localStorage.getItem("auth_token");
@@ -203,17 +187,12 @@ async function postar() {
             body: JSON.stringify(novoPost)
         });
 
-        if (!response.ok) {
-            throw new Error(`Erro: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Erro: ${response.statusText}`);
 
         const data = await response.json();
-        console.log("Post criado com sucesso:", data);
-
         alert("Post criado com sucesso!");
         window.location.href = "./index.html";
     } catch (err) {
-        console.error("Erro ao criar o post:", err);
         alert("Erro ao criar o post. Tente novamente.");
     }
 }
@@ -222,37 +201,28 @@ async function carregarUltimosPosts() {
     try {
         const response = await fetch(`${webservice}/recent`);
         if (!response.ok) throw new Error(`Erro: ${response.statusText}`);
-        
-        const posts = await response.json();
-        console.log("Posts recebidos:", posts); // Verifique a estrutura dos dados aqui
 
+        const posts = await response.json();
         const postsContainer = document.getElementById("posts-recentes");
+
         if (postsContainer) {
             postsContainer.innerHTML = "";
-            
             posts.forEach(post => {
                 const postElement = document.createElement("div");
                 postElement.className = "post-container";
-                
-                // Verifique como o ID está vindo no objeto post
-                const postId = post.id || post._id; // Tenta ambos os formatos
-                console.log("ID do post:", postId); // Verifique no console
-                
-                if (!postId) {
-                    console.error("Post sem ID:", post);
-                    return; // Pula posts sem ID
-                }
+
+                const postId = post.id || post._id;
+                if (!postId) return;
 
                 postElement.onclick = () => abrirPost(postId);
-                
-                // Restante do seu código...
+
                 if (post.capa) {
                     const imgContainer = document.createElement("div");
                     imgContainer.className = "post";
                     imgContainer.style.backgroundImage = `url('${post.capa}')`;
                     postElement.appendChild(imgContainer);
                 }
-                
+
                 const infoContainer = document.createElement("div");
                 infoContainer.className = "post-info";
                 infoContainer.innerHTML = `
@@ -260,40 +230,110 @@ async function carregarUltimosPosts() {
                     <p class="post-content">${post.content}</p>
                     <p>Autor: ${post.author?.name || 'Desconhecido'}</p>
                 `;
-                
+
                 postElement.appendChild(infoContainer);
                 postsContainer.appendChild(postElement);
             });
         }
     } catch (err) {
-        console.error("Erro ao carregar posts:", err);
         alert("Erro ao carregar posts. Tente novamente.");
     }
 }
 
-// Função para abrir o post completo
+// Abrir post completo
 function abrirPost(postId) {
-    console.log("Tentando abrir post com ID:", postId); // Adicione este log
     if (!postId || postId === 'undefined') {
-        console.error('ID inválido:', postId);
         alert('Erro: Post não encontrado');
         return;
     }
     window.location.href = `vizualizador.html?id=${postId}`;
 }
 
+// -----------------------------
+// FUNÇÃO PARA SALVAR AVALIAÇÃO
+// -----------------------------
+async function salvarAvaliacao(postId, nota) {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+        alert("Você precisa estar logado para avaliar.");
+        return;
+    }
 
+    try {
+        const response = await fetch(`${webservice}/avaliar/${postId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ nota })
+        });
 
-// CARREGAR INFORMAÇÕES DO CARDAPIO NA TELA DE VISUALIZAÇÕES
+        const data = await response.json();
 
+        if (response.ok) {
+            alert("Avaliação salva com sucesso!");
+        } else {
+            alert("Erro ao salvar avaliação: " + (data.message || "Erro desconhecido"));
+        }
+    } catch (err) {
+        alert("Erro ao salvar avaliação. Tente novamente.");
+    }
+}
 
-window.onload = () => {
-    carregarUltimosPosts();
-};
-
+// -----------------------------
+// INICIALIZAÇÃO
+// -----------------------------
 window.onload = () => {
     verificarToken();
     setTimeout(VerEmail, 500);
     carregarUltimosPosts();
+};
+
+// -----------------------------
+// FUNÇÃO PARA BUSCAR MÉDIA DE AVALIAÇÕES
+// -----------------------------
+async function buscarMediaAvaliacao(postId) {
+    try {
+        const response = await fetch(`${webservice}/avaliacoes/media/${postId}`);
+        if (!response.ok) throw new Error("Erro ao buscar média");
+
+        const data = await response.json();
+        return data.media || 0;
+    } catch (err) {
+        console.error("Erro ao buscar média da avaliação:", err);
+        return 0;
+    }
+}
+
+// -----------------------------
+// EXIBIR MÉDIA DE AVALIAÇÃO (para vizualizador.html)
+// -----------------------------
+async function carregarMediaPost() {
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get("id");
+
+    if (!postId) return;
+
+    const media = await buscarMediaAvaliacao(postId);
+    const mediaEl = document.getElementById("media-avaliacao");
+
+    if (mediaEl) {
+        mediaEl.innerText = `Média de avaliação: ${media.toFixed(1)} ★`;
+    }
+}
+
+// -----------------------------
+// INICIALIZAÇÃO
+// -----------------------------
+window.onload = () => {
+    verificarToken();
+    setTimeout(VerEmail, 500);
+    carregarUltimosPosts();
+
+    // Carrega média se estiver no vizualizador
+    if (window.location.pathname.includes("vizualizador.html")) {
+        carregarMediaPost();
+    }
 };
 
