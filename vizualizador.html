@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visualizar Cardápio</title>
+  <link rel="stylesheet" href="vizu.css" />
+</head>
+<body>
+  <div class="container">
+    <button onclick="history.back()">← Voltar</button>
+    <div id="visualizacao"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (id) {
+      fetch(`http://localhost:3000/api/cardapios/${id}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Erro ao buscar cardápio.");
+          }
+          return response.json();
+        })
+        .then(cardapio => {
+          document.getElementById("visualizacao").innerHTML = `
+            <div class="detalhe-cardapio">
+              <img src="${cardapio.imagem}" alt="${cardapio.nome}">
+              <h1>${cardapio.nome}</h1>
+              <h3>por ${cardapio.autor}</h3>
+              <p>${cardapio.descricao}</p>
+            </div>
+          `;
+        })
+        .catch(error => {
+          console.error(error);
+          document.getElementById("visualizacao").innerHTML = `<p>Erro ao carregar cardápio.</p>`;
+        });
+    } else {
+      document.getElementById("visualizacao").innerHTML = `<p>ID do cardápio não especificado.</p>`;
+    }
+  </script>
+</body>
+</html>
