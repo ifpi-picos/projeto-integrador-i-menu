@@ -40,7 +40,7 @@
 
         try {
           const webservice ="https://imenu-backend-yp5c.onrender.com" // "http://localhost:3006"
-            const response = await fetch(`http://${webservice}/posts/${postId}`);
+            const response = await fetch(`${webservice}/posts/${postId}`);
             
             if (!response.ok) {
                 throw new Error(`Erro: ${response.status}`);
@@ -62,6 +62,7 @@
                 link.href = post.sociallink;
                 link.textContent = 'Visitar rede social';
                 link.style.display = 'inline-block';
+                link.target = '_blank';
             }
             else{
               const link = document.getElementById('post-link');
