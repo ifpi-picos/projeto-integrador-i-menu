@@ -227,7 +227,7 @@ async function carregarUltimosPosts() {
                 infoContainer.className = "post-info";
                 infoContainer.innerHTML = `
                     <p>${post.title}</p>
-                    <p class="post-content">${post.content}</p>
+                    <p class="post-content"></p>
                     <p>Autor: ${post.author?.name || 'Desconhecido'}</p>
                 `;
 
