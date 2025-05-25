@@ -1,66 +1,161 @@
-/* Import Google font - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
-* {
-  font-family: "Poppins", sans-serif;
-}
-
-#barP{
-  margin-left: 290px;
-  width: 300px;
-}
-
 body {
-  background-image: url(images/fundnovo.jpg) !important;
-  background-size: cover;
+  background-color: #f9f5f1;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-body .container {
-  max-width: 1100px;
+.container {
+  padding: 20px;
 }
 
-#headerP{
-  display: flex;
+/* Botões de filtro */
+#filter-buttons .btn {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+  white-space: nowrap;
 }
 
-#filter-buttons{
-  display: flex;
+#filter-buttons .btn.active,
+#filter-buttons .btn:hover {
+  background-color: #c6935c;
+  color: #fff;
+  border-color: #c6935c;
 }
 
-#filter-buttons button {
-  border-radius: 3px;
+/* Input de busca */
+#barP {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+  width: 100%;
+  max-width: 400px;
+  flex-grow: 1;
+}
+
+/* Cards */
+.card {
+  width: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border: none;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 10px 12px;
+  background-color: #fff;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Seções */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 40px 0 20px;
+  color: #333;
+}
+
+/* Restaurante famoso */
+.restaurant-logo {
   background: #fff;
-  border-color: transparent;
+  border-radius: 12px;
+  padding: 12px;
+  width: 140px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  margin-right: 16px;
+  margin-bottom: 16px;
 }
 
-#filter-buttons button:hover {
-  background: #ddd;
+.restaurant-logo img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
-#filter-buttons button.active {
-  color: #cfc9c7;
-  background: #3b1d0f;
+/* Botão voltar */
+a.btn-secondary {
+  background-color: #c6935c;
+  color: white;
+  font-weight: 500;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 20px;
+  transition: background-color 0.3s;
+  display: inline-block;
+  margin-bottom: 10px;
 }
 
-#filterable-cards .card {
-  width: 15rem;
-  border: 2px solid transparent;
+a.btn-secondary:hover {
+  background-color: #a3794b;
 }
 
-#filterable-cards .card.hide {
-  display: none;
-}
-
-#barraP{
-
-}
-
-@media (max-width: 600px) {
-  #filterable-cards {
-    justify-content: center;
+/* Responsividade */
+@media (max-width: 768px) {
+  #filter-buttons {
+    flex-direction: column;
   }
 
-  #filterable-cards .card {
-    width: calc(100% / 2 - 10px);
+  #filter-buttons .btn {
+    flex: 1 1 auto;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+
+  .card {
+    width: 48%;
+  }
+
+  #barP {
+    max-width: 100%;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .card {
+    width: 100%;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  #filter-buttons .btn {
+    font-size: 0.85rem;
+  }
+
+  a.btn-secondary {
+    width: 100%;
+    text-align: center;
   }
 }

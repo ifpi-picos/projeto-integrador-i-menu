@@ -3,106 +3,101 @@
   <head>
     <meta charset="utf-8" />
     <title>Pesquisa</title>
-    <link rel="stylesheet" href="pesquisa.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="pesquisa.css" />
     <script src="js/pesquisa.js" defer></script>
   </head>
   <body>
     <div class="container">
-      <div class="row mt-5" id="filter-buttons">
-        <div id="filter-buttons" class="col-11">
-          <button class="btn mb-2 me-1 active" data-filter="all">todos</button>
-          <button class="btn mb-2 mx-1" data-filter="nature">bebidas</button>
-          <button class="btn mb-2 mx-1" data-filter="cars">refeiçoes</button>
-          <button class="btn mb-2 mx-1" data-filter="people">sobremesas</button>
-          <nav><input id="barP" type="bar" value=""></nav>
-        </div>
-    </div>
+      <!-- Botão de voltar -->
+      <div class="mt-4 mb-3">
+        <a href="index.html" class="btn btn-secondary">← Voltar</a>
+      </div>
 
-      <div class="row px-2 mt-4 gap-3" id="filterable-cards">
-        <div class="card p-0" data-name="nature">
+      <!-- Botões de filtro e barra de busca -->
+      <div class="row mt-2" id="filter-buttons">
+        <div class="col-12 d-flex flex-wrap align-items-center gap-2">
+          <button class="btn active" data-filter="all">Todos</button>
+          <button class="btn" data-filter="nature">Bebidas</button>
+          <button class="btn" data-filter="cars">Refeições</button>
+          <button class="btn" data-filter="people">Sobremesas</button>
+          <input id="barP" type="text" placeholder="Buscar..." />
+        </div>
+      </div>
+
+      <!-- Cards de restaurantes -->
+      <div class="row px-2 mt-4 gap-3 justify-content-start" id="filterable-cards">
+        <div class="card p-0 card-wrapper" data-name="nature">
           <img src="images/cardapio 1.jpg" alt="img" />
           <div class="card-body">
-            <h6 class="card-title">restaurando do Zé</h6>
-            <p class="card-text"></p>
+            <h6 class="card-title">Restaurando do Zé</h6>
           </div>
         </div>
-        <div class="card p-0" data-name="nature">
+        <div class="card p-0 card-wrapper" data-name="nature">
           <img src="images/cardapio 2.jpg" alt="img" />
           <div class="card-body">
             <h6 class="card-title">Boteco do Zé</h6>
-            <p class="card-text"></p>
           </div>
         </div>
-        <div class="card p-0" data-name="nature">
+        <div class="card p-0 card-wrapper" data-name="nature">
           <img src="images/cardapio 3.jpg" alt="img" />
           <div class="card-body">
             <h6 class="card-title">Bar do seu Zé</h6>
-            <p class="card-text"></p>
           </div>
         </div>
-        <div class="card p-0" data-name="nature">
+        <div class="card p-0 card-wrapper" data-name="nature">
           <img src="images/cardapio 4.jpg" alt="img" />
           <div class="card-body">
             <h6 class="card-title">Hotel do seu Zé</h6>
-            <p class="card-text"></p>
           </div>
         </div>
-        <div class="card p-0" data-name="cars">
+        <div class="card p-0 card-wrapper" data-name="cars">
           <img src="images/cardapio 5.jpg" alt="img" />
           <div class="card-body">
-            <h6 class="card-title">Bistró delícias</h6>
-            <p class="card-text"></p>
+            <h6 class="card-title">Bistró Delícias</h6>
           </div>
         </div>
-        <div class="card p-0" data-name="cars">
+        <div class="card p-0 card-wrapper" data-name="cars">
           <img src="images/cardapio 6.jpg" alt="img" />
           <div class="card-body">
-            <h6 class="card-title">almoço do dia</h6>
-            <p class="card-text"></p>
+            <h6 class="card-title">Almoço do Dia</h6>
           </div>
         </div>
-        <div class="card p-0" data-name="cars">
+        <div class="card p-0 card-wrapper" data-name="cars">
           <img src="images/cardapio 8.jpg" alt="img" />
           <div class="card-body">
-            <h6 class="card-title">card sushi</h6>
-            <p class="card-text"></p>
+            <h6 class="card-title">Card Sushi</h6>
           </div>
         </div>
-        <div class="card p-0" data-name="cars">
+        <div class="card p-0 card-wrapper" data-name="cars">
           <img src="images/cardapio 9.jpg" alt="img" />
           <div class="card-body">
-            <h6 class="card-title">Hamburguer do seu Zé</h6>
-            <p class="card-text"></p>
+            <h6 class="card-title">Hambúrguer do seu Zé</h6>
           </div>
         </div>
-        <div class="card p-0" data-name="people">
+        <div class="card p-0 card-wrapper" data-name="people">
           <img src="images/cardapio 7.jpg" alt="img" />
           <div class="card-body">
-            <h6 class="card-title">fernanda sobremesas</h6>
-            <p class="card-text"></p>
+            <h6 class="card-title">Fernanda Sobremesas</h6>
           </div>
         </div>
-        <div class="card p-0" data-name="people">
+        <div class="card p-0 card-wrapper" data-name="people">
           <img src="images/cardapio 10.jpg" alt="img" />
           <div class="card-body">
-            <h6 class="card-title">Açaí no grau</h6>
-            <p class="card-text"></p>
+            <h6 class="card-title">Açaí no Grau</h6>
           </div>
         </div>
-        <div class="card p-0" data-name="people">
+        <div class="card p-0 card-wrapper" data-name="people">
           <img src="images/cardapio 11.jpg" alt="img" />
           <div class="card-body">
             <h6 class="card-title">Açaí do seu Zé</h6>
-            <p class="card-text"></p>
           </div>
         </div>
-        <div class="card p-0" data-name="people">
+        <div class="card p-0 card-wrapper" data-name="people">
           <img src="images/cardapio 12.jpg" alt="img" />
           <div class="card-body">
             <h6 class="card-title">Sorveteria do seu Zé</h6>
-            <p class="card-text"></p>
           </div>
         </div>
       </div>
