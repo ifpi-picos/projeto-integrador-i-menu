@@ -1,0 +1,296 @@
+/* RESET */ 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Corpo */
+body.bodyp {
+  background-color: #f3f3f3;
+  padding: 0;
+}
+
+/* Cabeçalho */
+.headerperfil {
+  position: relative;
+  height: 60px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 2;
+}
+
+.icon-button {
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.icon-button:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+}
+
+/* Banner de fundo */
+.banner-perfil {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.banner-perfil img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Cartão principal */
+.profile-card {
+  background-color: white;
+  max-width: 700px;
+  margin: -80px auto 30px auto;
+  border-radius: 12px;
+  padding: 60px 30px 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Imagem de perfil */
+.image {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid white;
+  object-fit: cover;
+  background-color: #eee;
+}
+
+/* Nome e estrelas */
+.data {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.data .h2P {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.data .stars {
+  color: #f0c040;
+  font-size: 18px;
+  margin-top: 5px;
+}
+
+/* Info: localização, seguidores, visitas */
+.rowP {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+  font-size: 15px;
+  color: #444;
+  flex-wrap: wrap;
+}
+
+.rowP .info {
+  text-align: center;
+}
+
+.rowP .info h3 {
+  font-size: 14px;
+  color: #888;
+}
+
+.rowP .info span {
+  font-weight: bold;
+  font-size: 16px;
+  display: block;
+  margin-top: 2px;
+}
+
+/* Seções (cardápios, comentários) */
+.section {
+  background-color: white;
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.section h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Cardápios em grade */
+.image-list {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.image-item {
+  width: 150px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: #eee;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.image-item:hover {
+  transform: scale(1.03);
+}
+
+/* Scroll invisível */
+.image-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Estrela extra (comentários) */
+.rating-small {
+  font-size: 14px;
+  color: #f0c040;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+/* Responsividade geral */
+@media (max-width: 768px) {
+  .headerperfil {
+    flex-direction: row; /* mantém botões lado a lado */
+    justify-content: space-between;
+    padding: 0 15px;
+  }
+
+  .icon-button {
+    width: 52px;
+    height: 52px;
+  }
+
+  .profile-card {
+    margin: -60px 15px 30px;
+    padding: 60px 20px 25px;
+  }
+
+  .rowP {
+    gap: 20px;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .data .h2P {
+    font-size: 20px;
+  }
+
+  .data .stars {
+    font-size: 16px;
+  }
+
+  .rowP .info span {
+    font-size: 15px;
+  }
+
+  .rowP .info h3 {
+    font-size: 13px;
+  }
+
+  .section {
+    margin: 15px;
+    padding: 20px;
+  }
+
+  .section h4 {
+    font-size: 15px;
+  }
+
+  .image-list {
+    gap: 10px;
+  }
+
+  .image-item {
+    width: 130px;
+    height: 190px;
+  }
+
+  .profile-pic {
+    width: 80px;
+    height: 80px;
+  }
+
+  .image {
+    top: -40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .icon-button {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .profile-card {
+    padding: 60px 15px 20px;
+  }
+
+  .image-item {
+    width: 120px;
+    height: 180px;
+  }
+
+  .section {
+    padding: 18px;
+  }
+
+  .rowP {
+    font-size: 13px;
+  }
+
+  .data .h2P {
+    font-size: 18px;
+  }
+
+  .data .stars {
+    font-size: 14px;
+  }
+
+  .profile-pic {
+    width: 70px;
+    height: 70px;
+  }
+
+  .image {
+    top: -35px;
+  }
+}

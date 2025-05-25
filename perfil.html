@@ -1,65 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <!---Custom Css File!--->
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Perfil</title>
+  <link rel="stylesheet" href="perfil.css"/>
 </head>
+<body class="bodyp">
+
+  <!-- Cabeçalho -->
+ <!-- Cabeçalho -->
+<header class="headerperfil">
+  <button class="icon-button" onclick="voltar()">
+    &#8592; <!-- seta para a esquerda -->
+  </button>
+  <button class="icon-button" onclick="localizacao()">
+    📍 <!-- ícone de localização -->
+  </button>
+</header>
+
+  <!-- Banner do restaurante -->
+<div class="banner-perfil">
+  <img src="images/background-cad.png" alt="Banner do restaurante" />
+</div>
+
+
+  <!-- Cartão de Perfil -->
   <section class="main-p">
-    <body class="bodyp">
-      <header class="headerperfil">
-        <img id="butaoperfil" onclick="voltar()" src="images/seta.png" width="100px" height="100px">
-      <img id="butaoperfil" class="localizacaoicon" onclick="localizacao()" src="images/location icon.png" width="200px" height="200px">
-      </header>
-  <div class="profile-card">
-    <div class="image">
-      <img src="images/perfil.png"  alt="" class="profile-pic">
-    </div>
-    <div class="data">
-      <h2 class="h2P" id="P-username">None</h2>
-      <span id="spanP">none</span>
-    </div>
-    <div class="rowP">
-      <div class="info">
-        <h3 id="h3P">Seguidores</h3>
-        <span id="spanP" >0</span>
-      </div>
-      <div class="info">
-        <h3 id="h3P">Cardápios publicados</h3>
-        <span id="spanP">0</span>
-      </div>
-    </div>
-    
-    <!--PASSADOR DE IMAGENS-->
+    <div class="profile-card">
 
-      <div class="containerP">
-        <div class="slider-wrapper">
+      <!-- Foto -->
+      <div class="image">
+        <img src="images/perfil.png" alt="Foto de perfil" class="profile-pic" id="profile-img"/>
+      </div>
 
-          <button id="prev-slide" class="slide-button material-symbols-rounded">
-            chevron_left
-          </button>
-          <div class="nomecard">
-            <h5>Recentes</h5>
-          </div>
-          <ul class="image-list">
-            <img class="image-item" src="images/menu1.jpeg" alt="img-1" />
-            <img class="image-item" src="images/menu2.jpeg" alt="img-2" />
-            <img class="image-item" src="images/menu3.jpeg" alt="img-3" />
-            <img class="image-item" src="images/menu5.jpeg" alt="img-4" />
-            <img class="image-item" src="images/menu1.jpeg" alt="img-5" />
-            <img class="image-item" src="images/menu3.jpeg" alt="img-6" />
-          </ul>
+      <!-- Nome + estrelas -->
+      <div class="data">
+        <h2 class="h2P" id="P-username">None</h2>
+        <div class="stars">★★★★☆</div>
+      </div>
+
+      <!-- Localização, Seguidores, Visitados -->
+      <div class="rowP">
+        <div class="info">
+          <h3>📍 --- / Brasil</h3>
         </div>
-          </div>
+        <div class="info">
+          <h3>Seguidores</h3>
+          <span>--</span>
+        </div>
+        <div class="info">
+          <h3>Visitados</h3>
+          <span>--</span>
         </div>
       </div>
-  
     </div>
-  </div>
-</section>
-<script src="js/server_script.js"></script>
-<script src="js/script.js"></script>
+  </section>
+
+  <!-- Cardápios publicados -->
+  <section class="section">
+    <h4>Cardápios publicados (5)</h4>
+    <div class="image-list">
+      <img class="image-item" src="images/menu1.jpeg" alt="Menu 1" />
+      <img class="image-item" src="images/menu2.jpeg" alt="Menu 2" />
+      <img class="image-item" src="images/menu3.jpeg" alt="Menu 3" />
+      <img class="image-item" src="images/menu6.jpeg" alt="Menu 4" />
+      <img class="image-item" src="images/menu5.jpeg" alt="Menu 5" />
+      <div class="image-item" style="display: flex; align-items: center; justify-content: center; font-size: 32px; background-color: #e0e0e0;">+</div>
+    </div>
+  </section>
+
+  <!-- Comentários -->
+  <section class="section">
+    <h4>Comentarios (78) <span class="rating-small">★★★☆☆</span></h4>
+    <!-- Você pode inserir a lista de comentários aqui -->
+  </section>
+
+  <!-- Scripts -->
+  <script src="js/server_script.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
