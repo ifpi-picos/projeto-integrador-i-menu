@@ -9,17 +9,34 @@
 <body>
 
   <!-- Sidebar -->
- <div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar">
   <nav>
-  <a href="index.html"><span class="menu-item"><i data-lucide="home"></i><span>Início</span></span></a>
-  <a href="pesquisa.html"><span class="menu-item"><i data-lucide="utensils"></i><span>Menus</span></span></a>
-  <a href="#" onclick="localizacao()" id="mapaSidebar"><span class="menu-item"><i data-lucide="map-pin"></i><span>Mapa</span></span></a>
-  <a href="publicar.html" id="publicarSidebar"><span class="menu-item"><i data-lucide="file-text"></i><span>Publicar</span></span></a>
-  <a href="#" onclick="goeditor()" id="editorSidebar"><span class="menu-item"><i data-lucide="paintbrush"></i><span>Editor</span></span></a>
-  <a href="perfil.html" id="perfilSidebar"><span class="menu-item"><i data-lucide="user"></i><span>Perfil</span></span></a>
-</nav>
+    <a href="index.html">
+      <span class="menu-item"><i data-lucide="home"></i><span>Início</span></span>
+    </a>
+    <a href="pesquisa.html">
+      <span class="menu-item"><i data-lucide="utensils"></i><span>Menus</span></span>
+    </a>
+    <a href="#" onclick="localizacao()" id="mapaSidebar">
+      <span class="menu-item"><i data-lucide="map-pin"></i><span>Mapa</span></span>
+    </a>
+    <a href="publicar.html" id="publicarSidebar">
+      <span class="menu-item"><i data-lucide="file-text"></i><span>Publicar</span></span>
+    </a>
+    <a href="#" onclick="goeditor()" id="editorSidebar">
+      <span class="menu-item"><i data-lucide="paintbrush"></i><span>Editor</span></span>
+    </a>
+    <a href="perfil.html" id="perfilSidebar">
+      <span class="menu-item"><i data-lucide="user"></i><span>Perfil</span></span>
+    </a>
+  </nav>
 
+  <div class="auth-sidebar-buttons">
+    <button id="button-enter" onclick="gologin()" class="login-button">Entrar</button>
+    <button id="button-acount" onclick="goecadastro()" class="register-button">Cadastrar</button>
+  </div>
 </div>
+
 
 
   <!-- Botão toggle da sidebar -->

@@ -2,20 +2,15 @@ const webservice = "https://imenu-backend-yp5c.onrender.com";
 
 // Criar usuário
 async function criaruser() {
-    var nome = document.getElementById("nome").value;
-    var email = document.getElementById("email").value;
-    var senha = document.getElementById("senha").value;
-    var dono = document.getElementById("dono").checked;
+    const nome = document.getElementById("nome").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const dono = document.getElementById("dono").checked;
 
-    const novoUsuario = {
-        name: nome,
-        email: email,
-        password: senha,
-        dono: dono
-    };
+    const novoUsuario = { name: nome, email, password: senha, dono };
 
     try {
-        const response = await fetch(webservice + "/create", {
+        const response = await fetch(`${webservice}/create`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(novoUsuario)
@@ -34,15 +29,15 @@ async function criaruser() {
     }
 }
 
-// Login de usuário
+// Login
 async function logar() {
-    var email = document.getElementById("email").value;
-    var senha = document.getElementById("senha").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
 
-    const usuario = { email: email, password: senha };
+    const usuario = { email, password: senha };
 
     try {
-        const response = await fetch(webservice + "/login", {
+        const response = await fetch(`${webservice}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(usuario)
@@ -53,7 +48,6 @@ async function logar() {
         if (response.ok) {
             alert("Usuário logado com sucesso!");
             localStorage.setItem('auth_token', data.token);
-            verificarToken();
             window.location.href = "./index.html";
         } else {
             alert("Erro ao logar: " + (data.message || "Erro desconhecido"));
@@ -68,10 +62,11 @@ async function verificarToken() {
     const token = localStorage.getItem("auth_token");
 
     const conta = document.getElementById("perfil-link");
+    const username = document.getElementById("username");
     const mapa = document.getElementById("mapaAba");
     const editor = document.getElementById("editorAba");
-    const cadastrarB = document.getElementById("button-acount");
-    const logarB = document.getElementById("button-enter");
+    const cadastrarB = document.querySelectorAll("#button-acount");
+    const logarB = document.querySelectorAll("#button-enter");
     const publicar = document.getElementById("publicarAba");
 
     const perfilSidebar = document.getElementById("perfilSidebar");
@@ -79,88 +74,94 @@ async function verificarToken() {
     const editorSidebar = document.getElementById("editorSidebar");
 
     if (!token) {
-        if (conta) conta.remove();
-        if (mapa) mapa.remove();
-        if (editor) editor.remove();
-        if (publicar) publicar.remove();
+        // Deslogado
         if (perfilSidebar) perfilSidebar.style.display = "none";
         if (publicarSidebar) publicarSidebar.style.display = "none";
         if (editorSidebar) editorSidebar.style.display = "none";
-        if (cadastrarB) cadastrarB.style.display = "block";
-        if (logarB) logarB.style.display = "block";
+        if (conta) conta.style.display = "none";
+        if (mapa) mapa.style.display = "flex";
+        if (editor) editor.style.display = "none";
+        if (publicar) publicar.style.display = "none";
+
+        cadastrarB.forEach(b => b.style.display = "block");
+        logarB.forEach(b => b.style.display = "block");
+
+        if (username) username.innerText = "";
+
         return;
     }
 
     try {
-        const response = await fetch(webservice + "/dados", {
+        const response = await fetch(`${webservice}/dados`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
 
         if (!response.ok) {
-            if (conta) conta.remove();
-            if (mapa) mapa.remove();
-            if (editor) editor.remove();
-            if (publicar) publicar.remove();
-            if (perfilSidebar) perfilSidebar.style.display = "none";
-            if (publicarSidebar) publicarSidebar.style.display = "none";
-            if (editorSidebar) editorSidebar.style.display = "none";
+            localStorage.removeItem('auth_token');
+            verificarToken();
             return;
         }
 
         const data = await response.json();
 
-        if (window.location.pathname.includes("index.html")) {
-            document.getElementById("username").innerText = data.name;
-            if (data.foto) {
-                document.getElementById("perfil").src = data.foto;
-            }
-
-            if (data.dono) {
-                if (mapa) mapa.remove();
-                if (editor) editor.style.display = "flex";
-                if (publicar) {
-                    publicar.style.display = "block";
-                    publicar.onclick = () => window.location.href = "publicar.html";
-                }
-                if (publicarSidebar) publicarSidebar.style.display = "block";
-                if (editorSidebar) editorSidebar.style.display = "block";
-            } else {
-                if (editor) editor.remove();
-                if (mapa) mapa.style.display = "flex";
-                if (publicar) publicar.remove();
-                if (publicarSidebar) publicarSidebar.style.display = "none";
-                if (editorSidebar) editorSidebar.style.display = "none";
-            }
-
-            if (perfilSidebar) perfilSidebar.style.display = "block";
+        // Nome e foto
+        if (conta) conta.style.display = "flex";
+        if (username) username.innerText = data.name;
+        const perfilImg = document.getElementById("perfil");
+        if (perfilImg && data.foto) {
+            perfilImg.src = data.foto;
         }
 
+        // Para donos
+        if (data.dono) {
+            if (mapa) mapa.style.display = "none";
+            if (editor) editor.style.display = "flex";
+            if (publicar) publicar.style.display = "flex";
+
+            if (publicarSidebar) publicarSidebar.style.display = "flex";
+            if (editorSidebar) editorSidebar.style.display = "flex";
+        } else {
+            if (mapa) mapa.style.display = "flex";
+            if (editor) editor.style.display = "none";
+            if (publicar) publicar.style.display = "none";
+
+            if (publicarSidebar) publicarSidebar.style.display = "none";
+            if (editorSidebar) editorSidebar.style.display = "none";
+        }
+
+        if (perfilSidebar) perfilSidebar.style.display = "flex";
+
+        // Esconde login e cadastro
+        cadastrarB.forEach(b => b.style.display = "none");
+        logarB.forEach(b => b.style.display = "none");
+
+        // Página de perfil
         if (window.location.pathname.includes("perfil.html")) {
-            document.getElementById("P-username").innerText = data.name;
-            document.getElementById("spanP").innerText = data.dono ? "Dono de Restaurante" : "Cliente";
+            const spanUser = document.getElementById("P-username");
+            const spanTipo = document.getElementById("spanP");
+
+            if (spanUser) spanUser.innerText = data.name;
+            if (spanTipo) spanTipo.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
 
             if (data.dono) {
                 const localIcons = document.getElementsByClassName("localizacaoicon");
-                for (let i = 0; i < localIcons.length; i++) {
-                    localIcons[i].remove();
-                }
+                Array.from(localIcons).forEach(icon => icon.remove());
             }
         }
 
-        if (cadastrarB) cadastrarB.style.display = "none";
-        if (logarB) logarB.style.display = "none";
     } catch (err) {
-        console.error("Erro ao buscar usuário:", err);
+        console.error("Erro ao verificar token:", err);
     }
 }
 
+// Verificação de e-mail
 async function VerEmail() {
     const token = localStorage.getItem("auth_token");
     if (!token) return;
 
     try {
-        const response = await fetch(webservice + "/dados", {
+        const response = await fetch(`${webservice}/dados`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -177,6 +178,7 @@ async function VerEmail() {
     }
 }
 
+// Publicar
 async function postar() {
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
@@ -184,13 +186,7 @@ async function postar() {
     const publice = document.getElementById("public").checked;
     const capa = document.getElementById("linkimg").value;
 
-    const novoPost = {
-        title,
-        content,
-        sociallink: link,
-        publice,
-        capa
-    };
+    const novoPost = { title, content, sociallink: link, publice, capa };
 
     const token = localStorage.getItem("auth_token");
 
@@ -206,7 +202,6 @@ async function postar() {
 
         if (!response.ok) throw new Error(`Erro: ${response.statusText}`);
 
-        const data = await response.json();
         alert("Post criado com sucesso!");
         window.location.href = "./index.html";
     } catch (err) {
@@ -214,6 +209,7 @@ async function postar() {
     }
 }
 
+// Carregar últimos posts
 async function carregarUltimosPosts() {
     try {
         const response = await fetch(`${webservice}/recent`);
@@ -253,7 +249,7 @@ async function carregarUltimosPosts() {
             });
         }
     } catch (err) {
-        alert("Erro ao carregar posts. Tente novamente.");
+        console.error("Erro ao carregar posts:", err);
     }
 }
 
@@ -265,6 +261,7 @@ function abrirPost(postId) {
     window.location.href = `vizualizador.html?id=${postId}`;
 }
 
+// Avaliação
 async function salvarAvaliacao(postId, nota) {
     const token = localStorage.getItem("auth_token");
     if (!token) {

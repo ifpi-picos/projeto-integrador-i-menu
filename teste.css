@@ -23,13 +23,13 @@ a {
     display: flex;
     flex-direction: row;
     overflow-x: scroll;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE e Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     scroll-snap-type: x mandatory;
 }
 
 #posts-recentes::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
+    display: none;
 }
 
 .post-info {
@@ -360,7 +360,7 @@ header > div {
     font-weight: bold;
 }
 
-/* Estilos para perfil e nome de usuário aaa */
+/* Estilos para perfil e nome de usuário */
 #perfil {
     width: 40px;
     height: 40px;
@@ -507,6 +507,42 @@ header > div {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
+}
+
+/* Botões de login/cadastro na sidebar */
+.sidebar .auth-sidebar-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 2rem 1rem 1rem 1rem;
+}
+
+.sidebar .auth-sidebar-buttons button {
+  background-color: white;
+  color: #4E2C1E;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar .auth-sidebar-buttons button:hover {
+  background-color: #7B3F00;
+  color: white;
+}
+
+.sidebar .auth-sidebar-buttons .register-button {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+}
+
+.sidebar .auth-sidebar-buttons .register-button:hover {
+  background-color: white;
+  color: #4E2C1E;
 }
 
 /* Esconde header em telas pequenas, mostra sidebar */
