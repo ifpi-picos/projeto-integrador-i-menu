@@ -1,67 +1,483 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>EDITOR DE CARDÁPIO</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor de Imagem</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f5f1;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
 
-  </head> 
-  <body class="editorbody">
-    <div class="containerE disable">
-        <h2>Editar cardápio</h2>
-        <div class="wrapper">
-            <div class="editor-panel">
-                <div class="filter">
-                    <label class="titleeditor">Filtros</label>
-                    <div class="options">
-                        <button id="brightness" class="active">Brilho</button>
-                        <button id="saturation">Saturação</button>
-                        <button id="inversion">Inverter</button>
-                        <button id="grayscale">Acinzentar</button>
-                    </div>
-                    <div class="slider">
-                        <div class="filter-info">
-                            <p class="name">Brighteness</p>
-                            <p class="value">100%</p>
-                        </div>
-                        <input id="inputE" type="range" value="100" min="0" max="200">
-                    </div>
-                </div>
-                <div class="rotate">
-                    <label class="titleE">Rotação</label>
-                    <div class="options">
-                        <button id="left"><i class="fa-solid fa-rotate-left"></i></button>
-                        <button id="right"><i class="fa-solid fa-rotate-right"></i></button>
-                        <button id="horizontal"><i class='bx bx-reflect-vertical'></i></button>
-                        <button id="vertical"><i class='bx bx-reflect-horizontal' ></i></button>
-                    </div>
-                </div>
-                <div class="crop-container" style="display: none;">
-                    <img id="image-to-crop" src="" alt="Imagem a ser recortada">
-                    <button class="save-cropped-img">Salvar Imagem Recortada</button>
-                    <button class="cancel-crop">Cancelar</button>
-                </div>
-            </div>
-            <div class="preview-img">
-                <img src="imagens/icone-app.png" alt="preview-img">
-            </div>
-        </div>
-        <div class="controls">
-            <button class="reset-filter">Resetar</button>
-            <button class="crop-img">Recortar Imagem</button>
-            <div class="row">
-                <input type="file" class="file-input" accept="image/*" hidden>
-                <button class="choose-img">Escolher imagem</button>
-                <button class="save-img">Salvar</button>
-            </div>
-        </div>
-        
-    <script src="js/jeditor.js"></script>
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      transition: max-height 0.3s ease;
+    }
 
-  </body>
+    .toolbar.hidden {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    #menuToggle {
+      display: none;
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background-color: #7b3f00;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      font-size: 20px;
+      border-radius: 6px;
+      z-index: 1000;
+      cursor: pointer;
+    }
+
+    input[type="color"],
+    input[type="file"],
+    select {
+      padding: 5px;
+    }
+
+    button {
+      all: unset;
+    }
+
+    .modern-button {
+      padding: 10px 16px;
+      background-color: #7b3f00;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-button:hover {
+      background-color: #a66f2c;
+      transform: translateY(-1px);
+    }
+
+    .modern-button:active {
+      background-color: #5c2f00;
+      transform: scale(0.98);
+    }
+
+    .modern-button:focus {
+      outline: 2px solid #c38b5f;
+      outline-offset: 2px;
+    }
+
+    #editorContainer {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    canvas {
+      border: 1px solid #ccc;
+      cursor: crosshair;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .text-box,
+    .image-box {
+      position: absolute;
+      cursor: move;
+      user-select: none;
+    }
+
+    .resize-handle {
+      width: 10px;
+      height: 10px;
+      background: #000;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      cursor: se-resize;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding: 5px;
+        max-height: 35vh;
+        overflow-y: auto;
+      }
+
+      .toolbar > * {
+        width: 100%;
+        font-size: 0.8rem;
+        padding: 4px;
+      }
+
+      .modern-button {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+        border-radius: 6px;
+      }
+
+      canvas {
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      #editorContainer {
+        max-height: 60vh;
+        overflow: hidden;
+      }
+
+      .text-box,
+      .image-box {
+        max-width: 90%;
+        font-size: 0.9em !important;
+      }
+
+      #menuToggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Editor de Imagem</h1>
+
+  <button id="menuToggle" onclick="toggleToolbar()">☰</button>
+
+  <div class="toolbar">
+    <input type="file" id="upload" accept="image/*">
+    <button class="modern-button" onclick="addTextBox()">Adicionar Texto</button>
+    <input type="color" id="textColor" value="#000000">
+    <select id="fontSize">
+      <option value="16">16px</option>
+      <option value="24">24px</option>
+      <option value="32">32px</option>
+    </select>
+    <select id="fontFamily">
+      <option value="Arial">Arial</option>
+      <option value="Verdana">Verdana</option>
+      <option value="Georgia">Georgia</option>
+    </select>
+    <button class="modern-button" onclick="undo()">Desfazer</button>
+    <button class="modern-button" onclick="redo()">Refazer</button>
+    <button class="modern-button" onclick="toggleDraw()">Desenhar</button>
+    <button class="modern-button" onclick="download()">Download</button>
+    <button class="modern-button" onclick="exportPDF()">Exportar PDF</button>
+    <input type="file" id="imageInput" accept="image/*">
+    <button class="modern-button" onclick="addImageBox()">Adicionar Imagem</button>
+  </div>
+
+  <div id="editorContainer">
+    <canvas id="canvas" width="800" height="600"></canvas>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const undoStack = [];
+    const redoStack = [];
+    let drawing = false;
+    let isDrawingMode = false;
+
+    function toggleToolbar() {
+      const toolbar = document.querySelector('.toolbar');
+      toolbar.classList.toggle('hidden');
+    }
+
+    function saveState() {
+      undoStack.push(canvas.toDataURL());
+      redoStack.length = 0;
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      redoStack.push(canvas.toDataURL());
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.src = undoStack.pop();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      undoStack.push(canvas.toDataURL());
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.src = redoStack.pop();
+    }
+
+    document.getElementById('upload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          saveState();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (!isDrawingMode) return;
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (drawing && isDrawingMode) {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (drawing && isDrawingMode) {
+        ctx.closePath();
+        drawing = false;
+        saveState();
+      }
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (!isDrawingMode || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      e.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!drawing || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      e.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+      if (drawing) {
+        drawing = false;
+        ctx.closePath();
+        saveState();
+        e.preventDefault();
+      }
+    });
+
+    function toggleDraw() {
+      isDrawingMode = !isDrawingMode;
+    }
+
+    function addTextBox() {
+      const div = document.createElement('div');
+      div.contentEditable = true;
+      div.className = 'text-box';
+      div.innerText = 'Texto';
+      applyTextStyles(div);
+      enableDragResize(div);
+      document.getElementById('editorContainer').appendChild(div);
+    }
+
+    function applyTextStyles(element) {
+      element.style.color = document.getElementById('textColor').value;
+      element.style.fontSize = document.getElementById('fontSize').value + 'px';
+      element.style.fontFamily = document.getElementById('fontFamily').value;
+      element.style.left = '100px';
+      element.style.top = '100px';
+    }
+
+    function addImageBox() {
+      const input = document.getElementById('imageInput');
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.src = reader.result;
+        img.className = 'image-box';
+        img.style.width = '100px';
+        img.style.height = '100px';
+
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.left = '150px';
+        container.style.top = '150px';
+        container.style.width = '100px';
+        container.style.height = '100px';
+        container.className = 'image-box';
+        container.appendChild(img);
+
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        container.appendChild(handle);
+
+        enableDragResize(container);
+        document.getElementById('editorContainer').appendChild(container);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function enableDragResize(el) {
+      let offsetX, offsetY, startX, startY;
+      let isTouch = false;
+
+      function onMouseMove(e) {
+        if (isTouch) return;
+        el.style.left = (e.clientX - offsetX) + 'px';
+        el.style.top = (e.clientY - offsetY) + 'px';
+      }
+
+      function onTouchMove(e) {
+        if (!isTouch || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        el.style.left = (touch.clientX - offsetX) + 'px';
+        el.style.top = (touch.clientY - offsetY) + 'px';
+      }
+
+      el.onmousedown = function (e) {
+        if (e.target.className === 'resize-handle') return;
+        isTouch = false;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+        document.onmousemove = onMouseMove;
+        document.onmouseup = () => {
+          document.onmousemove = null;
+          document.onmouseup = null;
+        };
+      };
+
+      el.ontouchstart = function (e) {
+        if (e.target.className === 'resize-handle' || e.touches.length !== 1) return;
+        isTouch = true;
+        const touch = e.touches[0];
+        offsetX = touch.clientX - el.offsetLeft;
+        offsetY = touch.clientY - el.offsetTop;
+        document.ontouchmove = onTouchMove;
+        document.ontouchend = () => {
+          document.ontouchmove = null;
+          document.ontouchend = null;
+        };
+      };
+
+      const handle = el.querySelector('.resize-handle');
+      if (handle) {
+        handle.onmousedown = function (e) {
+          e.stopPropagation();
+          startX = e.clientX;
+          startY = e.clientY;
+          const startWidth = parseInt(getComputedStyle(el).width);
+          const startHeight = parseInt(getComputedStyle(el).height);
+          document.onmousemove = function (e) {
+            el.style.width = (startWidth + e.clientX - startX) + 'px';
+            el.style.height = (startHeight + e.clientY - startY) + 'px';
+            const img = el.querySelector('img');
+            if (img) {
+              img.style.width = '100%';
+              img.style.height = '100%';
+            }
+          };
+          document.onmouseup = function () {
+            document.onmousemove = null;
+            document.onmouseup = null;
+          };
+        };
+
+        handle.ontouchstart = function (e) {
+          e.stopPropagation();
+          if (e.touches.length !== 1) return;
+          const touch = e.touches[0];
+          startX = touch.clientX;
+          startY = touch.clientY;
+          const startWidth = parseInt(getComputedStyle(el).width);
+          const startHeight = parseInt(getComputedStyle(el).height);
+          document.ontouchmove = function (e) {
+            const touchMove = e.touches[0];
+            el.style.width = (startWidth + touchMove.clientX - startX) + 'px';
+            el.style.height = (startHeight + touchMove.clientY - startY) + 'px';
+            const img = el.querySelector('img');
+            if (img) {
+              img.style.width = '100%';
+              img.style.height = '100%';
+            }
+          };
+          document.ontouchend = function () {
+            document.ontouchmove = null;
+            document.ontouchend = null;
+          };
+        };
+      }
+
+      el.addEventListener('dblclick', () => {
+        if (confirm('Remover este elemento?')) {
+          el.remove();
+        }
+      });
+    }
+
+    function download() {
+      const link = document.createElement('a');
+      link.download = 'imagem.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const imgData = canvas.toDataURL('image/jpeg');
+      pdf.addImage(imgData, 'JPEG', 10, 10, 180, 160);
+      pdf.save('imagem.pdf');
+    }
+
+    function resizeCanvasToFit() {
+      const container = document.getElementById('editorContainer');
+      const scale = container.clientWidth / 800;
+      canvas.style.transform = `scale(${scale})`;
+      canvas.style.transformOrigin = 'top left';
+      container.style.height = `${600 * scale}px`;
+    }
+
+    window.addEventListener('resize', resizeCanvasToFit);
+    resizeCanvasToFit();
+  </script>
+</body>
 </html>
