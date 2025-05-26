@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com";
+const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006";
 
 // Criar usuário
 async function criaruser() {
