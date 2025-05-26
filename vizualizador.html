@@ -37,7 +37,7 @@
 </main>
 
 <script>
-  const webservice ="https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006";
+  const webservice = "http://localhost:3006" //"https://imenu-backend-yp5c.onrender.com";
 
   async function carregarPost() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -58,9 +58,16 @@
       document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
       document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
 
-      if (post.capa) {
-        document.getElementById('post-image').style.backgroundImage = `url('${post.capa}')`;
-      }
+if (post.capa) {
+  const capa = document.getElementById("post-image");
+  capa.style.backgroundImage = `url('${post.capa}')`;
+
+  // Adiciona o clique de forma dinâmica
+  capa.addEventListener('click', function () {
+    window.location.href = post.capa; // ou window.open(post.capa, "_blank") para nova aba
+  });
+}
+
 
       const link = document.getElementById('post-link');
       if (post.sociallink) {

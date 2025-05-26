@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006";
+const webservice = "http://localhost:3006"; //"https://imenu-backend-yp5c.onrender.com"
 
 // Criar usuário
 async function criaruser() {
@@ -104,7 +104,7 @@ async function verificarToken() {
         }
 
         const data = await response.json();
-
+        
         // Nome e foto
         if (conta) conta.style.display = "flex";
         if (username) username.innerText = data.name;
@@ -112,44 +112,48 @@ async function verificarToken() {
         if (perfilImg && data.foto) {
             perfilImg.src = data.foto;
         }
-
+        
         // Para donos
         if (data.dono) {
             if (mapa) mapa.style.display = "none";
             if (editor) editor.style.display = "flex";
             if (publicar) publicar.style.display = "flex";
-
+            // document.getElementById("tipo-conta").innerText = "Dono de Restaurante";
+            
             if (publicarSidebar) publicarSidebar.style.display = "flex";
             if (editorSidebar) editorSidebar.style.display = "flex";
         } else {
             if (mapa) mapa.style.display = "flex";
             if (editor) editor.style.display = "none";
             if (publicar) publicar.style.display = "none";
-
+            
             if (publicarSidebar) publicarSidebar.style.display = "none";
             if (editorSidebar) editorSidebar.style.display = "none";
         }
-
+        
         if (perfilSidebar) perfilSidebar.style.display = "flex";
-
+        
         // Esconde login e cadastro
         cadastrarB.forEach(b => b.style.display = "none");
         logarB.forEach(b => b.style.display = "none");
-
+        
         // Página de perfil
         if (window.location.pathname.includes("perfil.html")) {
             const spanUser = document.getElementById("P-username");
-            const spanTipo = document.getElementById("spanP");
-
+            const spanTipo = document.getElementById("tipo-conta");
+            
             if (spanUser) spanUser.innerText = data.name;
             if (spanTipo) spanTipo.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
-
+            
             if (data.dono) {
-                const localIcons = document.getElementsByClassName("localizacaoicon");
+                const localIcons = document.getElementsByName("localizacaoicon");
                 Array.from(localIcons).forEach(icon => icon.remove());
+                document.getElementById("locationicon").remove()
             }
+            if(data.dono == false){document.getElementById("stars").remove();}
         }
-
+        return(data);
+        
     } catch (err) {
         console.error("Erro ao verificar token:", err);
     }
@@ -316,6 +320,10 @@ async function carregarMediaPost() {
     if (mediaEl) {
         mediaEl.innerText = `Média de avaliação: ${media.toFixed(1)} ★`;
     }
+}
+
+async function CarregarUserPosts(email) {
+    verificarToken()
 }
 
 // Inicialização

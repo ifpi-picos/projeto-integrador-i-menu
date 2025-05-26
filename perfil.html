@@ -14,7 +14,7 @@
   <button class="icon-button" onclick="voltar()">
     &#8592; <!-- seta para a esquerda -->
   </button>
-  <button class="icon-button" onclick="localizacao()">
+  <button class="icon-button" id="locationicon" onclick="localizacao()">
     📍 <!-- ícone de localização -->
   </button>
 </header>
@@ -37,7 +37,8 @@
       <!-- Nome + estrelas -->
       <div class="data">
         <h2 class="h2P" id="P-username">None</h2>
-        <div class="stars">★★★★☆</div>
+        <div class="stars" id="stars">★★★★☆</div>
+        <p id="tipo-conta">none</p>
       </div>
 
       <!-- Localização, Seguidores, Visitados -->
