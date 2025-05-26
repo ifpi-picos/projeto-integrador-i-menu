@@ -282,7 +282,7 @@ async function salvarAvaliacao(postId, nota) {
         const data = await response.json();
 
         if (response.ok) {
-            alert("Avaliação salva com sucesso!");
+           // alert("Avaliação salva com sucesso!");
         } else {
             alert("Erro ao salvar avaliação: " + (data.message || "Erro desconhecido"));
         }
