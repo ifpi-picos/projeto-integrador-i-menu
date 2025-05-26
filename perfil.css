@@ -26,18 +26,19 @@ body.bodyp {
 
 .icon-button {
   background: white;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.2s;
+      line-height: 1; /* IMPORTANTE */
 }
 
 .icon-button:hover {
