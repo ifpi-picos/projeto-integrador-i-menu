@@ -153,19 +153,27 @@ header {
 
 /* Categorias rápidas */
 .categories {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 1rem;
-    justify-content: center;
-    margin: 2rem 0;
+    justify-items: center;
+    margin: 2rem 1rem;
 }
   
 .category {
     background: #fff;
     padding: 0.75rem 1rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Cards principais */
@@ -445,16 +453,6 @@ header > div {
     .section h2 {
         font-size: 1.25rem;
         margin-left: 1rem;
-    }
-
-    .categories {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .category {
-        width: 90%;
-        text-align: center;
     }
 }
 
