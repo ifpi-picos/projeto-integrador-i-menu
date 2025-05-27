@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006"
+const webservice = "http://localhost:3006" //"https://imenu-backend-yp5c.onrender.com"
 
 // Criar usuário
 async function criaruser() {
@@ -45,6 +45,7 @@ async function logar() {
 
         const data = await response.json();
 
+
         if (response.ok) {
             alert("Usuário logado com sucesso!");
             localStorage.setItem('auth_token', data.token);
@@ -72,15 +73,17 @@ async function verificarToken() {
     const perfilSidebar = document.getElementById("perfilSidebar");
     const publicarSidebar = document.getElementById("publicarSidebar");
     const editorSidebar = document.getElementById("editorSidebar");
+    const perfilaba = document.getElementById("perfil_nav");
 
     if (!token) {
         // Deslogado
-        if (perfilSidebar) perfilSidebar.style.display = "none";
         if (publicarSidebar) publicarSidebar.style.display = "none";
-        if (editorSidebar) editorSidebar.style.display = "none";
+        if (perfilaba) perfilaba.remove()
+        if (editorSidebar) editorSidebar.remove()
         if (conta) conta.style.display = "none";
         if (mapa) mapa.style.display = "flex";
         if (editor) editor.style.display = "none";
+        if (publicar) publicar.style.display = "none";
         if (publicar) publicar.style.display = "none";
 
         cadastrarB.forEach(b => b.style.display = "block");
@@ -141,6 +144,7 @@ async function verificarToken() {
         if (window.location.pathname.includes("perfil.html")) {
             const spanUser = document.getElementById("P-username");
             const spanTipo = document.getElementById("tipo-conta");
+            CarregarPostsDono()
             
             if (spanUser) spanUser.innerText = data.name;
             if (spanTipo) spanTipo.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
@@ -150,7 +154,9 @@ async function verificarToken() {
                 Array.from(localIcons).forEach(icon => icon.remove());
                 document.getElementById("locationicon").remove()
             }
-            if(data.dono == false){document.getElementById("stars").remove();}
+            if(data.dono == false){
+                document.getElementById("stars").remove();
+            }
         }
         return(data);
         
@@ -264,6 +270,63 @@ function abrirPost(postId) {
     }
     window.location.href = `vizualizador.html?id=${postId}`;
 }
+
+
+//carregar posts do dono
+async function CarregarPostsDono() {
+    try {
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+            console.log("Usuário não autenticado");
+            return;
+        }
+
+        const response = await fetch(`${webservice}/userposts`, {
+            method: "GET",
+            headers: { 
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Erro: ${response.status}`);
+        }
+
+        const userPosts = await response.json();
+        console.log("Posts do usuário:", userPosts);
+        
+const postsContainer = document.getElementById("cards_user");
+const postsContainerInfo = document.getElementById("cards_user_info");
+
+if (postsContainer && postsContainerInfo) {
+    postsContainer.innerHTML = userPosts.map(post => `
+        <div class="dono_card" onclick="abrirPost('${post.id}')">
+            ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
+            <div class="post-info">
+                <h3>${post.title}</h3>
+                <p>${post.content?.substring(0, 100)}...</p>
+                <p>Autor: ${post.author?.name || 'Você'}</p>
+            </div>
+        </div>
+    `).join('');
+}
+        return userPosts;
+    } catch (err) {
+        console.error("Erro ao carregar posts:", err);
+        alert(err.message || "Erro ao carregar posts");
+    }
+}
+
+function abrirPost(postId) {
+    if (!postId || postId === 'undefined') {
+        alert('Erro: Post não encontrado');
+        return;
+    }
+    window.location.href = `vizualizador.html?id=${postId}`;
+}
+
 
 // Avaliação
 async function salvarAvaliacao(postId, nota) {

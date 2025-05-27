@@ -12,6 +12,65 @@ body.bodyp {
   padding: 0;
 }
 
+/*      CARDAPIOS PUBLICADOS        */
+
+#cards_user {
+    height: auto; /* Alterado de 50vh para auto */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Quebra de linha */
+    gap: 10px;
+    padding: 10px;
+    overflow-x: hidden; /* Remove a barra de rolagem horizontal */
+}
+
+/* CARD INDIVIDUAL */
+.dono_card {
+    width: 22vw; /* Largura fixa */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.dono_card:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
+}
+
+/* IMAGEM DO CARD */
+.dono_card_image {
+    height: 30vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* INFORMAÇÕES DO CARD */
+.post-info {
+    padding: 15px;
+    background: white;
+}
+
+.post-info h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.post-info p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.dono_card_container{
+  width: 25vw;
+  border: 1px solid black;
+  margin: 10px;
+  border-radius: 5px;
+}
 /* Cabeçalho */
 .headerperfil {
   position: relative;
@@ -152,31 +211,8 @@ body.bodyp {
 }
 
 /* Cardápios em grade */
-.image-list {
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-}
 
-.image-item {
-  width: 150px;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 8px;
-  background-color: #eee;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  transition: transform 0.3s;
-}
 
-.image-item:hover {
-  transform: scale(1.03);
-}
-
-/* Scroll invisível */
-.image-list::-webkit-scrollbar {
-  display: none;
-}
 
 /* Estrela extra (comentários) */
 .rating-small {
