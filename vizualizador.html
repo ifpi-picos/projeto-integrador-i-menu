@@ -33,7 +33,20 @@
     </div>
 
     <button onclick="window.history.back()" class="btn">← Voltar</button>
+    <section class="comments-section">
+      <h2>Comentários</h2>
+      
+      <div class="comment-form" id="comment-form">
+        <textarea id="comment-content" placeholder="Adicione um comentário..." rows="3"></textarea>
+        <button onclick="postComment()" class="btn">Enviar Comentário</button>
+      </div>
+      
+      <div class="comments-list" id="comments-list">
+        <!-- Comentários serão carregados aqui -->
+      </div>
+    </section>
   </div>
+
 </main>
 
 <script>
@@ -81,6 +94,7 @@ if (post.capa) {
 
       await carregarMedia(postId);
       ativarAvaliacao(postId);
+      await carregarComentarios(postId);
 
     } catch (error) {
       console.error('Erro ao carregar post:', error);
@@ -157,6 +171,133 @@ if (post.capa) {
       alert("Erro ao salvar avaliação. Tente novamente.");
     }
   }
+
+
+  //    COMENTARIOS     //
+
+
+  // Carregar comentários
+async function carregarComentarios(postId) {
+    try {
+        const response = await fetch(`${webservice}/comentarios/${postId}`);
+        if (!response.ok) throw new Error(`Erro: ${response.status}`);
+        
+        const comments = await response.json();
+        const commentsList = document.getElementById('comments-list');
+        commentsList.innerHTML = '';
+        
+        const token = localStorage.getItem("auth_token");
+        const userId = token ? parseJwt(token).id : null;
+        
+        comments.forEach(comment => {
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment';
+            
+            const commentDate = new Date(comment.createdAt).toLocaleString();
+            
+            commentDiv.innerHTML = `
+                <div class="comment-header">
+                    <span class="comment-author">${comment.author.name}</span>
+                    <span class="comment-date">${commentDate}</span>
+                </div>
+                <p class="comment-content">${comment.content}</p>
+                ${userId === comment.authorId ? `<button class="delete-comment" data-id="${comment.id}">Excluir</button>` : ''}
+            `;
+            
+            commentsList.appendChild(commentDiv);
+        });
+        
+        // Adicionar eventos aos botões de deletar
+        document.querySelectorAll('.delete-comment').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                if (confirm('Tem certeza que deseja excluir este comentário?')) {
+                    await deletarComentario(e.target.dataset.id);
+                    await carregarComentarios(postId);
+                }
+            });
+        });
+        
+        // Mostrar/ocultar formulário baseado no login
+        const commentForm = document.getElementById('comment-form');
+        if (token) {
+            commentForm.style.display = 'block';
+        } else {
+            commentForm.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar comentários:', error);
+        document.getElementById('comments-list').innerHTML = 
+            '<p>Erro ao carregar comentários. Tente recarregar a página.</p>';
+    }
+}
+
+// Postar novo comentário
+async function postComment() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    const content = document.getElementById('comment-content').value.trim();
+    const token = localStorage.getItem("auth_token");
+    
+    if (!content) {
+        alert('Por favor, escreva um comentário.');
+        return;
+    }
+    
+    if (!token) {
+        alert('Você precisa estar logado para comentar.');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${webservice}/comentar/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ content })
+        });
+        
+        if (!response.ok) throw new Error(`Erro: ${response.status}`);
+        
+        document.getElementById('comment-content').value = '';
+        await carregarComentarios(postId);
+    } catch (error) {
+        console.error('Erro ao postar comentário:', error);
+        alert('Erro ao postar comentário. Tente novamente.');
+    }
+}
+
+// Deletar comentário
+async function deletarComentario(commentId) {
+    const token = localStorage.getItem("auth_token");
+    
+    try {
+        const response = await fetch(`${webservice}/comentario-del/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) throw new Error(`Erro: ${response.status}`);
+    } catch (error) {
+        console.error('Erro ao deletar comentário:', error);
+        throw error;
+    }
+}
+
+// Função auxiliar para decodificar JWT
+function parseJwt(token) {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+}
+
+// Atualize a função carregarPost para incluir comentários
+
 
   window.onload = carregarPost;
 </script>
