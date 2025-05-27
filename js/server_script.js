@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006"
+const webservice = "http://localhost:3006" //"https://imenu-backend-yp5c.onrender.com"
 
 // Criar usuário
 async function criaruser() {
@@ -196,9 +196,15 @@ async function postar() {
     const publice = document.getElementById("public").checked;
     const capa = document.getElementById("linkimg").value;
 
-    const novoPost = { title, content, sociallink: link, publice, capa };
-
     const token = localStorage.getItem("auth_token");
+    
+    if (!token) {
+        alert("Você precisa fazer login primeiro");
+        window.location.href = "./login.html";
+        return;
+    }
+
+    const novoPost = { title, content, sociallink: link, publice, capa };
 
     try {
         const response = await fetch(`${webservice}/post`, {
@@ -210,15 +216,25 @@ async function postar() {
             body: JSON.stringify(novoPost)
         });
 
-        if (!response.ok) throw new Error(`Erro: ${response.statusText}`);
+        if (response.status === 401) {
+            alert("Sessão expirada. Por favor, faça login novamente.");
+            localStorage.removeItem('auth_token');
+            window.location.href = "./login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Erro ao criar post");
+        }
 
         alert("Post criado com sucesso!");
         window.location.href = "./index.html";
     } catch (err) {
-        alert("Erro ao criar o post. Tente novamente.");
+        console.error("Erro detalhado:", err);
+        alert("Erro ao criar o post: " + err.message);
     }
 }
-
 // Carregar últimos posts
 async function carregarUltimosPosts() {
     try {
