@@ -142,11 +142,12 @@ label[for="imageUpload"]:hover {
   display: inline-block;
 }
 
+/* Remover display:inline-block para button-text no base, texto visível só em desktop */
 .button-text {
   display: inline-block;
 }
 
-/* Responsividade - Tablet */
+/* Responsividade - Tablet e Celulares: só ícone, sem texto */
 @media (max-width: 768px) {
   #editorContainer {
     width: 95%;
@@ -161,6 +162,25 @@ label[for="imageUpload"]:hover {
   .text-options {
     flex-direction: column;
     align-items: center;
+  }
+
+  /* Oculta o texto dos botões e mantém só o ícone */
+  .button-text {
+    display: none;
+  }
+
+  .button-icon {
+    font-size: 18px;
+  }
+
+  /* Botões circulares só com ícone */
+  .modern-button,
+  label[for="imageUpload"] {
+    padding: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    justify-content: center;
   }
 }
 
@@ -201,36 +221,22 @@ label[for="imageUpload"]:hover {
     justify-content: center;
     gap: 8px;
   }
-
-  .modern-button,
-  label[for="imageUpload"] {
-    padding: 0;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    justify-content: center;
-  }
-
-  .button-text {
-    display: none;
-  }
-
-  .button-icon {
-    font-size: 18px;
-  }
 }
 
 /* Celular Muito Pequeno */
 @media (max-width: 400px) {
   .modern-button,
   label[for="imageUpload"] {
-    width: 100%;
-    border-radius: 10px;
-    height: auto;
+    width: 48px;
+    border-radius: 50%;
+    height: 48px;
     justify-content: center;
   }
 
+  /* Mantém o texto oculto conforme regra acima */
+  /*
   .button-text {
     display: inline-block;
   }
+  */
 }
