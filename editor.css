@@ -1,0 +1,236 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f9f5f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.back-button {
+  margin-top: 20px;
+  align-self: flex-start;
+  margin-left: 20px;
+  text-decoration: none;
+  background: #8B5E3C;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.back-button:hover {
+  background: #6c472e;
+}
+
+h1 {
+  margin-top: 10px;
+  color: #4b3621;
+  text-align: center;
+}
+
+#editorContainer {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(75, 54, 33, 0.15);
+  margin-top: 20px;
+  width: 850px;
+  max-width: 95%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#editorCanvas {
+  border: none;
+  background: white;
+  box-shadow: 0 4px 20px rgba(75, 54, 33, 0.1);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: #fff7f0;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(75, 54, 33, 0.08);
+  justify-content: center;
+}
+
+.modern-button {
+  padding: 10px 16px;
+  background: #8B5E3C;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modern-button:hover {
+  background: #6c472e;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+label[for="imageUpload"] {
+  padding: 10px 16px;
+  background: #A47148;
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+label[for="imageUpload"]:hover {
+  background: #7d5336;
+}
+
+.text-options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-options select,
+.text-options input {
+  padding: 6px;
+  border: 1px solid #c8b7a6;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #4b3621;
+  min-width: 100px;
+}
+
+/* Estilo base */
+.modern-button,
+label[for="imageUpload"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #8B5E3C;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modern-button:hover,
+label[for="imageUpload"]:hover {
+  background: #6c472e;
+}
+
+.button-icon {
+  display: inline-block;
+}
+
+.button-text {
+  display: inline-block;
+}
+
+/* Responsividade - Tablet */
+@media (max-width: 768px) {
+  #editorContainer {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .text-options {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Responsividade - Celular Médio */
+@media (max-width: 600px) {
+  .controls {
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .text-options {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .text-options select,
+  .text-options input {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+/* Responsividade - Celular Pequeno */
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+  }
+
+  .controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .modern-button,
+  label[for="imageUpload"] {
+    padding: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    justify-content: center;
+  }
+
+  .button-text {
+    display: none;
+  }
+
+  .button-icon {
+    font-size: 18px;
+  }
+}
+
+/* Celular Muito Pequeno */
+@media (max-width: 400px) {
+  .modern-button,
+  label[for="imageUpload"] {
+    width: 100%;
+    border-radius: 10px;
+    height: auto;
+    justify-content: center;
+  }
+
+  .button-text {
+    display: inline-block;
+  }
+}
