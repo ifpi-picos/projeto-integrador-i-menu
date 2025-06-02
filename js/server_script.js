@@ -47,14 +47,16 @@ async function logar() {
 
 
         if (response.ok) {
-            alert("Usuário logado com sucesso!");
             localStorage.setItem('auth_token', data.token);
             window.location.href = "./index.html";
         } else {
-            alert("Erro ao logar: " + (data.message || "Erro desconhecido"));
+            const logar_msg = document.getElementById("login_ms");
+            logar_msg.innerText = "Erro ao logar: " + (data.message || "Erro desconhecido");
+            
         }
     } catch (err) {
-        alert("Erro ao logar: " + err.message);
+        const logar_msg = document.getElementById("login_ms");
+        logar_msg.innerText = "Erro ao logar: " + err.message
     }
 }
 
@@ -145,6 +147,7 @@ async function verificarToken() {
             const spanUser = document.getElementById("P-username");
             const spanTipo = document.getElementById("tipo-conta");
             CarregarPostsDono()
+            CarregarPostsDono_P()
             
             if (spanUser) spanUser.innerText = data.name;
             if (spanTipo) spanTipo.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
@@ -315,6 +318,53 @@ async function CarregarPostsDono() {
         
 const postsContainer = document.getElementById("cards_user");
 const postsContainerInfo = document.getElementById("cards_user_info");
+
+if (postsContainer && postsContainerInfo) {
+    postsContainer.innerHTML = userPosts.map(post => `
+        <div class="dono_card" onclick="abrirPost('${post.id}')">
+            ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
+            <div class="post-info">
+                <h3>${post.title}</h3>
+                <p>${post.content?.substring(0, 100)}...</p>
+                <p>Autor: ${post.author?.name || 'Você'}</p>
+            </div>
+        </div>
+    `).join('');
+}
+        return userPosts;
+    } catch (err) {
+        console.error("Erro ao carregar posts:", err);
+        alert(err.message || "Erro ao carregar posts");
+    }
+}
+
+
+async function CarregarPostsDono_P() {
+    try {
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+            console.log("Usuário não autenticado");
+            return;
+        }
+
+        const response = await fetch(`${webservice}/userposts_p`, {
+            method: "GET",
+            headers: { 
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Erro: ${response.status}`);
+        }
+
+        const userPosts = await response.json();
+        console.log("Posts do usuário:", userPosts);
+        
+const postsContainer = document.getElementById("cards_user_p");
+const postsContainerInfo = document.getElementById("cards_user_info_p");
 
 if (postsContainer && postsContainerInfo) {
     postsContainer.innerHTML = userPosts.map(post => `

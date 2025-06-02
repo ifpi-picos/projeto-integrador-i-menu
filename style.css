@@ -11,6 +11,10 @@
   color: #000;
   font-weight: bold;
 }
+#login_ms{
+  color: red;
+  font-size: 1rem;
+}
 .buttons_normais{
   border-radius: 5px;
   cursor: pointer;
