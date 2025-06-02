@@ -497,3 +497,16 @@ window.onload = () => {
       localizacaoEl.textContent = "📍 Geolocalização não suportada";
     }
   });
+
+
+// TEXTO DO EDITOR
+    function addText() {
+    const canvas = document.getElementById("canvas");
+
+    const newText = document.createElement("div");
+    newText.textContent = "Insira seu texto aqui";
+    newText.contentEditable = true;
+    newText.className = "editable-text";
+
+    canvas.appendChild(newText);
+  }

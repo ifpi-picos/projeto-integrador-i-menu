@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="publicar.css" />
 </head>
 <body>
+    <button class="back-button" onclick="window.location.href='index.html'">Voltar</button>
     <div class="container">
         <label class="upload-box">
             <input type="file" accept="image/*" onchange="previewImage(event)">
@@ -16,21 +17,30 @@
         <div class="form-section">
             <label>Título</label>
             <input id="title" type="text" placeholder="Adicione um título">
+
             <label>Descrição</label>
             <textarea id="content" placeholder="Adicione uma descrição detalhada"></textarea>
+
             <label>Link da imagem de capa</label>
             <textarea id="linkimg" placeholder="Adicione o link da imagem 200x200"></textarea>
+
             <label>Link</label>
             <input type="text" id="linksocial" placeholder="Adicione um link">
+
             <label>Interesses marcados</label>
             <input type="text" placeholder="Procure uma tag">
+
             <div class="radio-group">
                 <label><input type="radio" name="privacidade" id="public" value="publico"> Público</label>
                 <label><input type="radio" name="privacidade" id="private" value="privado" checked> Privado</label>
             </div> 
-            <button onclick="postar()">Postar</button>
+
+            <div class="button-group">
+                <button onclick="postar()">Postar</button>
+            </div>
         </div>
     </div>
+
     <script src="js/server_script.js"></script>
     <script>
         function previewImage(event) {
