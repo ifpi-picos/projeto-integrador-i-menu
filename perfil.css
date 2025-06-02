@@ -24,6 +24,16 @@ body.bodyp {
     overflow-x: hidden; /* Remove a barra de rolagem horizontal */
 }
 
+#cards_user_p {
+    height: auto; /* Alterado de 50vh para auto */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Quebra de linha */
+    gap: 10px;
+    padding: 10px;
+    overflow-x: hidden; /* Remove a barra de rolagem horizontal */
+}
+
 /* CARD INDIVIDUAL */
 .dono_card {
     width: 19vw; /* Largura fixa */
@@ -302,6 +312,16 @@ body.bodyp {
     padding: 10px;
     overflow-x: hidden; /* Remove a barra de rolagem horizontal */
 }
+  #cards_user_p {
+    height: auto; /* Alterado de 50vh para auto */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Quebra de linha */
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    overflow-x: hidden; /* Remove a barra de rolagem horizontal */
+}
 
 
 /* CARD INDIVIDUAL */
@@ -360,6 +380,16 @@ body.bodyp {
 
 
   #cards_user {
+    height: auto; /* Alterado de 50vh para auto */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Quebra de linha */
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    overflow-x: hidden; /* Remove a barra de rolagem horizontal */
+}
+  #cards_user_p {
     height: auto; /* Alterado de 50vh para auto */
     width: 100%;
     display: flex;
