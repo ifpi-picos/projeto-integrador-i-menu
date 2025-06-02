@@ -330,4 +330,29 @@ body.bodyp {
   .image {
     top: -35px;
   }
+
+  /*cards*/
+
+
+  #cards_user {
+    height: auto; /* Alterado de 50vh para auto */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Quebra de linha */
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    overflow-x: hidden; /* Remove a barra de rolagem horizontal */
+}
+
+
+/* CARD INDIVIDUAL */
+.dono_card {
+    width: 100%; /* Largura fixa */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
 }
