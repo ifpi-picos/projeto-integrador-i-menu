@@ -63,10 +63,18 @@ h1 {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(75, 54, 33, 0.08);
   justify-content: center;
+  z-index: 9999;
+  width: auto;
+  max-width: 850px;
+  margin: 0 auto 20px auto;
+  position: static;
 }
 
-.modern-button {
-  padding: 10px 16px;
+.modern-button,
+label[for="imageUpload"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: #8B5E3C;
   color: white;
   border: none;
@@ -74,28 +82,16 @@ h1 {
   font-weight: 500;
   cursor: pointer;
   transition: background 0.3s ease;
+  padding: 10px 16px;
 }
 
-.modern-button:hover {
+.modern-button:hover,
+label[for="imageUpload"]:hover {
   background: #6c472e;
 }
 
 input[type="file"] {
   display: none;
-}
-
-label[for="imageUpload"] {
-  padding: 10px 16px;
-  background: #A47148;
-  color: white;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-label[for="imageUpload"]:hover {
-  background: #7d5336;
 }
 
 .text-options {
@@ -118,78 +114,86 @@ label[for="imageUpload"]:hover {
   min-width: 100px;
 }
 
-/* Estilo base */
-.modern-button,
-label[for="imageUpload"] {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #8B5E3C;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.modern-button:hover,
-label[for="imageUpload"]:hover {
-  background: #6c472e;
-}
-
 .button-icon {
   display: inline-block;
 }
 
-/* Remover display:inline-block para button-text no base, texto visível só em desktop */
 .button-text {
   display: inline-block;
 }
 
-/* Responsividade - Tablet e Celulares: só ícone, sem texto */
+/* Responsividade - Tablet e Celulares */
 @media (max-width: 768px) {
   #editorContainer {
     width: 95%;
     padding: 15px;
+    padding-bottom: 100px;
   }
 
   .controls {
-    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    padding: 10px 10px;
+    border-top: 1px solid #ddd6ce;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    gap: 12px;
+    z-index: 9999;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    min-width: 100vw;
+  }
+
+  .controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .controls {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .modern-button,
+  label[for="imageUpload"] {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
     align-items: center;
+    font-size: 22px;
+    scroll-snap-align: start;
+  }
+
+  .button-text {
+    display: none;
+  }
+
+  .button-icon {
+    font-size: 22px;
   }
 
   .text-options {
     flex-direction: column;
     align-items: center;
   }
-
-  /* Oculta o texto dos botões e mantém só o ícone */
-  .button-text {
-    display: none;
-  }
-
-  .button-icon {
-    font-size: 18px;
-  }
-
-  /* Botões circulares só com ícone */
-  .modern-button,
-  label[for="imageUpload"] {
-    padding: 0;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    justify-content: center;
-  }
 }
 
-/* Responsividade - Celular Médio */
+/* Celular Médio */
 @media (max-width: 600px) {
   .controls {
-    flex-direction: column;
-    gap: 12px;
-    padding: 10px;
+    flex-direction: row;
+    gap: 8px;
+    padding: 10px 0;
   }
 
   .text-options {
@@ -204,7 +208,7 @@ label[for="imageUpload"]:hover {
   }
 }
 
-/* Responsividade - Celular Pequeno */
+/* Celular Pequeno */
 @media (max-width: 480px) {
   body {
     padding: 10px;
@@ -216,10 +220,7 @@ label[for="imageUpload"]:hover {
   }
 
   .controls {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+    gap: 6px;
   }
 }
 
@@ -228,15 +229,7 @@ label[for="imageUpload"]:hover {
   .modern-button,
   label[for="imageUpload"] {
     width: 48px;
-    border-radius: 50%;
     height: 48px;
-    justify-content: center;
+    font-size: 20px;
   }
-
-  /* Mantém o texto oculto conforme regra acima */
-  /*
-  .button-text {
-    display: inline-block;
-  }
-  */
 }
