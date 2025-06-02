@@ -465,3 +465,35 @@ window.onload = () => {
         carregarMediaPost();
     }
 };
+
+// LOCALIZAÇAO NO PERFIL
+  window.addEventListener('load', () => {
+    const localizacaoEl = document.getElementById("localizacao");
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+
+          // Faz a requisição para Nominatim (OpenStreetMap)
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+            .then(response => response.json())
+            .then(data => {
+              const cidade = data.address.city || data.address.town || data.address.village || "Cidade desconhecida";
+              const estado = data.address.state || "";
+              const pais = data.address.country || "Brasil";
+              localizacaoEl.textContent = `📍 ${cidade} / ${pais}`;
+            })
+            .catch(() => {
+              localizacaoEl.textContent = "📍 Localização não encontrada";
+            });
+        },
+        (erro) => {
+          localizacaoEl.textContent = "📍 Localização não permitida";
+        }
+      );
+    } else {
+      localizacaoEl.textContent = "📍 Geolocalização não suportada";
+    }
+  });
