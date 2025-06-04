@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Cardápio</title>
+    <link rel="stylesheet" href="editar.css" />
+    <style>
+        /* Adicione os mesmos estilos do publicar.css */
+    </style>
+</head>
+<body>
+    <!-- Adicione a estrutura HTML completa aqui -->
+    <div class="container">
+        <input type="text" id="title" placeholder="Título">
+        <textarea id="content" placeholder="Conteúdo"></textarea>
+        <input type="text" id="linksocial" placeholder="Link Social">
+        <div class="radio-group">
+            <input type="radio" id="public" name="visibility" value="public">
+            <label for="public">Público</label>
+            <input type="radio" id="private" name="visibility" value="private">
+            <label for="private">Privado</label>
+        </div>
+        <div id="upload-area">
+            <img id="preview" style="display: none;">
+            <span id="upload-text">Upload de imagem</span>
+        </div>
+        <button onclick="salvarEdicao()">Salvar</button>
+    </div>
+
+    <script>
+        const webservice = "https://imenu-backend-pd3a.onrender.com";
+        
+        async function carregarPost() {
+            const params = new URLSearchParams(window.location.search);
+            const postId = params.get("id");
+            
+            if (!postId) {
+                alert("Post não encontrado");
+                window.location.href = "perfil.html";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${webservice}/posts/${postId}`);
+                if (!response.ok) throw new Error("Post não encontrado");
+                
+                const post = await response.json();
+                
+                // Verificar se os elementos existem antes de definir valores
+                const titleElement = document.getElementById("title");
+                const contentElement = document.getElementById("content");
+                const linkSocialElement = document.getElementById("linksocial");
+                const publicElement = document.getElementById("public");
+                const privateElement = document.getElementById("private");
+                const previewElement = document.getElementById("preview");
+                const uploadTextElement = document.getElementById("upload-text");
+                
+                if (titleElement) titleElement.value = post.title || "";
+                if (contentElement) contentElement.value = post.content || "";
+                if (linkSocialElement) linkSocialElement.value = post.sociallink || "";
+                
+                if (publicElement && privateElement) {
+                    publicElement.checked = post.public;
+                    privateElement.checked = !post.public;
+                }
+                
+                if (post.capa && previewElement && uploadTextElement) {
+                    previewElement.src = post.capa;
+                    previewElement.style.display = 'block';
+                    uploadTextElement.style.display = 'none';
+                }
+            } catch (err) {
+                console.error("Erro ao carregar post:", err);
+                alert("Erro ao carregar post: " + err.message);
+                window.location.href = "perfil.html";
+            }
+        }
+
+    async function salvarEdicao() {
+        const params = new URLSearchParams(window.location.search);
+        const postId = params.get("id");
+        
+        if (!postId) {
+            alert("Post não encontrado");
+            window.location.href = "perfil.html";
+            return;
+        }
+
+        // Obter os valores dos campos
+        const title = document.getElementById("title").value;
+        const content = document.getElementById("content").value;
+        const sociallink = document.getElementById("linksocial").value;
+        const isPublic = document.getElementById("public").checked;
+        const previewElement = document.getElementById("preview");
+        const capa = previewElement.style.display !== 'none' ? previewElement.src : null;
+
+        if (!title || !content) {
+            alert("Título e conteúdo são obrigatórios!");
+            return;
+        }
+
+        try {
+            // Obter o token JWT do localStorage ou de onde você o armazena
+            const token = localStorage.getItem('auth_token'); // Ajuste conforme sua aplicação
+            
+            if (!token) {
+                alert("Sessão expirada. Faça login novamente.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const response = await fetch(`${webservice}/posts/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    title,
+                    content,
+                    sociallink,
+                    public: isPublic,
+                    capa
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Erro ao atualizar post");
+            }
+
+            alert("Post atualizado com sucesso!");
+            window.location.href = "perfil.html";
+        } catch (err) {
+            console.error("Erro ao salvar edição:", err);
+            alert("Erro ao salvar edição: " + err.message);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarPost);
+    </script>
+</body>
+</html>

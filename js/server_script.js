@@ -1,4 +1,4 @@
-const webservice = "https://imenu-backend-yp5c.onrender.com" //"http://localhost:3006"
+const webservice = "https://imenu-backend-pd3a.onrender.com"  //"http://localhost:3006"
 
 // Criar usuário
 async function criaruser() {
@@ -191,14 +191,11 @@ async function VerEmail() {
     }
 }
 
-// Publicar
-async function postar() {
+async function enviarPostCompleto() {
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
     const link = document.getElementById("linksocial").value;
     const publice = document.getElementById("public").checked;
-    const capa = document.getElementById("linkimg").value;
-
     const token = localStorage.getItem("auth_token");
     
     if (!token) {
@@ -207,10 +204,19 @@ async function postar() {
         return;
     }
 
-    const novoPost = { title, content, sociallink: link, publice, capa };
+    // Verifica se imageUrl foi definido - agora não é mais crítico
+    const capa = imageUrl || null; // Permite que o post seja criado sem imagem
+
+    const novoPost = { 
+        title, 
+        content, 
+        sociallink: link, 
+        publice, 
+        capa
+    };
 
     try {
-        const response = await fetch(`${webservice}/post`, {
+        const response = await fetch(`https://imenu-backend-pd3a.onrender.com/post`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -220,24 +226,22 @@ async function postar() {
         });
 
         if (response.status === 401) {
-            alert("Sessão expirada. Por favor, faça login novamente.");
-            localStorage.removeItem('auth_token');
-            window.location.href = "./login.html";
-            return;
+            throw new Error("Sessão expirada. Faça login novamente.");
         }
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Erro ao criar post");
+            const error = await response.json();
+            throw new Error(error.message || "Erro ao criar post");
         }
 
         alert("Post criado com sucesso!");
         window.location.href = "./index.html";
-    } catch (err) {
-        console.error("Erro detalhado:", err);
-        alert("Erro ao criar o post: " + err.message);
+    } catch (error) {
+        console.error("Erro:", error);
+        alert(error.message);
     }
 }
+
 // Carregar últimos posts
 async function carregarUltimosPosts() {
     try {
@@ -314,29 +318,39 @@ async function CarregarPostsDono() {
         }
 
         const userPosts = await response.json();
-        console.log("Posts do usuário:", userPosts);
         
-const postsContainer = document.getElementById("cards_user");
-const postsContainerInfo = document.getElementById("cards_user_info");
+        const postsContainer = document.getElementById("cards_user");
+        const postsContainerInfo = document.getElementById("cards_user_info");
 
-if (postsContainer && postsContainerInfo) {
-    postsContainer.innerHTML = userPosts.map(post => `
-        <div class="dono_card" onclick="abrirPost('${post.id}')">
-            ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
-            <div class="post-info">
-                <h3>${post.title}</h3>
-                <p>${post.content?.substring(0, 100)}...</p>
-                <p>Autor: ${post.author?.name || 'Você'}</p>
-            </div>
-        </div>
-    `).join('');
-}
+        if (postsContainer && postsContainerInfo) {
+            postsContainer.innerHTML = userPosts.map(post => `
+                <div class="dono_card" data-post-id="${post.id}">
+                    <div class="card-menu" onclick="toggleMenu(event, '${post.id}')">
+                        <span class="menu-dots">⋮</span>
+                        <div class="menu-options" id="menu-${post.id}">
+                            <div class="menu-option" onclick="editarPost('${post.id}', event)">Editar</div>
+                            <div class="menu-option delete" onclick="excluirPost('${post.id}', event)">Excluir</div>
+                        </div>
+                    </div>
+                    <div onclick="abrirPost('${post.id}')">
+                        ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
+                        <div class="post-info">
+                            <h3>${post.title}</h3>
+                            <p>${post.content?.substring(0, 100)}...</p>
+                            <p>Autor: ${post.author?.name || 'Você'}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
         return userPosts;
     } catch (err) {
         console.error("Erro ao carregar posts:", err);
         alert(err.message || "Erro ao carregar posts");
     }
 }
+
+// Faça a mesma modificação para a função CarregarPostsDono_P()
 
 
 async function CarregarPostsDono_P() {
@@ -369,6 +383,13 @@ const postsContainerInfo = document.getElementById("cards_user_info_p");
 if (postsContainer && postsContainerInfo) {
     postsContainer.innerHTML = userPosts.map(post => `
         <div class="dono_card" onclick="abrirPost('${post.id}')">
+                    <div class="card-menu" onclick="toggleMenu(event, '${post.id}')">
+                        <span class="menu-dots">⋮</span>
+                        <div class="menu-options" id="menu-${post.id}">
+                            <div class="menu-option" onclick="editarPost('${post.id}', event)">Editar</div>
+                            <div class="menu-option delete" onclick="excluirPost('${post.id}', event)">Excluir</div>
+                        </div>
+                    </div>
             ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
             <div class="post-info">
                 <h3>${post.title}</h3>
@@ -384,6 +405,112 @@ if (postsContainer && postsContainerInfo) {
         alert(err.message || "Erro ao carregar posts");
     }
 }
+
+//      EDITAR POST POSTADO
+
+
+// Mostrar/ocultar menu
+function toggleMenu(event, postId) {
+    event.stopPropagation(); // Impede que o clique abra o post
+    const menu = document.getElementById(`menu-${postId}`);
+    const allMenus = document.querySelectorAll('.menu-options');
+    
+    // Fecha todos os outros menus abertos
+    allMenus.forEach(m => {
+        if (m.id !== `menu-${postId}`) {
+            m.classList.remove('show');
+        }
+    });
+    
+    // Alterna o menu atual
+    menu.classList.toggle('show');
+}
+
+// Fecha menus quando clicar em qualquer lugar
+document.addEventListener('click', function() {
+    document.querySelectorAll('.menu-options').forEach(menu => {
+        menu.classList.remove('show');
+    });
+});
+
+// Editar post
+async function editarPost(postId, event) {
+    event.stopPropagation();
+    window.location.href = `editar.html?id=${postId}`;
+}
+
+// Excluir post
+async function excluirPost(postId, event) {
+    event.stopPropagation();
+    
+    if (!confirm('Tem certeza que deseja excluir este cardápio permanentemente?')) {
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+            throw new Error("Você precisa estar logado para esta ação.");
+        }
+
+        // Mostrar feedback visual
+        const postElement = document.querySelector(`[data-post-id="${postId}"]`) || 
+                           document.querySelector(`.dono_card[onclick*="${postId}"]`);
+        
+        if (postElement) {
+            postElement.style.opacity = '0.5';
+            postElement.style.pointerEvents = 'none';
+        }
+
+        const response = await fetch(`${webservice}/post/${postId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || errorData.error || `Erro ${response.status}`);
+        }
+
+        // Remover o elemento apenas se a exclusão foi bem-sucedida
+        if (postElement) {
+            postElement.remove();
+            showToast('Cardápio excluído com sucesso!', 'success');
+            
+            // Recarregar os posts se estiver na página de perfil
+            if (window.location.pathname.includes("perfil.html")) {
+                CarregarPostsDono();
+                CarregarPostsDono_P();
+            }
+        }
+
+    } catch (error) {
+        console.error("Erro detalhado:", error);
+        showToast(`Erro ao excluir: ${error.message}`, 'error');
+        
+        // Restaurar o elemento em caso de erro
+        const postElement = document.querySelector(`[data-post-id="${postId}"]`) || 
+                           document.querySelector(`.dono_card[onclick*="${postId}"]`);
+        if (postElement) {
+            postElement.style.opacity = '1';
+            postElement.style.pointerEvents = 'auto';
+        }
+    }
+}
+
+// Função auxiliar para mostrar toasts (adicione ao seu código)
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.remove(), 5000);
+}
+
 
 function abrirPost(postId) {
     if (!postId || postId === 'undefined') {

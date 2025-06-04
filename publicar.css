@@ -16,6 +16,11 @@ body {
     position: relative;
 }
 
+#preview{
+    max-width: 40vw;
+    width: 40vw;
+}
+
 .container {
     display: flex;
     flex-wrap: wrap;

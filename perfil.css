@@ -13,8 +13,79 @@ body.bodyp {
 }
 
 /*      CARDAPIOS PUBLICADOS        */
+/* Menu de três pontos */
+.dono_card {
+    position: relative; /* Necessário para posicionar o menu */
+}
+
+.card-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.card-menu:hover {
+    background: #f5f5f5;
+}
+
+.menu-dots {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.menu-options {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    overflow: hidden;
+    z-index: 20;
+    display: none;
+}
+
+.menu-options.show {
+    display: block;
+}
+
+.menu-option {
+    padding: 10px 15px;
+    white-space: nowrap;
+    cursor: pointer;
+    color: #333;
+}
+
+.menu-option:hover {
+    background: #f5f5f5;
+}
+
+.menu-option.delete {
+    color: #e74c3c;
+}
+
 
 #cards_user {
+    height: auto; /* Alterado de 50vh para auto */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Quebra de linha */
+    gap: 15px;
+    padding: 15px;
+    overflow-x: hidden; /* Remove a barra de rolagem horizontal */
+}
+#cards_user_p {
     height: auto; /* Alterado de 50vh para auto */
     width: 100%;
     display: flex;
