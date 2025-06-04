@@ -5,6 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publicação de Cardápio</title>
     <link rel="stylesheet" href="publicar.css" />
+    <style>
+        #result {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #e6ffed;
+            color: #2d9735;
+            border: 1px solid #2d9735;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+        }
+        #postar_btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
 </head>
 <body>
     <button class="back-button" onclick="window.location.href='index.html'">Voltar</button>
@@ -14,9 +49,14 @@
             <span id="upload-text">Escolha um arquivo</span>
             <img id="preview" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
         </label>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
         <div class="form-section">
             <label>Título</label>
-            <input id="title" type="text" placeholder="Adicione um título">
+            <input id="title" type="text" placeholder="Adicione um título" required>
 
             <label>Descrição</label>
             <textarea id="content" placeholder="Adicione uma descrição detalhada"></textarea>
@@ -24,13 +64,13 @@
             <label>Link</label>
             <input type="text" id="linksocial" placeholder="Adicione um link">
 
-            <label>Interesses marcados</label>
-            <input type="text" placeholder="Procure uma tag">
-
             <div class="radio-group">
                 <label><input type="radio" name="privacidade" id="public" value="publico"> Público</label>
                 <label><input type="radio" name="privacidade" id="private" value="privado" checked> Privado</label>
             </div> 
+
+            <div id="result"></div>
+            <input id="linkimg" type="hidden">
 
             <div class="button-group">
                 <button id="postar_btn">Postar</button>
