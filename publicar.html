@@ -45,7 +45,7 @@
     <button class="back-button" onclick="window.location.href='index.html'">Voltar</button>
     <div class="container">
         <label class="upload-box">
-            <input type="file" accept="image/*" id="upload_card" onchange="previewImage(event)">
+            <input type="file" accept="image/*,application/pdf" id="upload_card" onchange="previewFile(event)">
             <span id="upload-text">Escolha um arquivo</span>
             <img id="preview" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
         </label>
@@ -133,57 +133,43 @@ function previewImage(event) {
 }
 
 // Função para enviar imagem com timeout
-async function enviarImagem() {
+async function enviarArquivo() {
     const fileInput = document.getElementById('upload_card');
     const file = fileInput.files[0];
-    
-    if (!file) {
-        console.log("Nenhuma imagem selecionada");
-        return null;
+
+    if (!file) return null;
+
+    const isImage = file.type.startsWith('image/');
+    const isPDF = file.type === 'application/pdf';
+
+    if (!isImage && !isPDF) {
+        throw new Error('Formato inválido. Apenas imagem ou PDF são permitidos.');
     }
 
-    if (!file.type.match('image.*')) {
-        throw new Error('Por favor, selecione um arquivo de imagem válido (JPEG, PNG)');
+    const base64Data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+
+    const payload = isImage
+        ? { imagem: base64Data }
+        : { arquivo: base64Data, tipo: file.type };
+
+    const response = await fetch(`${webservicef}/api/cardapio`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Erro ${response.status}`);
     }
 
-    // Configura timeout de 30 segundos
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-    try {
-        const imageBase64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-            reader.readAsDataURL(file);
-        });
-
-        const response = await fetch(`${webservicef}/api/cardapio`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ imagem: imageBase64 }),
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `Erro ${response.status}`);
-        }
-        
-        const data = await response.json();
-        return data.imageUrl || null;
-    } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-            throw new Error('Tempo excedido no upload da imagem');
-        }
-        throw error;
-    }
+    const data = await response.json();
+    return data.fileUrl || data.imageUrl || null;
 }
 
 // Função principal para enviar o post completo
@@ -202,7 +188,7 @@ async function enviarPostCompleto() {
 
         // Upload da imagem (se houver)
         try {
-            imageUrl = await enviarImagem();
+            imageUrl = await enviarArquivo();
         } catch (imgError) {
             console.warn("Erro no upload da imagem:", imgError.message);
             imageUrl = null; // Continua sem imagem
