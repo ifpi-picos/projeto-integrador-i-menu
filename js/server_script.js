@@ -286,13 +286,6 @@ async function carregarUltimosPosts() {
     }
 }
 
-function abrirPost(postId) {
-    if (!postId || postId === 'undefined') {
-        alert('Erro: Post não encontrado');
-        return;
-    }
-    window.location.href = `vizualizador.html?id=${postId}`;
-}
 
 
 //carregar posts do dono

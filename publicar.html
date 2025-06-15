@@ -107,43 +107,54 @@ function showError(message) {
 }
 
 // Função para preview da imagem
-function previewImage(event) {
+function previewFile(event) {
     const file = event.target.files[0];
     const preview = document.getElementById('preview');
     const uploadText = document.getElementById('upload-text');
     
     if (file) {
-        if (file.size > 5 * 1024 * 1024) {
-            showError('A imagem deve ter no máximo 5MB');
+        if (file.size > 10 * 1024 * 1024) { // Aumente para 10MB
+            showError('O arquivo deve ter no máximo 10MB');
             event.target.value = '';
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
+        // Se for PDF
+        if (file.type === 'application/pdf') {
+            preview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png'; // Ícone de PDF
             preview.style.display = 'block';
-            uploadText.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
+            uploadText.textContent = file.name;
+            uploadText.style.display = 'block';
+            return;
+        }
+
+        // Se for imagem
+        if (file.type.match('image.*')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                uploadText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            showError('Tipo de arquivo não suportado');
+            event.target.value = '';
+        }
     } else {
         preview.style.display = 'none';
         uploadText.style.display = 'block';
+        uploadText.textContent = 'Escolha um arquivo';
     }
 }
-
 // Função para enviar imagem com timeout
-async function enviarImagem() {
+async function enviarArquivo() {
     const fileInput = document.getElementById('upload_card');
     const file = fileInput.files[0];
     
     if (!file) {
-        console.log("Nenhuma imagem selecionada");
+        console.log("Nenhum arquivo selecionado");
         return null;
-    }
-
-    if (!file.type.match('image.*')) {
-        throw new Error('Por favor, selecione um arquivo de imagem válido (JPEG, PNG)');
     }
 
     // Configura timeout de 30 segundos
@@ -151,20 +162,23 @@ async function enviarImagem() {
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-        const imageBase64 = await new Promise((resolve, reject) => {
+        const fileBase64 = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result.split(',')[1]);
             reader.onerror = error => reject(error);
             reader.readAsDataURL(file);
         });
 
-        const response = await fetch(`${webservicef}/api/cardapio`, {
+        const response = await fetch(`${webservicef}/api/upload`, { // Mudei a rota
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ imagem: imageBase64 }),
+            body: JSON.stringify({ 
+                file: fileBase64,
+                fileType: file.type 
+            }),
             signal: controller.signal
         });
         
@@ -176,16 +190,15 @@ async function enviarImagem() {
         }
         
         const data = await response.json();
-        return data.imageUrl || null;
+        return data.fileUrl || null;
     } catch (error) {
         clearTimeout(timeoutId);
         if (error.name === 'AbortError') {
-            throw new Error('Tempo excedido no upload da imagem');
+            throw new Error('Tempo excedido no upload do arquivo');
         }
         throw error;
     }
 }
-
 // Função principal para enviar o post completo
 async function enviarPostCompleto() {
     if (isSubmitting) return;
@@ -201,11 +214,11 @@ async function enviarPostCompleto() {
         if (!content) throw new Error('Por favor, adicione uma descrição');
 
         // Upload da imagem (se houver)
-        try {
-            imageUrl = await enviarImagem();
-        } catch (imgError) {
-            console.warn("Erro no upload da imagem:", imgError.message);
-            imageUrl = null; // Continua sem imagem
+try {
+            imageUrl = await enviarArquivo(); // Mudei para a nova função
+        } catch (uploadError) {
+            console.warn("Erro no upload do arquivo:", uploadError.message);
+            imageUrl = null;
         }
 
         // Preparar dados do post
