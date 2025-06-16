@@ -14,6 +14,7 @@
     <div class="post-header">
       <h1 id="post-title">none</h1>
       <p class="post-author" id="post-author"></p>
+      <button id="view-profile-btn" class="profile-btn">Ver Perfil</button>
     </div>
 
     <div class="post-image" id="post-image"></div>
@@ -52,7 +53,7 @@
 <script>
   const webservice = "https://imenu-backend-pd3a.onrender.com" //"http://localhost:3006"
 
-  async function carregarPost() {
+async function carregarPost() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
 
@@ -71,39 +72,33 @@
       document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
       document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
 
-if (post.capa) {
-  const capa = document.getElementById("post-image");
-  capa.style.backgroundImage = `url('${post.capa}')`;
-
-  // Adiciona o clique de forma dinâmica
-  capa.addEventListener('click', function () {
-    window.location.href = post.capa; // ou window.open(post.capa, "_blank") para nova aba
-  });
-}
-
-
-      const link = document.getElementById('post-link');
-      if (post.sociallink) {
-        link.href = post.sociallink;
-        link.textContent = 'Visitar rede social';
-        link.style.display = 'inline-block';
-        link.target = '_blank';
+      // Configurar o botão de perfil
+      const profileBtn = document.getElementById('view-profile-btn');
+      if (post.author) {
+        profileBtn.style.display = 'block';
+        profileBtn.onclick = () => {
+          // Verificar se o usuário está logado
+          const token = localStorage.getItem("auth_token");
+          if (token) {
+            window.location.href = `perfil.html?userId=${post.authorId}`;
+          } else {
+            alert("Você precisa estar logado para ver perfis de usuários");
+            window.location.href = "login.html";
+          }
+        };
       } else {
-        link.remove();
+        profileBtn.style.display = 'none';
       }
 
-      await carregarMedia(postId);
-      ativarAvaliacao(postId);
-      await carregarComentarios(postId);
-
+      // Rest of your existing code...
     } catch (error) {
       console.error('Erro ao carregar post:', error);
       alert('Erro ao carregar post. Tente novamente.');
       window.location.href = 'index.html';
     }
-  }
+}
 
-  async function carregarMedia(postId) {
+async function carregarMedia(postId) {
     try {
       const res = await fetch(`${webservice}/avaliacoes/media/${postId}`);
       const data = await res.json();

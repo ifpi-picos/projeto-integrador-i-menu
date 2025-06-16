@@ -10,6 +10,21 @@ body {
   min-height: 100vh;
 }
 
+.profile-btn {
+  background: none;
+  border: none;
+  color: #3498db;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  margin-top: 5px;
+}
+
+.profile-btn:hover {
+  color: #2980b9;
+}
+
 .post-container {
   width: 100%;
   padding: 2rem 1rem;
