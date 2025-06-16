@@ -131,96 +131,37 @@ button:active {
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* 🔥 Botão Voltar responsivo */
-.back-button {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    padding: 10px 20px;
-    background-color: #5a2d28;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    z-index: 1000;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-/* Interação desktop */
-.back-button:hover {
-    background-color: #5a2d28;
-    transform: translateY(-2px);
-}
-
-.back-button:active {
-    transform: translateY(1px);
-}
-
-
-/* 📱 Responsividade para telas menores (celulares) */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     body {
-        align-items: flex-start;
         height: auto;
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .container {
         flex-direction: column;
+        align-items: center;
         padding: 20px;
         gap: 20px;
     }
 
+    #preview {
+        max-width: 100%;
+        width: 100%;
+    }
+
     .upload-box {
         width: 100%;
-        height: auto;
-        padding: 40px 0;
+        height: 250px;
     }
 
     .form-section {
         width: 100%;
+        min-width: unset;
     }
 
     button {
         width: 100%;
-    }
-
-    .back-button {
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-}
-
-/* 📲 Responsividade para tablets */
-@media (max-width: 900px) {
-    .container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .upload-box {
-        width: 80%;
-        height: auto;
-        padding: 40px 0;
-    }
-
-    .form-section {
-        width: 100%;
-    }
-
-    button {
-        width: 100%;
-    }
-
-    .back-button {
-        top: 15px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 10px 18px;
-        font-size: 15px;
+        margin-bottom: 10px;
     }
 }
