@@ -63,100 +63,109 @@ async function logar() {
 // Verificar token e atualizar UI
 async function verificarToken() {
     const token = localStorage.getItem("auth_token");
-    
-    // ... your existing token verification code ...
 
-    // Página de perfil
-    if (window.location.pathname.includes("perfil.html")) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('userId');
-        
-        // If no userId parameter, show current user's profile
-        const targetUserId = userId || (token ? parseJwt(token).id : null);
-        
-        if (targetUserId) {
-            try {
-                const userResponse = await fetch(`${webservice}/user/${targetUserId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!userResponse.ok) throw new Error("Erro ao carregar perfil");
-                const userData = await userResponse.json();
+    const conta = document.getElementById("perfil-link");
+    const username = document.getElementById("username");
+    const mapa = document.getElementById("mapaAba");
+    const editor = document.getElementById("editorAba");
+    const cadastrarB = document.querySelectorAll("#button-acount");
+    const logarB = document.querySelectorAll("#button-enter");
+    const publicar = document.getElementById("publicarAba");
 
-                // Update profile info
-                const spanUser = document.getElementById("P-username");
-                const spanTipo = document.getElementById("tipo-conta");
-                
-                if (spanUser) spanUser.innerText = userData.name;
-                if (spanTipo) spanTipo.innerText = userData.dono ? "Dono de Restaurante" : "Cliente";
-                
-                // Load user's posts
-                const publicPostsResponse = await fetch(`${webservice}/user/${targetUserId}/posts`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const publicPosts = await publicPostsResponse.json();
-                renderPosts(publicPosts, 'cards_user');
-                
-                // If viewing own profile, load private posts
-                if (!userId || userId === parseJwt(token).id) {
-                    const privatePostsResponse = await fetch(`${webservice}/user/${targetUserId}/posts/private`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    const privatePosts = await privatePostsResponse.json();
-                    renderPosts(privatePosts, 'cards_user_p');
-                } else {
-                    document.getElementById('cards_user_p').innerHTML = '<p>Cardápios privados só são visíveis para o dono do perfil</p>';
-                }
-                
-                // Show/hide elements based on user type
-                if (userData.dono) {
-                    const localIcons = document.getElementsByName("localizacaoicon");
-                    Array.from(localIcons).forEach(icon => icon.remove());
-                    document.getElementById("locationicon")?.remove();
-                }
-                if(userData.dono == false){
-                    document.getElementById("stars")?.remove();
-                }
-            } catch (error) {
-                console.error("Erro ao carregar perfil:", error);
-                alert("Erro ao carregar perfil. Tente novamente.");
-            }
-        }
-    }
-    
-    return data;
-}
+    const perfilSidebar = document.getElementById("perfilSidebar");
+    const publicarSidebar = document.getElementById("publicarSidebar");
+    const editorSidebar = document.getElementById("editorSidebar");
+    const perfilaba = document.getElementById("perfil_nav");
 
-function renderPosts(posts, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (posts.length === 0) {
-        container.innerHTML = '<p>Nenhum cardápio publicado ainda</p>';
+    if (!token) {
+        // Deslogado
+        if (publicarSidebar) publicarSidebar.style.display = "none";
+        if (perfilaba) perfilaba.remove()
+        if (editorSidebar) editorSidebar.remove()
+        if (conta) conta.style.display = "none";
+        if (mapa) mapa.style.display = "flex";
+        if (editor) editor.style.display = "none";
+        if (publicar) publicar.style.display = "none";
+        if (publicar) publicar.style.display = "none";
+
+        cadastrarB.forEach(b => b.style.display = "block");
+        logarB.forEach(b => b.style.display = "block");
+
+        if (username) username.innerText = "";
+
         return;
     }
-    
-    posts.forEach(post => {
-        const postElement = document.createElement('div');
-        postElement.className = 'dono_card';
-        postElement.onclick = () => abrirPost(post.id);
-        postElement.innerHTML = `
-            ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
-            <div class="post-info">
-                <h3>${post.title}</h3>
-                <p>${post.content?.substring(0, 100)}...</p>
-            </div>
-        `;
-        container.appendChild(postElement);
-    });
+
+    try {
+        const response = await fetch(`${webservice}/dados`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            localStorage.removeItem('auth_token');
+            verificarToken();
+            return;
+        }
+
+        const data = await response.json();
+        
+        // Nome e foto
+        if (conta) conta.style.display = "flex";
+        if (username) username.innerText = data.name;
+        const perfilImg = document.getElementById("perfil");
+        if (perfilImg && data.foto) {
+            perfilImg.src = data.foto;
+        }
+        
+        // Para donos
+        if (data.dono) {
+            if (mapa) mapa.style.display = "none";
+            if (editor) editor.style.display = "flex";
+            if (publicar) publicar.style.display = "flex";
+            // document.getElementById("tipo-conta").innerText = "Dono de Restaurante";
+            
+            if (publicarSidebar) publicarSidebar.style.display = "flex";
+            if (editorSidebar) editorSidebar.style.display = "flex";
+        } else {
+            if (mapa) mapa.style.display = "flex";
+            if (editor) editor.style.display = "none";
+            if (publicar) publicar.style.display = "none";
+            
+            if (publicarSidebar) publicarSidebar.style.display = "none";
+            if (editorSidebar) editorSidebar.style.display = "none";
+        }
+        
+        if (perfilSidebar) perfilSidebar.style.display = "flex";
+        
+        // Esconde login e cadastro
+        cadastrarB.forEach(b => b.style.display = "none");
+        logarB.forEach(b => b.style.display = "none");
+        
+        // Página de perfil
+        if (window.location.pathname.includes("perfil.html")) {
+            const spanUser = document.getElementById("P-username");
+            const spanTipo = document.getElementById("tipo-conta");
+            CarregarPostsDono()
+            CarregarPostsDono_P()
+            
+            if (spanUser) spanUser.innerText = data.name;
+            if (spanTipo) spanTipo.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
+            
+            if (data.dono) {
+                const localIcons = document.getElementsByName("localizacaoicon");
+                Array.from(localIcons).forEach(icon => icon.remove());
+                document.getElementById("locationicon").remove()
+            }
+            if(data.dono == false){
+                document.getElementById("stars").remove();
+            }
+        }
+        return(data);
+        
+    } catch (err) {
+        console.error("Erro ao verificar token:", err);
+    }
 }
 
 // Verificação de e-mail

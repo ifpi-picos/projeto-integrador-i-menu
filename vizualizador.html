@@ -72,12 +72,22 @@ async function carregarPost() {
       document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
       document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
 
+      // Configurar a imagem do post
+      const postImage = document.getElementById('post-image');
+      if (post.capa) {
+        postImage.style.backgroundImage = `url('${post.capa}')`;
+        postImage.style.backgroundSize = 'cover';
+        postImage.style.backgroundPosition = 'center';
+        postImage.style.height = '300px'; // ou o tamanho que preferir
+      } else {
+        postImage.style.display = 'none';
+      }
+
       // Configurar o botão de perfil
       const profileBtn = document.getElementById('view-profile-btn');
       if (post.author) {
         profileBtn.style.display = 'block';
         profileBtn.onclick = () => {
-          // Verificar se o usuário está logado
           const token = localStorage.getItem("auth_token");
           if (token) {
             window.location.href = `perfil.html?userId=${post.authorId}`;
@@ -90,7 +100,11 @@ async function carregarPost() {
         profileBtn.style.display = 'none';
       }
 
-      // Rest of your existing code...
+      // Carregar média e comentários
+      await carregarMedia(postId);
+      ativarAvaliacao(postId);
+      await carregarComentarios(postId);
+
     } catch (error) {
       console.error('Erro ao carregar post:', error);
       alert('Erro ao carregar post. Tente novamente.');
@@ -98,16 +112,36 @@ async function carregarPost() {
     }
 }
 
+
 async function carregarMedia(postId) {
     try {
       const res = await fetch(`${webservice}/avaliacoes/media/${postId}`);
+      
+      if (!res.ok) {
+        throw new Error(`Erro HTTP: ${res.status}`);
+      }
+      
       const data = await res.json();
-      const media = data.media || 0;
-      document.getElementById("media-avaliacao").innerText = `Média de avaliação: ${media.toFixed(1)} ★`;
+      
+      if (data && typeof data.media !== 'undefined') {
+        const media = parseFloat(data.media).toFixed(1);
+        document.getElementById("media-avaliacao").innerText = `Média de avaliação: ${media} ★`;
+        
+        // Atualiza as estrelas visuais
+        const stars = document.querySelectorAll('.star');
+        const roundedMedia = Math.round(data.media);
+        stars.forEach((star, index) => {
+          star.classList.toggle('selected', index < roundedMedia);
+        });
+      } else {
+        document.getElementById("media-avaliacao").innerText = "Sem avaliações ainda";
+      }
     } catch (err) {
-      document.getElementById("media-avaliacao").innerText = "Erro ao carregar média.";
+      console.error("Erro ao carregar média:", err);
+      document.getElementById("media-avaliacao").innerText = "Erro ao carregar avaliações";
     }
-  }
+}
+
 
   function ativarAvaliacao(postId) {
     const stars = document.querySelectorAll('.star');
