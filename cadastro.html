@@ -1,44 +1,75 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-   <head>
-      <meta charset="utf-8">
-      <title>Cadastre-se no iMenu</title>
-      <link rel="stylesheet" href="cadastro.css">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   </head>
-   <body>
-      <div class="wrapper">
-         <div class="title">Cadastre-se no iMenu!</div>
-         <div class="slide-controls">
-            <label>
-               <input type="checkbox" id="dono" onchange="toggleRole()" style="display: none;">
-               <span id="toggle-text">Cliente</span>
-            </label>
-         </div>
-         <div class="form-container">
-            <form action="#" id="formulario">
-               <div class="field">
-                  <input type="text" id="nome" placeholder="Username" required>
-               </div>
-               <div class="field">
-                  <input type="email" id="email" placeholder="Endereço de Email" required>
-               </div>
-               <div class="field">
-                  <input type="password" id="senha" placeholder="Senha" required>
-               </div>
-               <div class="field btn">
-                  <button type="button" class="buttons_normais" id="create" onclick="criaruser()">Cadastre-se</button>
-               </div>
-            </form>
-         </div>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="cadastro.css" />
+  <title>Cadastre-se no iMenu</title>
+</head>
+
+<body>
+  <div class="box">
+    <div class="img-box">
+      <img src="images/icone-app.png" alt="Imagem de Cadastro" />
+    </div>
+
+    <div class="form-box">
+      <h2>Cadastre-se no iMenu!</h2>
+      <p>Já é um membro? <a href="login.html">Login</a></p>
+
+      <!-- Novo seletor de papel -->
+      <div class="role-selector">
+        <button type="button" class="role-btn active" onclick="selectRole(false)">Cliente</button>
+        <button type="button" class="role-btn" onclick="selectRole(true)">Dono de Restaurante</button>
+        <input type="checkbox" id="dono" />
+        <span id="toggle-text" style="display:none;">Cliente</span>
       </div>
-      <script src="js/server_script.js"></script>
-      <script>
-         function toggleRole() {
-             const toggleText = document.getElementById("toggle-text");
-             const donoCheckbox = document.getElementById("dono");
-             toggleText.textContent = donoCheckbox.checked ? "Dono de Restaurante" : "Cliente";
-         }
-      </script>
-   </body>
+
+      <!-- Formulário -->
+      <form id="formulario" action="#">
+        <div class="input-group">
+          <label for="nome">Nome Completo</label>
+          <input type="text" id="nome" placeholder="Digite o seu nome completo" required />
+        </div>
+
+        <div class="input-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="Digite o seu email" required />
+        </div>
+
+        <div class="input-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" placeholder="Digite sua senha" required />
+        </div>
+
+        <div class="input-group">
+          <button type="button" class="buttons_normais" id="create" onclick="criaruser()">Cadastre-se</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/server_script.js"></script>
+  <script>
+    function selectRole(isDono) {
+      const checkbox = document.getElementById('dono');
+      const toggleText = document.getElementById('toggle-text');
+      const buttons = document.querySelectorAll('.role-btn');
+
+      checkbox.checked = isDono;
+      toggleText.textContent = isDono ? 'Dono de Restaurante' : 'Cliente';
+
+      buttons.forEach(btn => btn.classList.remove('active'));
+      buttons[isDono ? 1 : 0].classList.add('active');
+    }
+
+    // Compatível com o JS atual, se necessário usar toggleRole():
+    function toggleRole() {
+      // Agora esse estático é opcional, a escolha está via botão
+    }
+  </script>
+</body>
+
 </html>
