@@ -34,17 +34,45 @@ body {
     background-color: rgba(255, 255, 255, 0.5);
     width: 50%;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: 20px;
     border-radius: 20px 0 0 20px;
 }
 
-.img-box img {
-    width: 100%;
+.upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer; /* Faz com que o texto e a imagem indiquem que podem ser clicados */
+    text-align: center;
 }
 
+.upload-label img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    transition: transform 0.2s;
+}
+
+.upload-label img:hover {
+    transform: scale(1.05);
+}
+
+.upload-hint {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+    font-style: italic;
+    transform: scale(1.05);
+}
+
+
 .form-box {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.46);
     backdrop-filter: blur(40px);
     padding: 30px 40px;
     width: 50%;
@@ -215,3 +243,4 @@ form .input-group button {
         padding: 0;
     }
 }
+
