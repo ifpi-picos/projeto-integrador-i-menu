@@ -10,6 +10,20 @@ body {
   min-height: 100vh;
 }
 
+/* Views  */
+
+.post-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.post-views {
+  font-size: 0.9rem;
+  color: #666;
+}
+
 .profile-btn {
   background: none;
   border: none;

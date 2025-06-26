@@ -274,7 +274,10 @@ async function carregarUltimosPosts() {
                 infoContainer.innerHTML = `
                     <p>${post.title}</p>
                     <p class="post-content"></p>
-                    <p>Autor: ${post.author?.name || 'Desconhecido'}</p>
+                    <div class="post-footer">
+                        <p>Autor: ${post.author?.name || 'Desconhecido'}</p>
+                        <p class="post-views">${post.views || 0} visualizações</p>
+                    </div>
                 `;
 
                 postElement.appendChild(infoContainer);
@@ -505,6 +508,7 @@ function showToast(message, type = 'info') {
 }
 
 
+// Modifique a função abrirPost para incluir o registro de visualização
 function abrirPost(postId) {
     if (!postId || postId === 'undefined') {
         alert('Erro: Post não encontrado');
@@ -618,6 +622,34 @@ window.onload = () => {
     }
   });
 
+
+  //views
+
+
+  // Função para registrar uma visualização
+async function registrarVisualizacao(postId) {
+    try {
+        await fetch(`${webservice}/posts/${postId}/view`, {
+            method: 'POST'
+        });
+    } catch (err) {
+        console.error('Erro ao registrar visualização:', err);
+    }
+}
+
+// Função para obter visualizações
+async function obterVisualizacoes(postId) {
+    try {
+        const response = await fetch(`${webservice}/posts/${postId}/views`);
+        if (!response.ok) throw new Error('Erro ao obter visualizações');
+        
+        const data = await response.json();
+        return data.views || 0;
+    } catch (err) {
+        console.error('Erro ao obter visualizações:', err);
+        return 0;
+    }
+}
 
 // TEXTO DO EDITOR
     function addText() {

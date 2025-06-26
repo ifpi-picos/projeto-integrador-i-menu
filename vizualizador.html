@@ -14,6 +14,7 @@
     <div class="post-header">
       <h1 id="post-title">none</h1>
       <p class="post-author" id="post-author"></p>
+      <p class="post-views" id="post-views">0 visualizações</p>
       <button id="view-profile-btn" class="profile-btn">Ver Perfil</button>
     </div>
 
@@ -53,7 +54,24 @@
 <script>
   const webservice = "https://imenu-backend-pd3a.onrender.com" //"http://localhost:3006"
 
-async function carregarPost() {
+
+    async function registrarVisualizacao(postId) {
+    try {
+      const response = await fetch(`${webservice}/posts/${postId}/view`, {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        console.error('Erro ao registrar visualização');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao registrar visualização:', error);
+      return { views: 0 }; // Retorna um valor padrão em caso de erro
+    }
+  }
+
+  async function carregarPost() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
 
@@ -64,13 +82,25 @@ async function carregarPost() {
     }
 
     try {
-      const response = await fetch(`${webservice}/posts/${postId}`);
-      if (!response.ok) throw new Error(`Erro: ${response.status}`);
-      const post = await response.json();
+      // Registrar a visualização (agora a função existe)
+      const registroVisu = await registrarVisualizacao(postId);
+      
+      // Carregar dados do post e visualizações em paralelo
+      const [postResponse, viewsResponse] = await Promise.all([
+        fetch(`${webservice}/posts/${postId}`),
+        fetch(`${webservice}/posts/${postId}/views`)
+      ]);
 
+      if (!postResponse.ok) throw new Error(`Erro ao carregar post: ${postResponse.status}`);
+      
+      const post = await postResponse.json();
+      const viewsData = await viewsResponse.json();
+
+      // Atualizar a UI
       document.getElementById('post-title').textContent = post.title || 'Sem título';
       document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
       document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
+      document.getElementById('post-views').textContent = `${viewsData.views || 0} visualizações`;
 
       // Configurar a imagem do post
       const postImage = document.getElementById('post-image');
@@ -78,7 +108,7 @@ async function carregarPost() {
         postImage.style.backgroundImage = `url('${post.capa}')`;
         postImage.style.backgroundSize = 'cover';
         postImage.style.backgroundPosition = 'center';
-        postImage.style.height = '300px'; // ou o tamanho que preferir
+        postImage.style.height = '300px';
       } else {
         postImage.style.display = 'none';
       }
@@ -107,11 +137,80 @@ async function carregarPost() {
 
     } catch (error) {
       console.error('Erro ao carregar post:', error);
-      alert('Erro ao carregar post. Tente novamente.');
-      window.location.href = 'index.html';
+      alert(`Erro ao carregar post: ${error.message}`);
+      setTimeout(() => window.location.href = 'index.html', 2000);
+    }
+  }
+async function carregarPost() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+
+    if (!postId || postId === 'undefined') {
+        alert('Post não encontrado: ID inválido');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    try {
+        // Registrar a visualização
+        await registrarVisualizacao(postId);
+
+        // Carregar dados do post e visualizações em paralelo
+        const [postResponse, viewsResponse] = await Promise.all([
+            fetch(`${webservice}/posts/${postId}`),
+            fetch(`${webservice}/posts/${postId}/views`)
+        ]);
+
+        if (!postResponse.ok) throw new Error(`Erro ao carregar post: ${postResponse.status}`);
+        
+        const post = await postResponse.json();
+        const viewsData = await viewsResponse.json();
+
+        // Atualizar a UI
+        document.getElementById('post-title').textContent = post.title || 'Sem título';
+        document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
+        document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
+        document.getElementById('post-views').textContent = `${viewsData.views || 0} visualizações`;
+
+        // Configurar a imagem do post
+        const postImage = document.getElementById('post-image');
+        if (post.capa) {
+            postImage.style.backgroundImage = `url('${post.capa}')`;
+            postImage.style.backgroundSize = 'cover';
+            postImage.style.backgroundPosition = 'center';
+            postImage.style.height = '300px';
+        } else {
+            postImage.style.display = 'none';
+        }
+
+        // Configurar o botão de perfil
+        const profileBtn = document.getElementById('view-profile-btn');
+        if (post.author) {
+            profileBtn.style.display = 'block';
+            profileBtn.onclick = () => {
+                const token = localStorage.getItem("auth_token");
+                if (token) {
+                    window.location.href = `perfil.html?userId=${post.authorId}`;
+                } else {
+                    alert("Você precisa estar logado para ver perfis de usuários");
+                    window.location.href = "login.html";
+                }
+            };
+        } else {
+            profileBtn.style.display = 'none';
+        }
+
+        // Carregar média e comentários
+        await carregarMedia(postId);
+        ativarAvaliacao(postId);
+        await carregarComentarios(postId);
+
+    } catch (error) {
+        console.error('Erro ao carregar post:', error);
+        alert(`Erro ao carregar post: ${error.message}`);
+        setTimeout(() => window.location.href = 'index.html', 2000);
     }
 }
-
 
 async function carregarMedia(postId) {
     try {
