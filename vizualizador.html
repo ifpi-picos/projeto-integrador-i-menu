@@ -303,28 +303,54 @@
     }
   }
 
-  async function carregarRelatorioVisualizacoes() {
+async function carregarRelatorioVisualizacoes() {
     try {
-      const res = await fetch(`${webservice}/relatorio/views`);
-      if (!res.ok) throw new Error("Erro ao buscar relatório");
-      const posts = await res.json();
-      const tbody = document.querySelector("#tabela-relatorio tbody");
-      tbody.innerHTML = "";
-      posts.forEach(post => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${post.id}</td>
-          <td>${post.title}</td>
-          <td>${post.views}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+            console.error("Usuário não autenticado");
+            return;
+        }
+        
+        const res = await fetch(`${webservice}/relatorio/views`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!res.ok) {
+            console.error("Erro ao buscar relatório:", res.status);
+            document.getElementById("relatorio").style.display = "none";
+            return;
+        }
+        
+        const posts = await res.json();
+        const tbody = document.querySelector("#tabela-relatorio tbody");
+        tbody.innerHTML = "";
+        
+        if (posts.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3">Você ainda não tem posts ou visualizações</td></tr>`;
+            return;
+        }
+        
+        posts.forEach(post => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${post.id}</td>
+                <td>${post.title || 'Sem título'}</td>
+                <td>${post.views || 0}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        document.getElementById("relatorio").style.display = "block";
     } catch (err) {
-      console.error("Erro ao carregar relatório:", err);
+        console.error("Erro ao carregar relatório:", err);
+        document.getElementById("relatorio").style.display = "none";
     }
-  }
+}
 
-  async function gerarRelatorioPDF() {
+
+async function gerarRelatorioPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.text("Relatório de Visualizações", 14, 20);
@@ -338,17 +364,23 @@
     doc.save("relatorio-visualizacoes.pdf");
   }
 
-  window.onload = async () => {
+window.onload = async () => {
     await carregarPost();
     const token = localStorage.getItem("auth_token");
-    const userData = parseJwt(token);
-    if (userData?.role === "admin" || userData?.isAdmin) {
-      document.getElementById("relatorio").style.display = "block";
-      await carregarRelatorioVisualizacoes();
+    if (token) {
+        try {
+            const userData = parseJwt(token);
+            // Mostrar relatório para qualquer usuário logado (dos seus próprios posts)
+            document.getElementById("relatorio").style.display = "block";
+            await carregarRelatorioVisualizacoes();
+        } catch (error) {
+            console.error("Erro ao decodificar token:", error);
+            document.getElementById("relatorio").style.display = "none";
+        }
     } else {
-      document.getElementById("relatorio").style.display = "none";
+        document.getElementById("relatorio").style.display = "none";
     }
-  };
+};
 </script>
 
 </body>
