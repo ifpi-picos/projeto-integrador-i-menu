@@ -5,87 +5,169 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Perfil</title>
   <link rel="stylesheet" href="perfil.css"/>
+  <!-- PDF libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body class="bodyp">
 
-  <!-- Cabeçalho -->
- <!-- Cabeçalho -->
+<!-- Cabeçalho -->
 <header class="headerperfil">
- <button class="icon-button" onclick="voltar()" aria-label="Voltar">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</button>
-  <button class="icon-button" id="locationicon" onclick="localizacao()">
-    📍 <!-- ícone de localização -->
+  <button class="icon-button" onclick="voltar()" aria-label="Voltar">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </button>
+  <button class="icon-button" id="locationicon" onclick="localizacao()">📍</button>
 </header>
 
-  <!-- Banner do restaurante -->
+<!-- Banner -->
 <div class="banner-perfil">
   <img src="images/background-cad.png" alt="Banner do restaurante" />
 </div>
 
+<!-- Perfil -->
+<section class="main-p">
+  <div class="profile-card">
+    <div class="image">
+      <img src="images/perfil.png" alt="Foto de perfil" class="profile-pic" id="profile-img"/>
+    </div>
 
-  <!-- Cartão de Perfil -->
-  <section class="main-p">
-    <div class="profile-card">
+    <div class="data">
+      <h2 class="h2P" id="P-username">None</h2>
+      <div class="stars" id="stars">★★★★☆</div>
+      <p id="tipo-conta">none</p>
+    </div>
 
-      <!-- Foto -->
-      <div class="image">
-        <img src="images/perfil.png" alt="Foto de perfil" class="profile-pic" id="profile-img"/>
+    <div class="rowP">
+      <div class="info">
+        <h3 id="localizacao">📍 --- / Brasil</h3>
       </div>
-
-      <!-- Nome + estrelas -->
-      <div class="data">
-        <h2 class="h2P" id="P-username">None</h2>
-        <div class="stars" id="stars">★★★★☆</div>
-        <p id="tipo-conta">none</p>
+      <div class="info">
+        <h3>Seguidores</h3>
+        <span>--</span>
       </div>
-
-      <!-- Localização, Seguidores, Visitados -->
-   <div class="rowP">
-  <div class="info">
-    <h3 id="localizacao">📍 --- / Brasil</h3>
+      <div class="info">
+        <h3>Visitados</h3>
+        <span>--</span>
+      </div>
+    </div>
   </div>
-  <div class="info">
-    <h3>Seguidores</h3>
-    <span>--</span>
-  </div>
-  <div class="info">
-    <h3>Visitados</h3>
-    <span>--</span>
-  </div>
-</div>
+</section>
 
-  </section>
-
-  <!-- Cardápios publicados -->
-  <section class="section">
-    <h4>Cardápios publicados</h4>
-    <div id="cards_user">
+<!-- Cardápios publicados -->
+<section class="section">
+  <h4>Cardápios publicados</h4>
+  <div id="cards_user">
     <div id="cards_user_info">
-      
       <div class="image-item" style="display: flex; align-items: center; justify-content: center; font-size: 32px; background-color: #e0e0e0;">+</div>
     </div>
-  </section>
-  <section class="section">
-    <h4>Cardápios privados</h4>
-    <div id="cards_user_p">
+  </div>
+</section>
+
+<!-- Cardápios privados -->
+<section class="section">
+  <h4>Cardápios privados</h4>
+  <div id="cards_user_p">
     <div id="cards_user_info_p">
-      
       <div class="image-item" style="display: flex; align-items: center; justify-content: center; font-size: 32px; background-color: #e0e0e0;">+</div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Comentários -->
-  <section class="section">
-    <h4>Comentarios (78) <span class="rating-small">★★★☆☆</span></h4>
-    <!-- Você pode inserir a lista de comentários aqui -->
-  </section>
+<!-- Relatório de Visualizações (apenas para donos) -->
+<section class="section" id="relatorio" style="display: none; margin-top: 30px;">
+  <h4>📊 Relatório de Visualizações</h4>
+  <button onclick="gerarRelatorioPDF()" class="btn">📄 Baixar PDF</button>
+  <table id="tabela-relatorio" border="1" cellpadding="5" cellspacing="0" style="margin-top: 10px; width: 100%;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Visualizações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
 
-  <!-- Scripts -->
-  <script src="js/server_script.js"></script>
-  <script src="js/script.js"></script>
+<!-- Comentários -->
+<section class="section">
+  <h4>Comentários (78) <span class="rating-small">★★★☆☆</span></h4>
+</section>
+
+<!-- Scripts -->
+<script src="js/server_script.js"></script>
+<script src="js/script.js"></script>
+
+<script>
+ window.webservice = window.webservice || "https://imenu-backend-pd3a.onrender.com";
+
+ function parseJwt(token) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function carregarRelatorioVisualizacoes() {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    const userData = parseJwt(token);
+    if (!userData?.dono) return;
+
+    try {
+      const res = await fetch(`${webservice}/relatorio/views`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!res.ok) throw new Error(`Erro: ${res.status}`);
+      const posts = await res.json();
+      const tbody = document.querySelector("#tabela-relatorio tbody");
+      tbody.innerHTML = "";
+
+      if (posts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3">Nenhum cardápio publicado ainda</td></tr>`;
+        return;
+      }
+
+      posts.forEach(post => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${post.id}</td>
+          <td>${post.title || 'Sem título'}</td>
+          <td>${post.views || 0}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("relatorio").style.display = "block";
+    } catch (err) {
+      console.error("Erro ao carregar relatório:", err);
+    }
+  }
+
+  async function gerarRelatorioPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text("Relatório de Visualizações", 14, 20);
+    const headers = [["ID", "Título", "Visualizações"]];
+    const body = [];
+    document.querySelectorAll("#tabela-relatorio tbody tr").forEach(row => {
+      const cols = Array.from(row.querySelectorAll("td")).map(td => td.textContent);
+      body.push(cols);
+    });
+    doc.autoTable({ head: headers, body: body, startY: 30 });
+    doc.save("relatorio-visualizacoes.pdf");
+  }
+
+  window.onload = async () => {
+    await verificarToken()
+    await carregarRelatorioVisualizacoes();
+  };
+</script>
+
 </body>
 </html>

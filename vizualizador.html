@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizar Post - iMenu</title>
   <link rel="stylesheet" href="vizu.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -39,44 +37,31 @@
 
     <section class="comments-section">
       <h2>Comentários</h2>
-      
       <div class="comment-form" id="comment-form">
         <textarea id="comment-content" placeholder="Adicione um comentário..." rows="3"></textarea>
         <button onclick="postComment()" class="btn">Enviar Comentário</button>
       </div>
-      
       <div class="comments-list" id="comments-list"></div>
     </section>
-  </div>
-
-  <!-- Relatório de Visualizações (Somente Admin) -->
-  <div id="relatorio" style="display: none; margin-top: 50px; padding: 20px;">
-    <h2>Relatório de Visualizações</h2>
-    <button onclick="gerarRelatorioPDF()">📄 Baixar PDF</button>
-    <table id="tabela-relatorio" border="1" cellpadding="5" cellspacing="0">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Título</th>
-          <th>Visualizações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
   </div>
 </main>
 
 <script>
   const webservice = "https://imenu-backend-pd3a.onrender.com";
 
+  function parseJwt(token) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
   async function registrarVisualizacao(postId) {
     try {
-      const response = await fetch(`${webservice}/posts/${postId}/view`, { method: 'POST' });
-      if (!response.ok) console.error('Erro ao registrar visualização');
-      return await response.json();
+      await fetch(`${webservice}/posts/${postId}/view`, { method: 'POST' });
     } catch (error) {
       console.error('Erro ao registrar visualização:', error);
-      return { views: 0 };
     }
   }
 
@@ -96,7 +81,6 @@
         fetch(`${webservice}/posts/${postId}/views`)
       ]);
 
-      if (!postResponse.ok) throw new Error(`Erro ao carregar post: ${postResponse.status}`);
       const post = await postResponse.json();
       const viewsData = await viewsResponse.json();
 
@@ -145,7 +129,6 @@
   async function carregarMedia(postId) {
     try {
       const res = await fetch(`${webservice}/avaliacoes/media/${postId}`);
-      if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
       const data = await res.json();
 
       if (data && typeof data.media !== 'undefined') {
@@ -160,7 +143,6 @@
         document.getElementById("media-avaliacao").innerText = "Sem avaliações ainda";
       }
     } catch (err) {
-      console.error("Erro ao carregar média:", err);
       document.getElementById("media-avaliacao").innerText = "Erro ao carregar avaliações";
     }
   }
@@ -204,9 +186,7 @@
       });
 
       const data = await response.json();
-      if (response.ok) {
-        alert("Avaliação salva com sucesso!");
-      } else {
+      if (!response.ok) {
         alert("Erro ao salvar avaliação: " + (data.message || "Erro desconhecido"));
       }
     } catch (err) {
@@ -217,7 +197,6 @@
   async function carregarComentarios(postId) {
     try {
       const response = await fetch(`${webservice}/comentarios/${postId}`);
-      if (!response.ok) throw new Error(`Erro: ${response.status}`);
       const comments = await response.json();
       const commentsList = document.getElementById('comments-list');
       commentsList.innerHTML = '';
@@ -250,7 +229,6 @@
 
       document.getElementById('comment-form').style.display = token ? 'block' : 'none';
     } catch (error) {
-      console.error('Erro ao carregar comentários:', error);
       document.getElementById('comments-list').innerHTML = '<p>Erro ao carregar comentários.</p>';
     }
   }
@@ -264,7 +242,7 @@
     if (!token) return alert('Você precisa estar logado para comentar.');
 
     try {
-      const response = await fetch(`${webservice}/comentar/${postId}`, {
+      await fetch(`${webservice}/comentar/${postId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -272,11 +250,9 @@
         },
         body: JSON.stringify({ content })
       });
-      if (!response.ok) throw new Error(`Erro: ${response.status}`);
       document.getElementById('comment-content').value = '';
       await carregarComentarios(postId);
     } catch (error) {
-      console.error('Erro ao postar comentário:', error);
       alert('Erro ao postar comentário.');
     }
   }
@@ -284,103 +260,18 @@
   async function deletarComentario(commentId) {
     const token = localStorage.getItem("auth_token");
     try {
-      const response = await fetch(`${webservice}/comentario-del/${commentId}`, {
+      await fetch(`${webservice}/comentario-del/${commentId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (!response.ok) throw new Error(`Erro: ${response.status}`);
     } catch (error) {
       console.error('Erro ao deletar comentário:', error);
-      throw error;
     }
   }
 
-  function parseJwt(token) {
-    try {
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      return null;
-    }
-  }
-
-async function carregarRelatorioVisualizacoes() {
-    try {
-        const token = localStorage.getItem("auth_token");
-        if (!token) {
-            console.error("Usuário não autenticado");
-            return;
-        }
-        
-        const res = await fetch(`${webservice}/relatorio/views`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        if (!res.ok) {
-            console.error("Erro ao buscar relatório:", res.status);
-            document.getElementById("relatorio").style.display = "none";
-            return;
-        }
-        
-        const posts = await res.json();
-        const tbody = document.querySelector("#tabela-relatorio tbody");
-        tbody.innerHTML = "";
-        
-        if (posts.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3">Você ainda não tem posts ou visualizações</td></tr>`;
-            return;
-        }
-        
-        posts.forEach(post => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${post.id}</td>
-                <td>${post.title || 'Sem título'}</td>
-                <td>${post.views || 0}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-        
-        document.getElementById("relatorio").style.display = "block";
-    } catch (err) {
-        console.error("Erro ao carregar relatório:", err);
-        document.getElementById("relatorio").style.display = "none";
-    }
-}
-
-
-async function gerarRelatorioPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text("Relatório de Visualizações", 14, 20);
-    const headers = [["ID", "Título", "Visualizações"]];
-    const body = [];
-    document.querySelectorAll("#tabela-relatorio tbody tr").forEach(row => {
-      const cols = Array.from(row.querySelectorAll("td")).map(td => td.textContent);
-      body.push(cols);
-    });
-    doc.autoTable({ head: headers, body: body, startY: 30 });
-    doc.save("relatorio-visualizacoes.pdf");
-  }
-
-window.onload = async () => {
+  window.onload = async () => {
     await carregarPost();
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-        try {
-            const userData = parseJwt(token);
-            // Mostrar relatório para qualquer usuário logado (dos seus próprios posts)
-            document.getElementById("relatorio").style.display = "block";
-            await carregarRelatorioVisualizacoes();
-        } catch (error) {
-            console.error("Erro ao decodificar token:", error);
-            document.getElementById("relatorio").style.display = "none";
-        }
-    } else {
-        document.getElementById("relatorio").style.display = "none";
-    }
-};
+  };
 </script>
 
 </body>

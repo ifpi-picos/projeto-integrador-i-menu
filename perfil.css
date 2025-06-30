@@ -482,3 +482,73 @@ body.bodyp {
     transition: transform 0.3s;
 }
 }
+
+/* Estilo para a seção de relatório */
+#relatorio h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+#relatorio .btn {
+  background-color: #5a2d28;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  margin-bottom: 15px;
+}
+
+#relatorio .btn:hover {
+  background-color: #723c33;
+}
+
+/* Estilo da tabela */
+#tabela-relatorio {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+#tabela-relatorio thead {
+  background-color: #5a2d28;
+  color: white;
+}
+
+#tabela-relatorio th, 
+#tabela-relatorio td {
+  text-align: left;
+  padding: 12px 15px;
+  font-size: 15px;
+}
+
+#tabela-relatorio tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#tabela-relatorio tbody tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  #tabela-relatorio th, 
+  #tabela-relatorio td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  #relatorio .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+}
