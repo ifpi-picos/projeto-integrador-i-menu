@@ -17,7 +17,7 @@
       <button id="view-profile-btn" class="profile-btn">Ver Perfil</button>
     </div>
 
-    <div class="post-image" id="post-image"></div>
+    <div class="post-image" id="post-image" onclick="abrirArquivo()"></div>
 
     <p id="media-avaliacao">Carregando média...</p>
     <div class="rating">
@@ -57,7 +57,130 @@
     }
   }
 
-  async function registrarVisualizacao(postId) {
+// Modifique a função abrirArquivo para:
+async function downloadFile(pdfUrl) {
+  try {
+    // Tenta primeiro o método mais moderno com fetch
+    const response = await fetch(pdfUrl, {
+      headers: { 'Content-Type': 'application/pdf' },
+      mode: 'cors'
+    });
+    
+    if (!response.ok) throw new Error('Falha ao buscar arquivo');
+    
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    
+    // Cria link de download
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = 'cardapio.pdf'; // Nome fixo com extensão garantida
+    document.body.appendChild(link);
+    link.click();
+    
+    // Limpeza
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    }, 100);
+    
+  } catch (error) {
+    console.error('Erro no download:', error);
+    // Fallback simples para navegadores mais antigos
+    const fallbackLink = document.createElement('a');
+    fallbackLink.href = pdfUrl;
+    fallbackLink.download = 'cardapio.pdf';
+    document.body.appendChild(fallbackLink);
+    fallbackLink.click();
+    setTimeout(() => document.body.removeChild(fallbackLink), 100);
+  }
+}
+
+// Função principal modificada
+async function abrirArquivo() {
+  const postId = new URLSearchParams(window.location.search).get('id');
+  if (!postId) return alert('Post não encontrado');
+
+  try {
+    const response = await fetch(`${webservice}/posts/${postId}`);
+    const post = await response.json();
+    
+    if (!post.arquivo) return alert('Nenhum arquivo encontrado');
+    
+    // Adiciona parâmetro para forçar download se não existir
+    const downloadUrl = post.arquivo.includes('fl_attachment') 
+      ? post.arquivo 
+      : post.arquivo + (post.arquivo.includes('?') ? '&' : '?' + 'fl_attachment');
+    
+    await downloadFile(downloadUrl);
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Erro ao baixar o arquivo');
+  }
+}
+
+function abrirImagem(imagemUrl) {
+    // Cria modal para imagem
+    const modal = document.createElement('div');
+    modal.className = 'modal-imagem';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    `;
+    
+    const img = document.createElement('img');
+    img.src = imagemUrl;
+    img.style.maxWidth = '90%';
+    img.style.maxHeight = '90%';
+    img.style.objectFit = 'contain';
+    img.alt = 'Visualização do cardápio';
+    
+    // Adiciona loader enquanto a imagem carrega
+    const loader = document.createElement('div');
+    loader.className = 'loader';
+    loader.style.cssText = `
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    `;
+    
+    modal.appendChild(loader);
+    document.body.appendChild(modal);
+    
+    img.onload = function() {
+        modal.removeChild(loader);
+        modal.appendChild(img);
+    };
+    
+    img.onerror = function() {
+        modal.removeChild(loader);
+        modal.innerHTML = '<p style="color:white;">Erro ao carregar imagem</p>';
+    };
+    
+    modal.onclick = () => document.body.removeChild(modal);
+    
+    // Adiciona tecla ESC para fechar
+    document.addEventListener('keydown', function fecharModal(e) {
+        if (e.key === 'Escape') {
+            document.body.removeChild(modal);
+            document.removeEventListener('keydown', fecharModal);
+        }
+    });
+}
+
+async function registrarVisualizacao(postId) {
     try {
       await fetch(`${webservice}/posts/${postId}/view`, { method: 'POST' });
     } catch (error) {
