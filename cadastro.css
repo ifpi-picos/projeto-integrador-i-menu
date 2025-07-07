@@ -244,3 +244,31 @@ form .input-group button {
     }
 }
 
+/* Estilo para a logo */
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;  /* Cor quente para complementar o design */
+  font-size: 10px;  /* Tamanho de fonte maior e mais imponente */
+  font-weight: 500;  /* Peso da fonte para mais presença */
+  letter-spacing: 2px;  /* Espaçamento entre as letras para um efeito mais estiloso */
+  text-transform: uppercase;  /* Maiúsculas para um estilo mais impactante */
+  cursor: pointer;  /* Para indicar que a logo é clicável */
+  font-family: 'Poppins', sans-serif;  /* Fonte consistente com o design */
+  transition: color 0.3s ease;  /* Transição suave para a cor ao passar o mouse */
+  text-decoration: none;  /* Remove qualquer linha embaixo */
+}
+
+.logo:hover {
+  color:  #3b1d0f;  /* Cor de destaque (um tom dourado) quando o usuário passa o mouse */
+}
+
+/* Caso a logo esteja dentro de um link <a> */
+a {
+  text-decoration: none;  /* Remove a linha de qualquer link */
+}
+
+

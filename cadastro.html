@@ -5,21 +5,25 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iMenu</title>
   <link rel="stylesheet" href="cadastro.css" />
-  <title>Cadastre-se no iMenu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
+  <!-- Logo iMenu no canto esquerdo -->
+  <a href="index.html" class="logo">
+    <h1>iMenu</h1>
+  </a>
+
   <div class="box">
-  <div class="img-box">
-  <label for="profile-pic-upload" class="upload-label">
-    <img id="profile-pic-preview" src="images/perfil.png" alt="Foto de Perfil" />
-    <p class="upload-hint">Clique na aqui para escolher sua foto de perfil</p>
-  </label>
-  <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;" />
-</div>
-
-
+    <div class="img-box">
+      <label for="profile-pic-upload" class="upload-label">
+        <img id="profile-pic-preview" src="images/perfil.png" alt="Foto de Perfil" />
+        <p class="upload-hint">Clique na aqui para escolher sua foto de perfil</p>
+      </label>
+      <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;" />
+    </div>
 
     <div class="form-box">
       <h2>Cadastre-se no iMenu!</h2>
@@ -71,26 +75,19 @@
       buttons[isDono ? 1 : 0].classList.add('active');
     }
 
-    // Compatível com o JS atual, se necessário usar toggleRole():
-    function toggleRole() {
-      // Agora esse estático é opcional, a escolha está via botão
-    }
+    const fileInput = document.getElementById('profile-pic-upload');
+    const previewImage = document.getElementById('profile-pic-preview');
 
-  const fileInput = document.getElementById('profile-pic-upload');
-  const previewImage = document.getElementById('profile-pic-preview');
-
-  fileInput.addEventListener('change', function () {
-    const file = this.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        previewImage.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-
+    fileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
   </script>
 </body>
 
