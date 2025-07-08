@@ -150,13 +150,14 @@ async function enviarArquivo(inputId) {
     
     const file = fileInput.files[0];
     
-        // Validação específica para o campo de arquivo principal
+    // Validação específica para o campo de arquivo principal
     if (inputId === 'upload_arquivo') {
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
         if (!isPDF) {
             throw new Error('Apenas arquivos PDF são permitidos para o cardápio');
         }
     }
+    
     // Verifica tamanho do arquivo (máx 25MB)
     if (file.size > 25 * 1024 * 1024) {
         throw new Error('Arquivo muito grande (máx. 25MB)');
@@ -191,7 +192,6 @@ async function enviarArquivo(inputId) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 180000);
 
-        // Adiciona logs para depuração
         console.log('Iniciando upload do arquivo:', file.name, 'Tamanho:', file.size);
         
         const response = await fetch(`${webservicef}/api/upload`, {
@@ -202,9 +202,11 @@ async function enviarArquivo(inputId) {
             },
             body: JSON.stringify({ 
                 file: fileBase64,
-                fileType: file.type 
+                fileType: file.type,
+                isCardapio: inputId === 'upload_arquivo' // Adiciona flag para identificar cardápios
             }),
-            signal: controller.signal
+            signal: controller.signal,
+            mode: 'cors' // Garante que o modo CORS está ativo
         });
         
         clearTimeout(timeoutId);
@@ -219,7 +221,7 @@ async function enviarArquivo(inputId) {
         console.log('Upload concluído:', responseData);
         
         progressBar.style.width = '100%';
-        progressBar.style.backgroundColor = '#4CAF50'; // Verde para sucesso
+        progressBar.style.backgroundColor = '#4CAF50';
         
         return {
             fileUrl: responseData.fileUrl || null,
@@ -229,7 +231,7 @@ async function enviarArquivo(inputId) {
     } catch (error) {
         console.error('Erro no upload:', error);
         const progressBar = document.getElementById('progressBar');
-        progressBar.style.backgroundColor = '#f44336'; // Vermelho para erro
+        progressBar.style.backgroundColor = '#f44336';
         
         throw new Error(error.name === 'AbortError' 
             ? 'O upload demorou muito. Tente um arquivo menor ou verifique sua conexão.' 
@@ -280,18 +282,18 @@ async function enviarPostCompleto() {
             throw new Error(uploadError.message || "Falha ao enviar arquivos. Tente novamente.");
         }
 
-            const arquivoInput = document.getElementById('upload_arquivo');
-    if (arquivoInput.files.length > 0) {
-        const file = arquivoInput.files[0];
-        const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-        
-        if (!isPDF) {
-            showError('O arquivo do cardápio deve ser um PDF');
-            isSubmitting = false;
-            showLoading(false);
-            return;
+        const arquivoInput = document.getElementById('upload_arquivo');
+        if (arquivoInput.files.length > 0) {
+            const file = arquivoInput.files[0];
+            const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            
+            if (!isPDF) {
+                showError('O arquivo do cardápio deve ser um PDF');
+                isSubmitting = false;
+                showLoading(false);
+                return;
+            }
         }
-    }
 
         // Preparar dados do post
         const link = document.getElementById("linksocial").value.trim();
@@ -314,52 +316,58 @@ async function enviarPostCompleto() {
 
         console.log("Enviando dados para o servidor:", postData);
 
-        // Enviar post com timeout aumentado
+        // Configura timeout de 60 segundos
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000); // 1 minuto
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-        const response = await fetch(`${webservice}/post`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(postData),
-            signal: controller.signal
-        });
+        try {
+            const response = await fetch(`${webservice}/post`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(postData),
+                signal: controller.signal
+            });
 
-        clearTimeout(timeoutId);
+            clearTimeout(timeoutId);
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error("Erro na resposta do servidor:", errorData);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error("Erro na resposta do servidor:", errorData);
+                
+                if (response.status === 401) {
+                    localStorage.removeItem('auth_token');
+                    window.location.href = "./login.html";
+                    return;
+                }
+                
+                throw new Error(errorData.error || errorData.message || `Erro ${response.status}`);
+            }
+
+            const responseData = await response.json();
+            console.log("Post criado com sucesso:", responseData);
             
-            if (response.status === 401) {
-                localStorage.removeItem('auth_token');
-                window.location.href = "./login.html";
-                return;
+            alert("Cardápio publicado com sucesso!");
+            window.location.href = "./index.html";
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+            console.error("Erro ao publicar:", error);
+            
+            let errorMessage = error.message;
+            if (error.name === 'AbortError') {
+                errorMessage = "A operação demorou muito. Verifique sua conexão e tente novamente.";
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = "Falha na conexão com o servidor. Verifique sua internet.";
             }
             
-            throw new Error(errorData.error || errorData.message || `Erro ${response.status}`);
+            showError(errorMessage);
+            throw error; // Re-lança o erro para ser capturado no bloco catch externo
         }
-
-        const responseData = await response.json();
-        console.log("Post criado com sucesso:", responseData);
-        
-        alert("Cardápio publicado com sucesso!");
-        window.location.href = "./index.html";
-
     } catch (error) {
-        console.error("Erro ao publicar:", error);
-        
-        let errorMessage = error.message;
-        if (error.name === 'AbortError') {
-            errorMessage = "A operação demorou muito. Verifique sua conexão e tente novamente.";
-        } else if (error.message.includes('Failed to fetch')) {
-            errorMessage = "Falha na conexão com o servidor. Verifique sua internet.";
-        }
-        
-        showError(errorMessage);
+        console.error("Erro no processo de publicação:", error);
     } finally {
         isSubmitting = false;
         showLoading(false);

@@ -78,23 +78,176 @@
     }
 
     async function downloadFile(pdfUrl) {
-      try {
-        const response = await fetch(pdfUrl);
+    try {
+        // Adiciona cabeçalho para forçar download
+        const response = await fetch(pdfUrl, {
+            headers: {
+                'Content-Disposition': 'attachment'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Erro ao baixar arquivo');
+        }
+
         const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
+        const blobUrl = window.URL.createObjectURL(blob);
+        
         const link = document.createElement('a');
         link.href = blobUrl;
-        link.download = 'cardapio.pdf';
+        link.setAttribute('download', 'cardapio.pdf');
         document.body.appendChild(link);
         link.click();
+        
+        // Limpeza
         setTimeout(() => {
-          document.body.removeChild(link);
-          URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
         }, 100);
-      } catch (err) {
-        alert('Erro no download');
-      }
+    } catch (err) {
+        console.error('Erro no download:', err);
+        alert('Erro ao baixar o arquivo. Tente novamente.');
     }
+}
+
+    async function abrirImagemCapa(imageUrl) {
+    // Cria o modal principal
+    const modal = document.createElement('div');
+    modal.id = 'image-modal';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.9)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.style.cursor = 'zoom-out';
+    
+    // Container da imagem com overflow
+    const imgContainer = document.createElement('div');
+    imgContainer.style.position = 'relative';
+    imgContainer.style.width = '90%';
+    imgContainer.style.height = '90%';
+    imgContainer.style.overflow = 'hidden';
+    imgContainer.style.display = 'flex';
+    imgContainer.style.justifyContent = 'center';
+    imgContainer.style.alignItems = 'center';
+    
+    // Elemento da imagem
+    const img = document.createElement('img');
+    img.id = 'modal-image';
+    img.src = imageUrl;
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '100%';
+    img.style.objectFit = 'contain';
+    img.style.transition = 'transform 0.3s ease';
+    img.style.cursor = 'zoom-in';
+    
+    // Botão de fechar
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '15px';
+    closeBtn.style.right = '15px';
+    closeBtn.style.background = 'none';
+    closeBtn.style.border = 'none';
+    closeBtn.style.color = 'white';
+    closeBtn.style.fontSize = '30px';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.zIndex = '1001';
+    
+    // Botão de download
+    const downloadBtn = document.createElement('button');
+    downloadBtn.innerHTML = '⬇️';
+    downloadBtn.style.position = 'absolute';
+    downloadBtn.style.top = '15px';
+    downloadBtn.style.left = '15px';
+    downloadBtn.style.background = 'rgba(0,0,0,0.5)';
+    downloadBtn.style.border = 'none';
+    downloadBtn.style.borderRadius = '50%';
+    downloadBtn.style.color = 'white';
+    downloadBtn.style.fontSize = '20px';
+    downloadBtn.style.width = '40px';
+    downloadBtn.style.height = '40px';
+    downloadBtn.style.cursor = 'pointer';
+    downloadBtn.style.zIndex = '1001';
+    
+    // Variáveis para controle do zoom
+    let scale = 1;
+    let isDragging = false;
+    let startPos = { x: 0, y: 0 };
+    let translate = { x: 0, y: 0 };
+    
+    // Função para aplicar transformação
+    function applyTransform() {
+        img.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
+    }
+    
+    // Eventos de zoom
+    img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        scale = scale === 1 ? 2 : 1;
+        translate = { x: 0, y: 0 }; // Reset position when toggling zoom
+        applyTransform();
+        modal.style.cursor = scale === 1 ? 'zoom-out' : 'zoom-in';
+    });
+    
+    // Eventos de arrastar (para quando estiver com zoom)
+    img.addEventListener('mousedown', (e) => {
+        if (scale > 1) {
+            isDragging = true;
+            startPos = { x: e.clientX - translate.x, y: e.clientY - translate.y };
+            img.style.cursor = 'grabbing';
+        }
+    });
+    
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        translate.x = e.clientX - startPos.x;
+        translate.y = e.clientY - startPos.y;
+        applyTransform();
+    });
+    
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        if (scale > 1) {
+            img.style.cursor = 'grab';
+        }
+    });
+    
+    // Evento de download
+    downloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = 'cardapio.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+    
+    // Fecha o modal ao clicar fora
+    modal.addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    // Monta a estrutura
+    imgContainer.appendChild(img);
+    imgContainer.appendChild(closeBtn);
+    imgContainer.appendChild(downloadBtn);
+    modal.appendChild(imgContainer);
+    document.body.appendChild(modal);
+    
+    // Fecha com ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.body.removeChild(modal);
+        }
+    });
+}
 
     async function abrirArquivo() {
       const postId = new URLSearchParams(window.location.search).get('id');
@@ -149,7 +302,18 @@
           postImage.style.backgroundSize = 'cover';
           postImage.style.backgroundPosition = 'center';
           postImage.style.height = '300px';
-          postImage.onclick = () => abrirArquivo();
+          postImage.style.cursor = 'pointer';
+          
+          // Modificação principal aqui:
+          if (post.arquivo) {
+            // Se tem PDF, baixa o PDF ao clicar
+            postImage.onclick = () => abrirArquivo();
+            postImage.title = 'Clique para baixar o cardápio (PDF)';
+          } else {
+            // Se não tem PDF mas tem capa, abre a imagem em tela cheia
+            postImage.onclick = () => abrirImagemCapa(post.capa);
+            postImage.title = 'Clique para ver o cardápio (Imagem)';
+          }
         } else {
           postImage.style.display = 'none';
         }
