@@ -614,7 +614,10 @@ window.onload = () => {
             });
         },
         (erro) => {
-          localizacaoEl.textContent = "📍 Localização não permitida";
+            
+            if (window.location.pathname == "/vizualizador.html") return; //VERIFICA DE QUAL ARQUIVO ESTA VINDO A REQUISIÇAO !!!!! PRESTA ATENCAO ROBERTO
+        localizacaoEl.textContent = "📍 Localização não permitida";
+
         }
       );
     } else {

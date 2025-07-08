@@ -7,395 +7,322 @@
   <link rel="stylesheet" href="vizu.css">
 </head>
 <body>
+  <div id="header-container"></div>
 
-<main class="post-container">
-  <div class="post-card">
-    <div class="post-header">
-      <h1 id="post-title">none</h1>
-      <p class="post-author" id="post-author"></p>
-      <p class="post-views" id="post-views">0 visualizações</p>
-      <button id="view-profile-btn" class="profile-btn">Ver Perfil</button>
-    </div>
-
-    <div class="post-image" id="post-image" onclick="abrirArquivo()"></div>
-
-    <p id="media-avaliacao">Carregando média...</p>
-    <div class="rating">
-      <span class="star" data-value="1">★</span>
-      <span class="star" data-value="2">★</span>
-      <span class="star" data-value="3">★</span>
-      <span class="star" data-value="4">★</span>
-      <span class="star" data-value="5">★</span>
-    </div>
-
-    <div class="post-content">
-      <p id="post-content"></p>
-      <a href="#" id="post-link" class="social-link">Ver rede social</a>
-    </div>
-
-    <button onclick="window.history.back()" class="btn">← Voltar</button>
-
-    <section class="comments-section">
-      <h2>Comentários</h2>
-      <div class="comment-form" id="comment-form">
-        <textarea id="comment-content" placeholder="Adicione um comentário..." rows="3"></textarea>
-        <button onclick="postComment()" class="btn">Enviar Comentário</button>
+  <main class="post-container">
+    <div class="post-card">
+      <div class="post-header">
+        <h1 id="post-title">none</h1>
+        <p class="post-author" id="post-author"></p>
+        <p class="post-views" id="post-views">0 visualizações</p>
+        <button id="view-profile-btn" class="profile-btn">Ver Perfil</button>
       </div>
-      <div class="comments-list" id="comments-list"></div>
-    </section>
-  </div>
-</main>
 
-<script>
-  const webservice = "https://imenu-backend-pd3a.onrender.com";
+      <div class="post-image" id="post-image"></div>
 
-  function parseJwt(token) {
-    try {
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      return null;
+      <p id="media-avaliacao">Carregando média...</p>
+      <div class="rating">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+      </div>
+
+      <div class="post-content">
+        <p id="post-content"></p>
+        <a href="#" id="post-link" class="social-link">Ver rede social</a>
+      </div>
+
+      <button onclick="window.history.back()" class="btn">← Voltar</button>
+
+      <section class="comments-section">
+        <h2>Comentários</h2>
+        <div class="comment-form" id="comment-form">
+          <textarea id="comment-content" placeholder="Adicione um comentário..." rows="3"></textarea>
+          <button onclick="postComment()" class="btn">Enviar Comentário</button>
+        </div>
+        <div class="comments-list" id="comments-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/script.js"></script>
+  <script src="js/cabecalho.js"></script>
+  <script src="js/server_script.js"></script>
+
+  <!-- Carrega o Lucide -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    //mudei pra nao dar erro sla (pergunta pra mim antes de mudar algo aqui)
+    const beleza = "https://imenu-backend-pd3a.onrender.com";
+
+    // Agora que o DOM está pronto e o Lucide foi carregado
+    lucide.createIcons();
+
+
+    fetch('cabecalho.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+        if (typeof initCabecalho === 'function') initCabecalho();
+      });
+
+    function parseJwt(token) {
+      try {
+        return JSON.parse(atob(token.split('.')[1]));
+      } catch (e) {
+        return null;
+      }
     }
-  }
 
-// Modifique a função abrirArquivo para:
-async function downloadFile(pdfUrl) {
-  try {
-    // Tenta primeiro o método mais moderno com fetch
-    const response = await fetch(pdfUrl, {
-      headers: { 'Content-Type': 'application/pdf' },
-      mode: 'cors'
-    });
-    
-    if (!response.ok) throw new Error('Falha ao buscar arquivo');
-    
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-    
-    // Cria link de download
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = 'cardapio.pdf'; // Nome fixo com extensão garantida
-    document.body.appendChild(link);
-    link.click();
-    
-    // Limpeza
-    setTimeout(() => {
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    }, 100);
-    
-  } catch (error) {
-    console.error('Erro no download:', error);
-    // Fallback simples para navegadores mais antigos
-    const fallbackLink = document.createElement('a');
-    fallbackLink.href = pdfUrl;
-    fallbackLink.download = 'cardapio.pdf';
-    document.body.appendChild(fallbackLink);
-    fallbackLink.click();
-    setTimeout(() => document.body.removeChild(fallbackLink), 100);
-  }
-}
+    async function downloadFile(pdfUrl) {
+      try {
+        const response = await fetch(pdfUrl);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = 'cardapio.pdf';
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(blobUrl);
+        }, 100);
+      } catch (err) {
+        alert('Erro no download');
+      }
+    }
 
-// Função principal modificada
-async function abrirArquivo() {
-  const postId = new URLSearchParams(window.location.search).get('id');
-  if (!postId) return alert('Post não encontrado');
+    async function abrirArquivo() {
+      const postId = new URLSearchParams(window.location.search).get('id');
+      if (!postId) return alert('Post não encontrado');
+      try {
+        const response = await fetch(`${beleza}/posts/${postId}`);
+        const post = await response.json();
+        if (!post.arquivo) return alert('Nenhum arquivo encontrado');
+        const downloadUrl = post.arquivo.includes('fl_attachment') 
+          ? post.arquivo 
+          : post.arquivo + (post.arquivo.includes('?') ? '&' : '?') + 'fl_attachment';
+        await downloadFile(downloadUrl);
+      } catch (error) {
+        console.error('Erro ao baixar arquivo:', error);
+        alert('Erro ao baixar o arquivo');
+      }
+    }
 
-  try {
-    const response = await fetch(`${webservice}/posts/${postId}`);
-    const post = await response.json();
-    
-    if (!post.arquivo) return alert('Nenhum arquivo encontrado');
-    
-    // Adiciona parâmetro para forçar download se não existir
-    const downloadUrl = post.arquivo.includes('fl_attachment') 
-      ? post.arquivo 
-      : post.arquivo + (post.arquivo.includes('?') ? '&' : '?' + 'fl_attachment');
-    
-    await downloadFile(downloadUrl);
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Erro ao baixar o arquivo');
-  }
-}
+    async function registrarVisualizacao(postId) {
+      try {
+        await fetch(`${beleza}/posts/${postId}/view`, { method: 'POST' });
+      } catch (error) {
+        console.error('Erro ao registrar visualização:', error);
+      }
+    }
 
-function abrirImagem(imagemUrl) {
-    // Cria modal para imagem
-    const modal = document.createElement('div');
-    modal.className = 'modal-imagem';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.9);
-        z-index: 1000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-    `;
-    
-    const img = document.createElement('img');
-    img.src = imagemUrl;
-    img.style.maxWidth = '90%';
-    img.style.maxHeight = '90%';
-    img.style.objectFit = 'contain';
-    img.alt = 'Visualização do cardápio';
-    
-    // Adiciona loader enquanto a imagem carrega
-    const loader = document.createElement('div');
-    loader.className = 'loader';
-    loader.style.cssText = `
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #3498db;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-    `;
-    
-    modal.appendChild(loader);
-    document.body.appendChild(modal);
-    
-    img.onload = function() {
-        modal.removeChild(loader);
-        modal.appendChild(img);
-    };
-    
-    img.onerror = function() {
-        modal.removeChild(loader);
-        modal.innerHTML = '<p style="color:white;">Erro ao carregar imagem</p>';
-    };
-    
-    modal.onclick = () => document.body.removeChild(modal);
-    
-    // Adiciona tecla ESC para fechar
-    document.addEventListener('keydown', function fecharModal(e) {
-        if (e.key === 'Escape') {
-            document.body.removeChild(modal);
-            document.removeEventListener('keydown', fecharModal);
+    async function carregarPost() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const postId = urlParams.get('id');
+      if (!postId || postId === 'undefined') {
+        alert('Post não encontrado: ID inválido');
+        window.location.href = 'index.html';
+        return;
+      }
+      try {
+        await registrarVisualizacao(postId);
+        const [postResponse, viewsResponse] = await Promise.all([
+          fetch(`${beleza}/posts/${postId}`),
+          fetch(`${beleza}/posts/${postId}/views`)
+        ]);
+        const post = await postResponse.json();
+        const viewsData = await viewsResponse.json();
+
+        document.getElementById('post-title').textContent = post.title || 'Sem título';
+        document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
+        document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
+        document.getElementById('post-views').textContent = `${viewsData.views || 0} visualizações`;
+
+        const postImage = document.getElementById('post-image');
+        if (post.capa) {
+          postImage.style.backgroundImage = `url('${post.capa}')`;
+          postImage.style.backgroundSize = 'cover';
+          postImage.style.backgroundPosition = 'center';
+          postImage.style.height = '300px';
+          postImage.onclick = () => abrirArquivo();
+        } else {
+          postImage.style.display = 'none';
         }
-    });
-}
 
-async function registrarVisualizacao(postId) {
-    try {
-      await fetch(`${webservice}/posts/${postId}/view`, { method: 'POST' });
-    } catch (error) {
-      console.error('Erro ao registrar visualização:', error);
-    }
-  }
+        const profileBtn = document.getElementById('view-profile-btn');
+        if (post.author) {
+          profileBtn.style.display = 'block';
+          profileBtn.onclick = () => {
+            const token = localStorage.getItem("auth_token");
+            if (token) {
+              window.location.href = `perfil.html?userId=${post.authorId}`;
+            } else {
+              alert("Você precisa estar logado para ver perfis de usuários");
+              window.location.href = "login.html";
+            }
+          };
+        } else {
+          profileBtn.style.display = 'none';
+        }
 
-  async function carregarPost() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('id');
-    if (!postId || postId === 'undefined') {
-      alert('Post não encontrado: ID inválido');
-      window.location.href = 'index.html';
-      return;
-    }
-
-    try {
-      await registrarVisualizacao(postId);
-      const [postResponse, viewsResponse] = await Promise.all([
-        fetch(`${webservice}/posts/${postId}`),
-        fetch(`${webservice}/posts/${postId}/views`)
-      ]);
-
-      const post = await postResponse.json();
-      const viewsData = await viewsResponse.json();
-
-      document.getElementById('post-title').textContent = post.title || 'Sem título';
-      document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
-      document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
-      document.getElementById('post-views').textContent = `${viewsData.views || 0} visualizações`;
-
-      const postImage = document.getElementById('post-image');
-      if (post.capa) {
-        postImage.style.backgroundImage = `url('${post.capa}')`;
-        postImage.style.backgroundSize = 'cover';
-        postImage.style.backgroundPosition = 'center';
-        postImage.style.height = '300px';
-      } else {
-        postImage.style.display = 'none';
-      }
-
-      const profileBtn = document.getElementById('view-profile-btn');
-      if (post.author) {
-        profileBtn.style.display = 'block';
-        profileBtn.onclick = () => {
-          const token = localStorage.getItem("auth_token");
-          if (token) {
-            window.location.href = `perfil.html?userId=${post.authorId}`;
-          } else {
-            alert("Você precisa estar logado para ver perfis de usuários");
-            window.location.href = "login.html";
-          }
-        };
-      } else {
-        profileBtn.style.display = 'none';
-      }
-
-      await carregarMedia(postId);
-      ativarAvaliacao(postId);
-      await carregarComentarios(postId);
-
-    } catch (error) {
-      console.error('Erro ao carregar post:', error);
-      alert(`Erro ao carregar post: ${error.message}`);
-      setTimeout(() => window.location.href = 'index.html', 2000);
-    }
-  }
-
-  async function carregarMedia(postId) {
-    try {
-      const res = await fetch(`${webservice}/avaliacoes/media/${postId}`);
-      const data = await res.json();
-
-      if (data && typeof data.media !== 'undefined') {
-        const media = parseFloat(data.media).toFixed(1);
-        document.getElementById("media-avaliacao").innerText = `Média de avaliação: ${media} ★`;
-        const stars = document.querySelectorAll('.star');
-        const roundedMedia = Math.round(data.media);
-        stars.forEach((star, index) => {
-          star.classList.toggle('selected', index < roundedMedia);
-        });
-      } else {
-        document.getElementById("media-avaliacao").innerText = "Sem avaliações ainda";
-      }
-    } catch (err) {
-      document.getElementById("media-avaliacao").innerText = "Erro ao carregar avaliações";
-    }
-  }
-
-  function ativarAvaliacao(postId) {
-    const stars = document.querySelectorAll('.star');
-    let selectedRating = 0;
-
-    stars.forEach(star => {
-      star.addEventListener('mouseover', () => highlightStars(+star.dataset.value));
-      star.addEventListener('mouseout', () => highlightStars(selectedRating));
-      star.addEventListener('click', async () => {
-        selectedRating = +star.dataset.value;
-        highlightStars(selectedRating);
-        await salvarAvaliacao(postId, selectedRating);
         await carregarMedia(postId);
-      });
-    });
-
-    function highlightStars(rating) {
-      stars.forEach(star => {
-        const val = +star.dataset.value;
-        star.classList.toggle('hover', val <= rating);
-        star.classList.toggle('selected', val <= rating);
-      });
-    }
-  }
-
-  async function salvarAvaliacao(postId, nota) {
-    const token = localStorage.getItem("auth_token");
-    if (!token) return alert("Você precisa estar logado para avaliar.");
-
-    try {
-      const response = await fetch(`${webservice}/avaliar/${postId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ nota })
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        alert("Erro ao salvar avaliação: " + (data.message || "Erro desconhecido"));
+        ativarAvaliacao(postId);
+        await carregarComentarios(postId);
+      } catch (error) {
+        console.error('Erro ao carregar post:', error);
+        alert(`Erro ao carregar post: ${error.message}`);
+        setTimeout(() => window.location.href = 'index.html', 2000);
       }
-    } catch (err) {
-      alert("Erro ao salvar avaliação. Tente novamente.");
     }
-  }
 
-  async function carregarComentarios(postId) {
-    try {
-      const response = await fetch(`${webservice}/comentarios/${postId}`);
-      const comments = await response.json();
-      const commentsList = document.getElementById('comments-list');
-      commentsList.innerHTML = '';
-      const token = localStorage.getItem("auth_token");
-      const userId = token ? parseJwt(token).id : null;
+    async function carregarMedia(postId) {
+      try {
+        const res = await fetch(`${beleza}/avaliacoes/media/${postId}`);
+        const data = await res.json();
+        if (data && typeof data.media !== 'undefined') {
+          const media = parseFloat(data.media).toFixed(1);
+          document.getElementById("media-avaliacao").innerText = `Média de avaliação: ${media} ★`;
+          const stars = document.querySelectorAll('.star');
+          const roundedMedia = Math.round(data.media);
+          stars.forEach((star, index) => {
+            star.classList.toggle('selected', index < roundedMedia);
+          });
+        } else {
+          document.getElementById("media-avaliacao").innerText = "Sem avaliações ainda";
+        }
+      } catch (err) {
+        document.getElementById("media-avaliacao").innerText = "Erro ao carregar avaliações";
+      }
+    }
 
-      comments.forEach(comment => {
-        const commentDiv = document.createElement('div');
-        commentDiv.className = 'comment';
-        const commentDate = new Date(comment.createdAt).toLocaleString();
-        commentDiv.innerHTML = `
-          <div class="comment-header">
-            <span class="comment-author">${comment.author.name}</span>
-            <span class="comment-date">${commentDate}</span>
-          </div>
-          <p class="comment-content">${comment.content}</p>
-          ${userId === comment.authorId ? `<button class="delete-comment" data-id="${comment.id}">Excluir</button>` : ''}
-        `;
-        commentsList.appendChild(commentDiv);
-      });
-
-      document.querySelectorAll('.delete-comment').forEach(button => {
-        button.addEventListener('click', async (e) => {
-          if (confirm('Tem certeza que deseja excluir este comentário?')) {
-            await deletarComentario(e.target.dataset.id);
-            await carregarComentarios(postId);
-          }
+    function ativarAvaliacao(postId) {
+      const stars = document.querySelectorAll('.star');
+      let selectedRating = 0;
+      stars.forEach(star => {
+        star.addEventListener('mouseover', () => highlightStars(+star.dataset.value));
+        star.addEventListener('mouseout', () => highlightStars(selectedRating));
+        star.addEventListener('click', async () => {
+          selectedRating = +star.dataset.value;
+          highlightStars(selectedRating);
+          await salvarAvaliacao(postId, selectedRating);
+          await carregarMedia(postId);
         });
       });
 
-      document.getElementById('comment-form').style.display = token ? 'block' : 'none';
-    } catch (error) {
-      document.getElementById('comments-list').innerHTML = '<p>Erro ao carregar comentários.</p>';
+      function highlightStars(rating) {
+        stars.forEach(star => {
+          const val = +star.dataset.value;
+          star.classList.toggle('hover', val <= rating);
+          star.classList.toggle('selected', val <= rating);
+        });
+      }
     }
-  }
 
-  async function postComment() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('id');
-    const content = document.getElementById('comment-content').value.trim();
-    const token = localStorage.getItem("auth_token");
-    if (!content) return alert('Por favor, escreva um comentário.');
-    if (!token) return alert('Você precisa estar logado para comentar.');
-
-    try {
-      await fetch(`${webservice}/comentar/${postId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ content })
-      });
-      document.getElementById('comment-content').value = '';
-      await carregarComentarios(postId);
-    } catch (error) {
-      alert('Erro ao postar comentário.');
+    async function salvarAvaliacao(postId, nota) {
+      const token = localStorage.getItem("auth_token");
+      if (!token) return alert("Você precisa estar logado para avaliar.");
+      try {
+        const response = await fetch(`${beleza}/avaliar/${postId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ nota })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          alert("Erro ao salvar avaliação: " + (data.message || "Erro desconhecido"));
+        }
+      } catch (err) {
+        alert("Erro ao salvar avaliação. Tente novamente.");
+      }
     }
-  }
 
-  async function deletarComentario(commentId) {
-    const token = localStorage.getItem("auth_token");
-    try {
-      await fetch(`${webservice}/comentario-del/${commentId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-    } catch (error) {
-      console.error('Erro ao deletar comentário:', error);
+    async function carregarComentarios(postId) {
+      try {
+        const response = await fetch(`${beleza}/comentarios/${postId}`);
+        const comments = await response.json();
+        const commentsList = document.getElementById('comments-list');
+        commentsList.innerHTML = '';
+        const token = localStorage.getItem("auth_token");
+        const userId = token ? parseJwt(token).id : null;
+
+        comments.forEach(comment => {
+          const commentDiv = document.createElement('div');
+          commentDiv.className = 'comment';
+          const commentDate = new Date(comment.createdAt).toLocaleString();
+          commentDiv.innerHTML = `
+            <div class="comment-header">
+              <span class="comment-author">${comment.author.name}</span>
+              <span class="comment-date">${commentDate}</span>
+            </div>
+            <p class="comment-content">${comment.content}</p>
+            ${userId === comment.authorId ? `<button class="delete-comment" data-id="${comment.id}">Excluir</button>` : ''}
+          `;
+          commentsList.appendChild(commentDiv);
+        });
+
+        document.querySelectorAll('.delete-comment').forEach(button => {
+          button.addEventListener('click', async (e) => {
+            if (confirm('Tem certeza que deseja excluir este comentário?')) {
+              await deletarComentario(e.target.dataset.id);
+              await carregarComentarios(postId);
+            }
+          });
+        });
+
+        document.getElementById('comment-form').style.display = token ? 'block' : 'none';
+      } catch (error) {
+        document.getElementById('comments-list').innerHTML = '<p>Erro ao carregar comentários.</p>';
+      }
     }
-  }
 
-  window.onload = async () => {
-    await carregarPost();
-  };
-</script>
+    async function postComment() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const postId = urlParams.get('id');
+      const content = document.getElementById('comment-content').value.trim();
+      const token = localStorage.getItem("auth_token");
+      if (!content) return alert('Por favor, escreva um comentário.');
+      if (!token) return alert('Você precisa estar logado para comentar.');
+      try {
+        await fetch(`${beleza}/comentar/${postId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ content })
+        });
+        document.getElementById('comment-content').value = '';
+        await carregarComentarios(postId);
+      } catch (error) {
+        alert('Erro ao postar comentário.');
+      }
+    }
+
+    async function deletarComentario(commentId) {
+      const token = localStorage.getItem("auth_token");
+      try {
+        await fetch(`${beleza}/comentario-del/${commentId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      } catch (error) {
+        console.error('Erro ao deletar comentário:', error);
+      }
+    }
+
+  window.addEventListener("load", async () => {
+  await carregarPost();
+});
+
+  </script>
 
 </body>
 </html>

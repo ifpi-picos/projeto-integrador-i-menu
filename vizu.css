@@ -4,13 +4,10 @@ body {
   color: #3E2723;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: start;
   min-height: 100vh;
 }
 
-/* Views  */
+/* Views */
 
 .post-meta {
   display: flex;
@@ -39,26 +36,29 @@ body {
   color: #2980b9;
 }
 
+/* 🔧 Container principal centralizado */
 .post-container {
-  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 2rem 1rem;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
+/* 🔧 Card ajustado */
 .post-card {
   background-color: #FFFFFF;
-  max-width: 700px;
   width: 100%;
+  max-width: 700px;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.1);
   padding: 2rem;
   box-sizing: border-box;
-  overflow-y: scroll;
-  word-break: break-all;
-  margin-bottom: 2rem; /* Adicionado espaço abaixo do card */
+  overflow-y: auto;
+  word-break: break-word;
+  margin-bottom: 2rem;
 }
-
 
 .post-header h1 {
   font-size: 2rem;
@@ -123,16 +123,20 @@ body {
   font-size: 2rem;
   color: #ccc;
   user-select: none;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  margin: 1rem 0;
 }
 
 .rating .star {
-  cursor: pointer;
+  color: gray;
   transition: color 0.2s;
 }
 
 .rating .star.hover,
 .rating .star.selected {
-  color: #FFD700; /* dourado */
+  color: gold;
 }
 
 .rating-result {
@@ -141,51 +145,32 @@ body {
   color: #5D4037;
 }
 
- .rating {
-      display: flex;
-      justify-content: center;
-      font-size: 2rem;
-      cursor: pointer;
-      margin: 1rem 0;
-    }
+#media-avaliacao {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
 
-    .star {
-      color: gray;
-      transition: color 0.2s;
-    }
+.post-image {
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  max-height: 310px;
+  margin-bottom: 1rem;
+  transition: transform 0.5s ease;
+}
 
-    .star.hover,
-    .star.selected {
-      color: gold;
-    }
+.post-image:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
 
-    #media-avaliacao {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
+/* Comentários */
 
-    .post-image {
-      background-size: cover;
-      background-position: center;
-      height: 300px;
-      max-height: 310px;
-      margin-bottom: 1rem;
-      transition: transform 0.5s ease;
-    }
-    .post-image:hover{
-      transform: scale(1.05);
-      cursor: pointer;
-    }
-
-
-/*    COMENTARIOS     */
-
-/* Seção de Comentários */
 .comments-section {
-  margin-top: 3rem; /* Mais espaço acima da seção */
+  margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid #E0E0E0; /* Linha separadora */
+  border-top: 1px solid #E0E0E0;
 }
 
 .comments-section h2 {
@@ -207,7 +192,7 @@ body {
   min-height: 80px;
   margin-bottom: 1rem;
   font-family: inherit;
-  background-color: #FFF9F5; /* Fundo levemente diferente */
+  background-color: #FFF9F5;
 }
 
 .comment-form textarea:focus {

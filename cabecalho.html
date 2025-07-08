@@ -1,0 +1,61 @@
+<!-- HEAD padrão -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>iMenu</title>
+  <link rel="stylesheet" href="teste.css"/>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <nav>
+      <a href="index.html">
+        <span class="menu-item"><i data-lucide="home"></i><span>Início</span></span>
+      </a>
+      <a href="pesquisa.html">
+        <span class="menu-item"><i data-lucide="utensils"></i><span>Menus</span></span>
+      </a>
+      <a href="#" onclick="localizacao()" id="mapaSidebar">
+        <span class="menu-item"><i data-lucide="map-pin"></i><span>Mapa</span></span>
+      </a>
+      <a href="publicar.html" id="publicarSidebar">
+        <span class="menu-item"><i data-lucide="file-text"></i><span>Publicar</span></span>
+      </a>
+      <a href="#" onclick="goeditor()" id="editorSidebar">
+        <span class="menu-item"><i data-lucide="paintbrush"></i><span>Editor</span></span>
+      </a>
+      <a href="perfil.html" id="perfilSidebar">
+        <span class="menu-item"><i data-lucide="user"></i><span>Perfil</span></span>
+      </a>
+    </nav>
+
+    <div class="auth-sidebar-buttons">
+      <button id="button-enter" onclick="gologin()" class="login-button">Entrar</button>
+      <button id="button-acount" onclick="goecadastro()" class="register-button">Cadastrar</button>
+    </div>
+  </div>
+
+  <!-- Botão toggle da sidebar -->
+  <button id="toggleSidebar" class="toggle-btn">☰</button>
+
+  <!-- Header com logo, navegação horizontal e autenticação -->
+  <header>
+    <div class="logo">iMenu</div>
+    <nav class="horizontal-nav">
+      <a href="index.html" class="nav-button"><p>Início</p></a>
+      <a href="pesquisa.html" class="nav-button"><p>Menus</p></a>
+      <button id="mapaAba" onclick="localizacao()" class="nav-button"><p>Mapa</p></button>
+      <a href="publicar.html" id="publicarAba" onclick="gopublicar()" class="nav-button"><p>Publicar</p></a>
+      <button id="editorAba" onclick="goeditor()" class="nav-button"><p>Editor</p></button>
+      <a href="perfil.html" class="nav-button" id="perfil_nav"><p>Perfil</p></a>
+    </nav>      
+    <div class="auth-buttons">
+      <a href="perfil.html" id="perfil-link">
+        <img id="perfil" src="images/perfil.png">
+        <p id="username"></p>
+      </a>
+      <button id="button-acount" onclick="goecadastro()" class="register-button">Cadastrar</button>
+      <button id="button-enter" onclick="gologin()" class="login-button">Entrar</button>
+    </div>
+  </header>

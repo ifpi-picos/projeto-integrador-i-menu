@@ -9,12 +9,11 @@
     <script src="js/pesquisa.js" defer></script>
   </head>
   <body>
-    <div class="container">
-      <!-- Botão de voltar -->
-      <div class="mt-4 mb-3">
-        <a href="index.html" class="btn btn-secondary">← Voltar</a>
-      </div>
 
+    <div id="header-container"></div>
+
+
+    <div class="container">
       <!-- Botões de filtro e barra de busca -->
       <div class="row mt-2" id="filter-buttons">
         <div class="col-12 d-flex flex-wrap align-items-center gap-2">
@@ -102,5 +101,21 @@
         </div>
       </div>
     </div>
+
+    <script src="js/script.js"></script>
+  <script src="js/cabecalho.js"></script>
+  <script src="js/server_script.js"></script>
+    
+    <script>
+      fetch('cabecalho.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+        if (typeof initCabecalho === 'function') initCabecalho();
+      });
+
+    </script>
+
   </body>
 </html>
+
