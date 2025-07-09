@@ -249,23 +249,32 @@
     });
 }
 
-    async function abrirArquivo() {
-      const postId = new URLSearchParams(window.location.search).get('id');
-      if (!postId) return alert('Post não encontrado');
-      try {
+async function abrirArquivo() {
+    const postId = new URLSearchParams(window.location.search).get('id');
+    if (!postId) return alert('Post não encontrado');
+    
+    try {
         const response = await fetch(`${beleza}/posts/${postId}`);
         const post = await response.json();
+        
         if (!post.arquivo) return alert('Nenhum arquivo encontrado');
-        const downloadUrl = post.arquivo.includes('fl_attachment') 
-          ? post.arquivo 
-          : post.arquivo + (post.arquivo.includes('?') ? '&' : '?') + 'fl_attachment';
-        await downloadFile(downloadUrl);
-      } catch (error) {
-        console.error('Erro ao baixar arquivo:', error);
-        alert('Erro ao baixar o arquivo');
-      }
+        
+        // Verifica se é PDF ou imagem
+        if (post.arquivo.toLowerCase().endsWith('.pdf') || post.arquivo.includes('fl_attachment')) {
+            // Se for PDF, força o download
+            const downloadUrl = post.arquivo.includes('fl_attachment') 
+                ? post.arquivo 
+                : post.arquivo + (post.arquivo.includes('?') ? '&' : '?') + 'fl_attachment';
+            await downloadFile(downloadUrl);
+        } else {
+            // Se for imagem, abre em modal para visualização
+            abrirImagemCapa(post.arquivo);
+        }
+    } catch (error) {
+        console.error('Erro ao abrir arquivo:', error);
+        alert('Erro ao abrir o arquivo');
     }
-
+}
     async function registrarVisualizacao(postId) {
       try {
         await fetch(`${beleza}/posts/${postId}/view`, { method: 'POST' });

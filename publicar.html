@@ -17,8 +17,8 @@
 
 <!-- Mantenha o input do arquivo como está -->
 <label class="upload-box" style="margin-top: 15px;">
-    <input type="file" accept=".pdf,application/pdf" id="upload_arquivo" onchange="previewArquivo(event)">
-    <span id="upload-text-arquivo">Escolha o arquivo do cardápio (somente PDF)</span>
+    <input type="file" accept=".pdf,application/pdf,image/*" id="upload_arquivo" onchange="previewArquivo(event)">
+    <span id="upload-text-arquivo">Escolha o arquivo do cardápio (PDF ou imagem)</span>
     <img id="preview-arquivo" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
 </label>
         
@@ -86,11 +86,12 @@ function previewArquivo(event) {
     const uploadText = document.getElementById('upload-text-arquivo');
     
     if (file) {
-        // Verifica se é PDF
+        // Verifica se é PDF ou imagem
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+        const isImage = file.type.match('image.*');
         
-        if (!isPDF) {
-            showError('Por favor, selecione apenas arquivos PDF.');
+        if (!isPDF && !isImage) {
+            showError('Por favor, selecione apenas arquivos PDF ou imagens.');
             event.target.value = '';
             return;
         }
@@ -102,15 +103,28 @@ function previewArquivo(event) {
             return;
         }
 
-        // Mostra ícone de PDF
-        preview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
-        preview.style.display = 'block';
-        uploadText.textContent = file.name;
+        if (isPDF) {
+            // Mostra ícone de PDF
+            preview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+            preview.style.display = 'block';
+            uploadText.textContent = file.name;
+        } else if (isImage) {
+            // Mostra prévia da imagem
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                uploadText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
     } else {
         preview.style.display = 'none';
-        uploadText.textContent = 'Escolha o arquivo do cardápio (somente PDF)';
+        uploadText.style.display = 'block';
+        }
     }
-}
+
+
 // Função para preview da imagem
 function previewFile(event) {
     const file = event.target.files[0];
@@ -153,8 +167,10 @@ async function enviarArquivo(inputId) {
     // Validação específica para o campo de arquivo principal
     if (inputId === 'upload_arquivo') {
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-        if (!isPDF) {
-            throw new Error('Apenas arquivos PDF são permitidos para o cardápio');
+        const isImage = file.type.match('image.*');
+        
+        if (!isPDF && !isImage) {
+            throw new Error('Apenas arquivos PDF ou imagens são permitidos para o cardápio');
         }
     }
     
@@ -282,18 +298,6 @@ async function enviarPostCompleto() {
             throw new Error(uploadError.message || "Falha ao enviar arquivos. Tente novamente.");
         }
 
-        const arquivoInput = document.getElementById('upload_arquivo');
-        if (arquivoInput.files.length > 0) {
-            const file = arquivoInput.files[0];
-            const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-            
-            if (!isPDF) {
-                showError('O arquivo do cardápio deve ser um PDF');
-                isSubmitting = false;
-                showLoading(false);
-                return;
-            }
-        }
 
         // Preparar dados do post
         const link = document.getElementById("linksocial").value.trim();
