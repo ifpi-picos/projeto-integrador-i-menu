@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
+
 
 * {
     padding: 0;
@@ -251,16 +253,17 @@ form .input-group button {
   left: 20px;
   display: flex;
   align-items: center;
-  color: #ffffff;  /* Cor quente para complementar o design */
-  font-size: 10px;  /* Tamanho de fonte maior e mais imponente */
-  font-weight: 500;  /* Peso da fonte para mais presença */
-  letter-spacing: 2px;  /* Espaçamento entre as letras para um efeito mais estiloso */
-  text-transform: uppercase;  /* Maiúsculas para um estilo mais impactante */
-  cursor: pointer;  /* Para indicar que a logo é clicável */
-  font-family: 'Poppins', sans-serif;  /* Fonte consistente com o design */
-  transition: color 0.3s ease;  /* Transição suave para a cor ao passar o mouse */
-  text-decoration: none;  /* Remove qualquer linha embaixo */
+  color: #ffffff;  /* marrom quente semelhante ao da imagem */
+  font-size: 10px;  /* ajustado para se parecer com o tamanho da imagem */
+  font-weight: 700;  /* mais peso para parecer com a fonte bold da imagem */
+  letter-spacing: 1px;  /* leve espaçamento */
+  text-transform: none;  /* remove o "uppercase" — a imagem mostra "iMenu", não "IMENU" */
+  cursor: pointer;
+  font-family: 'Merriweather', serif;  /* novo estilo serifado */
+  transition: color 0.3s ease;
+  text-decoration: none;
 }
+
 
 .logo:hover {
   color:  #3b1d0f;  /* Cor de destaque (um tom dourado) quando o usuário passa o mouse */
