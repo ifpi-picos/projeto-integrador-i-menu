@@ -48,6 +48,24 @@ async function carregarPost() {
         const post = await postResponse.json();
         const viewsData = await viewsResponse.json();
 
+            const profileBtn = document.getElementById('view-profile-btn');
+    if (post.authorId) {  // Alterado de post.author para post.authorId
+      profileBtn.style.display = 'block';
+      profileBtn.onclick = (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+          window.location.href = `perfil.html?userId=${post.authorId}`;
+        } else {
+          alert("Você precisa estar logado para ver perfis de usuários");
+          window.location.href = "login.html";
+        }
+      };
+    } else {
+      profileBtn.style.display = 'none';
+    }
+
+
         document.getElementById('post-title').textContent = post.title || 'Sem título';
         document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
         document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
@@ -105,21 +123,7 @@ async function carregarPost() {
         }
 
         // Restante do código permanece o mesmo...
-        const profileBtn = document.getElementById('view-profile-btn');
-        if (post.author) {
-            profileBtn.style.display = 'block';
-            profileBtn.onclick = () => {
-                const token = localStorage.getItem("auth_token");
-                if (token) {
-                    window.location.href = `perfil.html?userId=${post.authorId}`;
-                } else {
-                    alert("Você precisa estar logado para ver perfis de usuários");
-                    window.location.href = "login.html";
-                }
-            };
-        } else {
-            profileBtn.style.display = 'none';
-        }
+
 
         await carregarMedia(postId);
         ativarAvaliacao(postId);

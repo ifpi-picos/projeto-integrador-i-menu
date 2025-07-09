@@ -1,5 +1,40 @@
 const webservice = "https://imenu-backend-pd3a.onrender.com"  //"http://localhost:3006"
 
+function parseJwt(token) {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+}
+
+function atualizarPostsUI(posts, containerId, isOwner = false) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = posts.map(post => `
+        <div class="dono_card" data-post-id="${post.id || post._id}">
+            ${isOwner ? `
+            <div class="card-menu" onclick="toggleMenu(event, '${post.id || post._id}')">
+                <span class="menu-dots">⋮</span>
+                <div class="menu-options" id="menu-${post.id || post._id}">
+                    <div class="menu-option" onclick="editarPost('${post.id || post._id}', event)">Editar</div>
+                    <div class="menu-option delete" onclick="excluirPost('${post.id || post._id}', event)">Excluir</div>
+                </div>
+            </div>` : ''}
+            <div onclick="abrirPost('${post.id || post._id}')">
+                ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
+                <div class="post-info">
+                    <h3>${post.title}</h3>
+                    <p>${post.content?.substring(0, 100)}...</p>
+                    <p>Autor: ${post.author?.name || 'Você'}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+
 // Criar usuário
 async function criaruser() {
     const nome = document.getElementById("nome").value;
@@ -64,6 +99,11 @@ async function logar() {
 async function verificarToken() {
     const token = localStorage.getItem("auth_token");
 
+    // Verifica se estamos na página de perfil e se há um userId na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const userIdParam = urlParams.get('userId');
+    
+    // Elementos da UI
     const conta = document.getElementById("perfil-link");
     const username = document.getElementById("username");
     const mapa = document.getElementById("mapaAba");
@@ -71,7 +111,6 @@ async function verificarToken() {
     const cadastrarB = document.querySelectorAll("#button-acount");
     const logarB = document.querySelectorAll("#button-enter");
     const publicar = document.getElementById("publicarAba");
-
     const perfilSidebar = document.getElementById("perfilSidebar");
     const publicarSidebar = document.getElementById("publicarSidebar");
     const editorSidebar = document.getElementById("editorSidebar");
@@ -97,6 +136,83 @@ async function verificarToken() {
     }
 
     try {
+        if (window.location.pathname.includes("perfil.html") && userIdParam) {
+            const response = await fetch(`${webservice}/user/${userIdParam}`, {
+                method: "GET",
+                headers: { 
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao carregar perfil do usuário");
+            }
+
+            const userData = await response.json();
+            
+            // Atualiza a UI com os dados do usuário visitado
+            const spanUser = document.getElementById("P-username");
+            const spanTipo = document.getElementById("tipo-conta");
+            
+            if (spanUser) spanUser.innerText = userData.name;
+            if (spanTipo) spanTipo.innerText = userData.dono ? "Dono de Restaurante" : "Cliente";
+            
+            // Carrega os posts públicos do usuário visitado
+            const publicPosts = await fetch(`${webservice}/user/${userIdParam}/posts`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            }).then(res => res.json());
+            
+            // Carrega os posts privados apenas se for o próprio usuário
+            const tokenData = parseJwt(token);
+            const isOwner = tokenData.id.toString() === userIdParam;
+            let privatePosts = [];
+            
+            if (isOwner) {
+                privatePosts = await fetch(`${webservice}/user/${userIdParam}/posts/private`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                }).then(res => res.json());
+            }
+            
+            // Atualiza a UI com os posts
+            if (publicPosts.length > 0) {
+                atualizarPostsUI(publicPosts, "cards_user", isOwner);
+            } else {
+                document.getElementById("cards_user").innerHTML = "<p>Nenhum cardápio público encontrado</p>";
+            }
+            
+            if (isOwner) {
+                if (privatePosts.length > 0) {
+                    atualizarPostsUI(privatePosts, "cards_user_p", true);
+                } else {
+                    document.getElementById("cards_user_p").innerHTML = "<p>Nenhum cardápio privado encontrado</p>";
+                }
+                
+                // Mostra o relatório apenas para donos vendo seu próprio perfil
+                if (userData.dono) {
+                    await carregarRelatorioVisualizacoes();
+                }
+            } else {
+                document.getElementById("relatorio")?.remove();
+            }
+            
+            // Esconde elementos que só o próprio usuário deve ver
+            if (!isOwner) {
+                document.getElementById("relatorio").style.display = "none";
+                if (userData.dono) {
+                    const localIcons = document.getElementsByName("localizacaoicon");
+                    Array.from(localIcons).forEach(icon => icon.remove());
+                    document.getElementById("locationicon")?.remove();
+                }
+                if (!userData.dono) {
+                    document.getElementById("stars")?.remove();
+                }
+            }
+            
+            return;
+        }
+
+
         const response = await fetch(`${webservice}/dados`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
@@ -165,6 +281,47 @@ async function verificarToken() {
         
     } catch (err) {
         console.error("Erro ao verificar token:", err);
+    }
+}
+
+async function carregarRelatorioVisualizacoes() {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    const relatorioSection = document.getElementById("relatorio");
+    if (!relatorioSection) return;
+
+    try {
+        const response = await fetch(`${webservice}/relatorio/views`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error(`Erro: ${response.status}`);
+        
+        const posts = await response.json();
+        const tbody = document.querySelector("#tabela-relatorio tbody");
+        tbody.innerHTML = "";
+
+        if (posts.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3">Nenhum cardápio publicado ainda</td></tr>`;
+            relatorioSection.style.display = "none";
+            return;
+        }
+
+        posts.forEach(post => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${post.id || post._id}</td>
+                <td>${post.title || 'Sem título'}</td>
+                <td>${post.views || 0}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        relatorioSection.style.display = "block";
+    } catch (err) {
+        console.error("Erro ao carregar relatório:", err);
+        relatorioSection.style.display = "none";
     }
 }
 
