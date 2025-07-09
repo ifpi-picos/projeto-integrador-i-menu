@@ -9,72 +9,88 @@
 </head>
 <body>
 
-  <!-- Botão Voltar -->
-  <a href="index.html" class="back-button">
-    <i class="fas fa-arrow-left"></i> Voltar
-  </a>
+  <!-- Header carrega dinamicamente e ocupa largura total -->
+  <div id="header-container"></div>
 
-  <div id="editorContainer">
-    <div class="controls">
-      <button class="modern-button" onclick="addText()">
-        <i class="fas fa-font button-icon"></i>
-        <span class="button-text">Texto</span>
-      </button>
+  <!-- Wrapper para centralizar só o conteúdo do editor -->
+  <div class="wrapper">
+    <div id="editorContainer">
+      <div class="controls">
+        <button class="modern-button" onclick="addText()">
+          <i class="fas fa-font button-icon"></i>
+          <span class="button-text">Texto</span>
+        </button>
 
-      <label for="imageUpload" class="modern-button">
-        <i class="fas fa-image button-icon"></i>
-        <span class="button-text">Imagem</span>
-      </label>
-      <input type="file" id="imageUpload" accept="image/*" onchange="addImage(event)" />
+        <label for="imageUpload" class="modern-button">
+          <i class="fas fa-image button-icon"></i>
+          <span class="button-text">Imagem</span>
+        </label>
+        <input type="file" id="imageUpload" accept="image/*" onchange="addImage(event)" />
 
-      <button class="modern-button" onclick="bringToFront()">
-        <i class="fas fa-arrow-up button-icon"></i>
-        <span class="button-text">Frente</span>
-      </button>
+        <button class="modern-button" onclick="bringToFront()">
+          <i class="fas fa-arrow-up button-icon"></i>
+          <span class="button-text">Frente</span>
+        </button>
 
-      <button class="modern-button" onclick="sendToBack()">
-        <i class="fas fa-arrow-down button-icon"></i>
-        <span class="button-text">Trás</span>
-      </button>
+        <button class="modern-button" onclick="sendToBack()">
+          <i class="fas fa-arrow-down button-icon"></i>
+          <span class="button-text">Trás</span>
+        </button>
 
-      <button class="modern-button" onclick="deleteSelected()">
-        <i class="fas fa-trash button-icon"></i>
-        <span class="button-text">Deletar</span>
-      </button>
+        <button class="modern-button" onclick="deleteSelected()">
+          <i class="fas fa-trash button-icon"></i>
+          <span class="button-text">Deletar</span>
+        </button>
 
-      <button class="modern-button" onclick="exportToPDF()">
-        <i class="fas fa-file-pdf button-icon"></i>
-        <span class="button-text">PDF</span>
-      </button>
+        <button class="modern-button" onclick="exportToPDF()">
+          <i class="fas fa-file-pdf button-icon"></i>
+          <span class="button-text">PDF</span>
+        </button>
 
+        <button class="modern-button" onclick="setBackgroundImage()">
+          <i class="fas fa-fill-drip button-icon"></i>
+          <span class="button-text">Fundo</span>
+        </button>
+      </div>
 
-      <button class="modern-button" onclick="setBackgroundImage()">
-        <i class="fas fa-fill-drip button-icon"></i>
-        <span class="button-text">Fundo</span>
-      </button>
+      <div class="text-options">
+        <select id="fontFamily">
+          <option value="Arial">Arial</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Times New Roman">Times New Roman</option>
+        </select>
+
+        <input type="number" id="fontSize" value="20" min="10" max="100" />
+        <input type="color" id="fontColor" value="#000000" />
+        <select id="fontStyle">
+          <option value="normal">Normal</option>
+          <option value="bold">Negrito</option>
+          <option value="italic">Itálico</option>
+        </select>
+      </div>
+
+      <canvas id="editorCanvas" width="794" height="1123"></canvas>
     </div>
-
-    <div class="text-options">
-      <select id="fontFamily">
-        <option value="Arial">Arial</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Courier New">Courier New</option>
-        <option value="Times New Roman">Times New Roman</option>
-      </select>
-
-      <input type="number" id="fontSize" value="20" min="10" max="100" />
-      <input type="color" id="fontColor" value="#000000" />
-      <select id="fontStyle">
-        <option value="normal">Normal</option>
-        <option value="bold">Negrito</option>
-        <option value="italic">Itálico</option>
-      </select>
-    </div>
-
-    <canvas id="editorCanvas" width="794" height="1123"></canvas>
   </div>
+
+  <!-- Scripts -->
+  <script src="js/script.js"></script>
+  <script src="js/cabecalho.js"></script>
+  <script src="js/server_script.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <script>
+    lucide.createIcons();
+
+    fetch('cabecalho.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+        if (typeof initCabecalho === 'function') initCabecalho();
+      });
+
     const canvas = document.getElementById("editorCanvas");
     const ctx = canvas.getContext("2d");
 
