@@ -106,11 +106,20 @@
   <h4>Comentários (78) <span class="rating-small">★★★☆☆</span></h4>
 </section>
 
+<div id="footer-container"></div>
+
 <!-- Scripts -->
 <script src="js/server_script.js"></script>
 <script src="js/script.js"></script>
 
 <script>
+
+  fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    });
+
   window.webservice = window.webservice || "https://imenu-backend-pd3a.onrender.com";
 
   function parseJwt(token) {

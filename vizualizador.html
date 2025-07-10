@@ -45,7 +45,11 @@
         <div class="comments-list" id="comments-list"></div>
       </section>
     </div>
+  
   </main>
+
+  <div id="footer-container"></div>
+
 
   <script src="js/script.js"></script>
   <script src="js/cabecalho.js"></script>
@@ -68,6 +72,12 @@
         document.getElementById('header-container').innerHTML = data;
         if (typeof initCabecalho === 'function') initCabecalho();
       });
+
+      fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    });
 
     function parseJwt(token) {
       try {

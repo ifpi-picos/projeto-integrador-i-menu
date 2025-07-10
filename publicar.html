@@ -56,6 +56,9 @@
 
   <input type="hidden" id="linkimg" name="capa" value="">
 
+  <div id="footer-container"></div>
+
+
   <!-- Ordem corrigida: server_script.js vem primeiro -->
   <script src="js/server_script.js"></script>
   <script src="js/script.js"></script>
@@ -71,6 +74,12 @@
         document.getElementById('header-container').innerHTML = data;
         if (typeof initCabecalho === 'function') initCabecalho();
       });
+
+      fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    });
 
     let isSubmitting = false;
 

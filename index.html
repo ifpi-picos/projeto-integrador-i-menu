@@ -122,6 +122,9 @@
     </div>
   </section>
 
+
+  <div id="footer-container"></div>
+
   <!-- Seu script do servidor e principal -->
 <script src="js/server_script.js"></script>
 <script src="js/script.js"></script>
@@ -131,6 +134,12 @@
 
 <!-- Inicialização -->
 <script>
+  fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    });
+  
   document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggleSidebar");
