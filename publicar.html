@@ -56,13 +56,12 @@
 
   <input type="hidden" id="linkimg" name="capa" value="">
 
+  <!-- Ordem corrigida: server_script.js vem primeiro -->
+  <script src="js/server_script.js"></script>
   <script src="js/script.js"></script>
   <script src="js/cabecalho.js"></script>
-  <script src="js/server_script.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  
-  
-  <script src="https://unpkg.com/lucide@latest"></script>
+
   <script>
     lucide.createIcons();
 
@@ -73,9 +72,6 @@
         if (typeof initCabecalho === 'function') initCabecalho();
       });
 
-    // ----------------- TODAS AS FUNÇÕES JS AQUI -----------------
-    const webservice = "https://imenu-backend-pd3a.onrender.com";
-    const webservicef = "https://imenu-back-files.onrender.com";
     let isSubmitting = false;
 
     function showLoading(show) {
@@ -217,87 +213,6 @@
 
       setTimeout(() => progressContainer.style.display = 'none', 2000);
       return data;
-    }
-
-    async function enviarPostCompleto() {
-      if (isSubmitting) return;
-      isSubmitting = true;
-      showLoading(true);
-
-      try {
-        const title = document.getElementById("title").value.trim();
-        const content = document.getElementById("content").value.trim();
-        if (!title) throw new Error('Por favor, adicione um título');
-        if (!content) throw new Error('Por favor, adicione uma descrição');
-
-        const capa = await enviarArquivo('upload_card');
-        const arquivo = await enviarArquivo('upload_arquivo');
-        const link = document.getElementById("linksocial").value.trim();
-        const publice = document.getElementById("public").checked;
-        const token = localStorage.getItem("auth_token");
-        if (!token) return window.location.href = "./login.html";
-
-        const postData = { title, content, sociallink: link || null, publice, capa: capa?.fileUrl, arquivo: arquivo?.fileUrl };
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-        const res = await fetch(`${webservice}/post`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify(postData),
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            localStorage.removeItem('auth_token');
-            return window.location.href = "./login.html";
-          }
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || err.message || `Erro ${res.status}`);
-        }
-
-        alert("Cardápio publicado com sucesso!");
-        window.location.href = "./index.html";
-
-      } catch (err) {
-        console.error(err);
-        showError(err.message || 'Erro inesperado');
-      } finally {
-        isSubmitting = false;
-        showLoading(false);
-      }
-    }
-
-    async function verificarToken() {
-      const token = localStorage.getItem("auth_token");
-      if (!token) return window.location.href = "./login.html";
-
-      try {
-        const res = await fetch(`${webservice}/dados`, {
-          method: "GET",
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-
-        if (!res.ok) {
-          localStorage.removeItem('auth_token');
-          return window.location.href = "./login.html";
-        }
-
-        const data = await res.json();
-        if (!data.dono) {
-          alert("Apenas donos de restaurante podem publicar cardápios");
-          window.location.href = "./index.html";
-        }
-      } catch (err) {
-        window.location.href = "./login.html";
-      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
