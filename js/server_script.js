@@ -1,6 +1,7 @@
 const webservice = "https://imenu-backend-pd3a.onrender.com";
 const webservicef = "https://imenu-back-files.onrender.com";
   //"http://localhost:3006"
+  let imageUrl = null; // Adicione isso no topo do seu script
 
 function parseJwt(token) {
     try {
@@ -356,26 +357,38 @@ async function enviarPostCompleto() {
     const link = document.getElementById("linksocial").value;
     const publice = document.getElementById("public").checked;
     const token = localStorage.getItem("auth_token");
-    
+
     if (!token) {
         alert("Você precisa fazer login primeiro");
         window.location.href = "./login.html";
         return;
     }
 
-    // Verifica se imageUrl foi definido - agora não é mais crítico
-    const capa = imageUrl || null; // Permite que o post seja criado sem imagem
-
-    const novoPost = { 
-        title, 
-        content, 
-        sociallink: link, 
-        publice, 
-        capa
-    };
-
     try {
-        const response = await fetch(`https://imenu-backend-pd3a.onrender.com/post`, {
+        showLoading(true);
+        
+        // Faz upload da imagem de capa
+        const imagemCapa = await enviarArquivo("upload_card");
+        if (!imagemCapa || !imagemCapa.fileUrl) {
+            throw new Error("Erro ao enviar imagem de capa");
+        }
+
+        // Faz upload do arquivo do cardápio (PDF ou imagem)
+        const arquivoCardapio = await enviarArquivo("upload_arquivo");
+        if (!arquivoCardapio || !arquivoCardapio.fileUrl) {
+            throw new Error("Erro ao enviar arquivo do cardápio");
+        }
+
+        const novoPost = {
+            title,
+            content,
+            sociallink: link,
+            publice,
+            capa: imagemCapa.fileUrl,
+            arquivo: arquivoCardapio.fileUrl  // Adiciona o arquivo do cardápio ao post
+        };
+
+        const response = await fetch(`${webservice}/post`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -397,9 +410,12 @@ async function enviarPostCompleto() {
         window.location.href = "./index.html";
     } catch (error) {
         console.error("Erro:", error);
-        alert(error.message);
+        showError(error.message);
+    } finally {
+        showLoading(false);
     }
 }
+
 
 // Carregar últimos posts
 async function carregarUltimosPosts() {
@@ -775,7 +791,10 @@ window.onload = () => {
         (erro) => {
             
             if (window.location.pathname == "/vizualizador.html") return; //VERIFICA DE QUAL ARQUIVO ESTA VINDO A REQUISIÇAO !!!!! PRESTA ATENCAO ROBERTO
-        localizacaoEl.textContent = "📍 Localização não permitida";
+        if (localizacaoEl) {
+  localizacaoEl.textContent = "📍 Localização não permitida";
+}
+
 
         }
       );

@@ -270,7 +270,11 @@ async function abrirArquivo() {
         if (!post.arquivo) return alert('Nenhum arquivo encontrado');
         
         // Verifica se é PDF ou imagem
-        if (post.arquivo.toLowerCase().endsWith('.pdf') || post.arquivo.includes('fl_attachment')) {
+        const isPDF = post.arquivo.toLowerCase().endsWith('.pdf') || 
+                     post.arquivo.includes('fl_attachment') || 
+                     post.arquivo.includes('application/pdf');
+        
+        if (isPDF) {
             // Se for PDF, força o download
             const downloadUrl = post.arquivo.includes('fl_attachment') 
                 ? post.arquivo 
@@ -316,26 +320,27 @@ async function abrirArquivo() {
         document.getElementById('post-views').textContent = `${viewsData.views || 0} visualizações`;
 
         const postImage = document.getElementById('post-image');
-        if (post.capa) {
-          postImage.style.backgroundImage = `url('${post.capa}')`;
-          postImage.style.backgroundSize = 'cover';
-          postImage.style.backgroundPosition = 'center';
-          postImage.style.height = '300px';
-          postImage.style.cursor = 'pointer';
-          
-          // Modificação principal aqui:
-          if (post.arquivo) {
-            // Se tem PDF, baixa o PDF ao clicar
-            postImage.onclick = () => abrirArquivo();
-            postImage.title = 'Clique para baixar o cardápio (PDF)';
-          } else {
-            // Se não tem PDF mas tem capa, abre a imagem em tela cheia
-            postImage.onclick = () => abrirImagemCapa(post.capa);
-            postImage.title = 'Clique para ver o cardápio (Imagem)';
-          }
-        } else {
-          postImage.style.display = 'none';
-        }
+// Modificação principal aqui:
+if (post.capa) {
+  postImage.style.backgroundImage = `url('${post.capa}')`;
+  postImage.style.backgroundSize = 'cover';
+  postImage.style.backgroundPosition = 'center';
+  postImage.style.height = '300px';
+  postImage.style.cursor = 'pointer';
+  
+  // Corrigindo a lógica de clique:
+  if (post.arquivo) {
+    // Sempre abre o arquivo (PDF ou imagem) ao clicar na capa
+    postImage.onclick = () => abrirArquivo();
+    postImage.title = 'Clique para ver o cardápio';
+  } else {
+    // Se não tem arquivo, mas tem capa, abre a imagem em tela cheia
+    postImage.onclick = () => abrirImagemCapa(post.capa);
+    postImage.title = 'Clique para ampliar a imagem';
+  }
+} else {
+  postImage.style.display = 'none';
+}
 
         const profileBtn = document.getElementById('view-profile-btn');
         if (post.author) {
