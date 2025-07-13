@@ -43,7 +43,7 @@ function gerarQRCode(postId, event) {
     
     // URL base do seu site
     const baseUrl = window.location.origin;
-    const postUrl = `${baseUrl}/vizualizador.html?id=${postId}`;
+    const postUrl = `${baseUrl}/projeto-integrador-i-menu/vizualizador.html?id=${postId}`;
     
     // Criar modal para mostrar o QR Code
     const modal = document.createElement('div');
