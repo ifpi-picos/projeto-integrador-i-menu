@@ -102,17 +102,27 @@
       </div>
     </div>
 
+    <div id="footer-container"></div>
+
     <script src="js/script.js"></script>
   <script src="js/cabecalho.js"></script>
   <script src="js/server_script.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
     
     <script>
+      lucide.createIcons();
       fetch('cabecalho.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('header-container').innerHTML = data;
         if (typeof initCabecalho === 'function') initCabecalho();
       });
+
+      fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    });
 
     </script>
 

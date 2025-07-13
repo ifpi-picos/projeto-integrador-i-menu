@@ -6,20 +6,22 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     background-color: #f9f9f9;
     margin: 0;
-    padding: 10px;
-    position: relative;
+    padding: 0;
 }
 
-#preview{
-    max-width: 40vw;
-    width: 40vw;
+/* NOVO: Wrapper para centralizar apenas o conteúdo */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px 20px; /* Reduzido de 40px */
+    min-height: auto; /* Ou ajuste para um valor menor se quiser garantir altura mínima */
+    margin-top: -100px; /* Adicione controle explícito do espaço */
 }
+
+
 
 .container {
     display: flex;
@@ -28,10 +30,11 @@ body {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
+    max-width: 900px;
     width: 100%;
-    min-height: 400px;
     gap: 30px;
+    justify-content: center;
+    margin-top: 100px; /* ← ALTERADO: espaço abaixo do cabeçalho */
 }
 
 .upload-box {
@@ -47,6 +50,9 @@ body {
     cursor: pointer;
     position: relative;
     flex-shrink: 0;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
 }
 
 .upload-box input {
@@ -61,8 +67,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    flex: 1;
-    min-width: 250px;
+    flex: 1 1 300px;
+    min-width: 280px;
+    max-width: 500px;
 }
 
 input, textarea {
@@ -131,11 +138,33 @@ button:active {
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+.progress-container {
+    width: 100%;
+    background-color: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 8px;
+    display: none;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #3b1d1a;
+    transition: width 0.3s ease;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 @media (max-width: 768px) {
     body {
-        height: auto;
         flex-direction: column;
         align-items: stretch;
+        padding: 15px;
     }
 
     .container {
@@ -145,23 +174,17 @@ button:active {
         gap: 20px;
     }
 
-    #preview {
-        max-width: 100%;
-        width: 100%;
-    }
-
     .upload-box {
         width: 100%;
-        height: 250px;
+        height: auto;
+        aspect-ratio: 4 / 3;
     }
 
     .form-section {
         width: 100%;
-        min-width: unset;
     }
 
     button {
         width: 100%;
-        margin-bottom: 10px;
     }
 }

@@ -1,423 +1,237 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publicação de Cardápio</title>
-    <link rel="stylesheet" href="publicar.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Publicação de Cardápio</title>
+  <link rel="stylesheet" href="publicar.css" />
 </head>
 <body>
+  <div id="header-container"></div>
+
+  <div class="wrapper">
     <div class="container">
-<!-- Altere o input da capa para aceitar apenas imagens -->
-<label class="upload-box">
-    <input type="file" accept="image/*" id="upload_card" onchange="previewFile(event)">
-    <span id="upload-text">Imagem de Capa</span>
-    <img id="preview" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
-</label>
+      <label class="upload-box">
+        <input type="file" accept="image/*" id="upload_card" onchange="previewFile(event)">
+        <span id="upload-text">Imagem de Capa</span>
+        <img id="preview" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
+      </label>
 
-<!-- Mantenha o input do arquivo como está -->
-<label class="upload-box" style="margin-top: 15px;">
-    <input type="file" accept=".pdf,application/pdf,image/*" id="upload_arquivo" onchange="previewArquivo(event)">
-    <span id="upload-text-arquivo">Escolha o arquivo do cardápio (PDF ou imagem)</span>
-    <img id="preview-arquivo" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
-</label>
-        
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-bar" id="progressBar"></div>
+      <label class="upload-box" style="margin-top: 15px;">
+        <input type="file" accept=".pdf,application/pdf,image/*" id="upload_arquivo" onchange="previewArquivo(event)">
+        <span id="upload-text-arquivo">Escolha o arquivo do cardápio (PDF ou imagem)</span>
+        <img id="preview-arquivo" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
+      </label>
+
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <div class="form-section">
+        <label>Título</label>
+        <input id="title" type="text" placeholder="Adicione um título" required>
+
+        <label>Descrição</label>
+        <textarea id="content" placeholder="Adicione uma descrição detalhada"></textarea>
+
+        <label>Link</label>
+        <input type="text" id="linksocial" placeholder="Adicione um link">
+
+        <div class="radio-group">
+          <label><input type="radio" name="privacidade" id="public" value="publico"> Público</label>
+          <label><input type="radio" name="privacidade" id="private" value="privado" checked> Privado</label>
+        </div> 
+
+        <div id="result"></div>
+        <input id="linkimg" type="hidden">
+
+        <div class="button-group">
+          <button id="postar_btn">Postar</button>
+          <button class="back-button" onclick="window.location.href='index.html'">Voltar para o início</button>
         </div>
-        
-        <div class="form-section">
-            <label>Título</label>
-            <input id="title" type="text" placeholder="Adicione um título" required>
-
-            <label>Descrição</label>
-            <textarea id="content" placeholder="Adicione uma descrição detalhada"></textarea>
-
-            <label>Link</label>
-            <input type="text" id="linksocial" placeholder="Adicione um link">
-
-            <div class="radio-group">
-                <label><input type="radio" name="privacidade" id="public" value="publico"> Público</label>
-                <label><input type="radio" name="privacidade" id="private" value="privado" checked> Privado</label>
-            </div> 
-
-            <div id="result"></div>
-            <input id="linkimg" type="hidden">
-
-            <div class="button-group">
-                <button id="postar_btn">Postar</button>
-                <button class="back-button" onclick="window.location.href='index.html'">Voltar para o inicio</button>
-            </div>
-            <div id="result"></div>
-        </div>
+        <div id="result"></div>
+      </div>
     </div>
-    <input type="hidden" id="linkimg" name="capa" value="">
+  </div>
 
-    <script>
-// Configurações
-const webservice = "https://imenu-backend-pd3a.onrender.com";
-const webservicef = "https://imenu-back-files.onrender.com";
-let imageUrl = '';
-let isSubmitting = false; // Flag para evitar múltiplos envios
+  <input type="hidden" id="linkimg" name="capa" value="">
 
-// Função para mostrar feedback visual
-function showLoading(show) {
-    const postarBtn = document.getElementById('postar_btn');
-    if (show) {
-        postarBtn.disabled = true;
-        postarBtn.innerHTML = '<span class="spinner"></span> Enviando...';
-    } else {
-        postarBtn.disabled = false;
-        postarBtn.textContent = 'Publicar Cardápio';
-    }
-}
+  <div id="footer-container"></div>
 
-// Função para mostrar mensagem de erro
-function showError(message) {
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<p class="error-message">❌ ${message}</p>`;
-    resultDiv.scrollIntoView({ behavior: 'smooth' });
-}
 
-// Adicione função para preview do arquivo
-function previewArquivo(event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById('preview-arquivo');
-    const uploadText = document.getElementById('upload-text-arquivo');
-    
-    if (file) {
-        // Verifica se é PDF ou imagem
-        const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-        const isImage = file.type.match('image.*');
-        
-        if (!isPDF && !isImage) {
-            showError('Por favor, selecione apenas arquivos PDF ou imagens.');
-            event.target.value = '';
-            return;
-        }
+  <!-- Ordem corrigida: server_script.js vem primeiro -->
+  <script src="js/server_script.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/cabecalho.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-        // Verifica tamanho máximo (10MB)
-        if (file.size > 10 * 1024 * 1024) {
-            showError('O arquivo deve ter no máximo 10MB');
-            event.target.value = '';
-            return;
-        }
+  <script>
+    lucide.createIcons();
 
-        if (isPDF) {
-            // Mostra ícone de PDF
-            preview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
-            preview.style.display = 'block';
-            uploadText.textContent = file.name;
-        } else if (isImage) {
-            // Mostra prévia da imagem
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                uploadText.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        }
-    } else {
-        preview.style.display = 'none';
-        uploadText.style.display = 'block';
-        }
+    fetch('cabecalho.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+        if (typeof initCabecalho === 'function') initCabecalho();
+      });
+
+      fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    });
+
+    let isSubmitting = false;
+
+    function showLoading(show) {
+      const btn = document.getElementById('postar_btn');
+      btn.disabled = show;
+      btn.innerHTML = show ? '<span class="spinner"></span> Enviando...' : 'Publicar Cardápio';
     }
 
+    function showError(message) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<p class="error-message">❌ ${message}</p>`;
+      resultDiv.scrollIntoView({ behavior: 'smooth' });
+    }
 
-// Função para preview da imagem
-function previewFile(event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById('preview');
-    const uploadText = document.getElementById('upload-text');
-    
-    if (file) {
+    function previewFile(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('preview');
+      const uploadText = document.getElementById('upload-text');
+
+      if (file) {
         if (file.size > 10 * 1024 * 1024) {
-            showError('O arquivo deve ter no máximo 10MB');
-            event.target.value = '';
-            return;
+          showError('O arquivo deve ter no máximo 10MB');
+          event.target.value = '';
+          return;
         }
-
-        // Aceita apenas imagens
         if (file.type.match('image.*')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                uploadText.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+          const reader = new FileReader();
+          reader.onload = e => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            uploadText.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
         } else {
-            showError('Por favor, selecione apenas imagens para a capa');
-            event.target.value = '';
+          showError('Por favor, selecione apenas imagens para a capa');
+          event.target.value = '';
         }
-    } else {
+      } else {
         preview.style.display = 'none';
         uploadText.style.display = 'block';
         uploadText.textContent = 'Escolha uma imagem para capa';
+      }
     }
-}
 
-async function enviarArquivo(inputId) {
-    const fileInput = document.getElementById(inputId);
-    if (!fileInput || !fileInput.files[0]) return null;
-    
-    const file = fileInput.files[0];
-    
-    // Validação específica para o campo de arquivo principal
-    if (inputId === 'upload_arquivo') {
+    function previewArquivo(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('preview-arquivo');
+      const uploadText = document.getElementById('upload-text-arquivo');
+
+      if (file) {
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
         const isImage = file.type.match('image.*');
-        
+
         if (!isPDF && !isImage) {
-            throw new Error('Apenas arquivos PDF ou imagens são permitidos para o cardápio');
+          showError('Por favor, selecione apenas arquivos PDF ou imagens.');
+          event.target.value = '';
+          return;
         }
-    }
-    
-    // Verifica tamanho do arquivo (máx 25MB)
-    if (file.size > 25 * 1024 * 1024) {
-        throw new Error('Arquivo muito grande (máx. 25MB)');
-    }
-
-    try {
-        // Mostra progresso
-        const progressBar = document.getElementById('progressBar');
-        const progressContainer = document.getElementById('progressContainer');
-        progressBar.style.width = '0%';
-        progressContainer.style.display = 'block';
-        
-        // Converte para base64 com progresso
-        const fileBase64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const base64String = reader.result.split(',')[1];
-                resolve(base64String);
-            };
-            reader.onerror = error => reject(error);
-            reader.onprogress = (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressBar.style.width = `${percent}%`;
-                    progressBar.setAttribute('aria-valuenow', percent);
-                }
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // Configura timeout de 180 segundos (3 minutos)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 180000);
-
-        console.log('Iniciando upload do arquivo:', file.name, 'Tamanho:', file.size);
-        
-        const response = await fetch(`${webservicef}/api/upload`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ 
-                file: fileBase64,
-                fileType: file.type,
-                isCardapio: inputId === 'upload_arquivo' // Adiciona flag para identificar cardápios
-            }),
-            signal: controller.signal,
-            mode: 'cors' // Garante que o modo CORS está ativo
-        });
-        
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('Erro na resposta:', errorData);
-            throw new Error(errorData.error || `Erro ${response.status}`);
+        if (file.size > 10 * 1024 * 1024) {
+          showError('O arquivo deve ter no máximo 10MB');
+          event.target.value = '';
+          return;
         }
-        
-        const responseData = await response.json();
-        console.log('Upload concluído:', responseData);
-        
-        progressBar.style.width = '100%';
-        progressBar.style.backgroundColor = '#4CAF50';
-        
-        return {
-            fileUrl: responseData.fileUrl || null,
-            fileType: responseData.fileType || file.type
+
+        if (isPDF) {
+          preview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+          preview.style.display = 'block';
+          uploadText.textContent = file.name;
+        } else {
+          const reader = new FileReader();
+          reader.onload = e => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            uploadText.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        }
+      } else {
+        preview.style.display = 'none';
+        uploadText.style.display = 'block';
+      }
+    }
+
+    async function enviarArquivo(inputId) {
+      const input = document.getElementById(inputId);
+      const file = input?.files[0];
+      if (!file) return null;
+
+      if (inputId === 'upload_arquivo') {
+        const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+        const isImage = file.type.match('image.*');
+        if (!isPDF && !isImage) throw new Error('Apenas arquivos PDF ou imagens são permitidos');
+      }
+
+      if (file.size > 25 * 1024 * 1024) throw new Error('Arquivo muito grande (máx. 25MB)');
+
+      const progressBar = document.getElementById('progressBar');
+      const progressContainer = document.getElementById('progressContainer');
+      progressBar.style.width = '0%';
+      progressContainer.style.display = 'block';
+
+      const fileBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.onprogress = e => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            progressBar.style.width = `${percent}%`;
+            progressBar.setAttribute('aria-valuenow', percent);
+          }
         };
-        
-    } catch (error) {
-        console.error('Erro no upload:', error);
-        const progressBar = document.getElementById('progressBar');
-        progressBar.style.backgroundColor = '#f44336';
-        
-        throw new Error(error.name === 'AbortError' 
-            ? 'O upload demorou muito. Tente um arquivo menor ou verifique sua conexão.' 
-            : 'Falha ao enviar arquivo: ' + (error.message || 'Erro desconhecido'));
-    } finally {
-        setTimeout(() => {
-            const progressContainer = document.getElementById('progressContainer');
-            progressContainer.style.display = 'none';
-        }, 2000);
-    }
-}
+        reader.readAsDataURL(file);
+      });
 
-// Atualize a função enviarPostCompleto
-async function enviarPostCompleto() {
-    if (isSubmitting) return;
-    isSubmitting = true;
-    showLoading(true);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 180000);
 
-    try {
-        // Validação básica
-        const title = document.getElementById("title").value.trim();
-        const content = document.getElementById("content").value.trim();
-        
-        if (!title) throw new Error('Por favor, adicione um título');
-        if (!content) throw new Error('Por favor, adicione uma descrição');
+      const res = await fetch(`${webservicef}/api/upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ file: fileBase64, fileType: file.type, isCardapio: inputId === 'upload_arquivo' }),
+        signal: controller.signal
+      });
 
-        console.log('Iniciando upload dos arquivos...');
-        
-        // Upload dos arquivos
-        let capaUrl = null;
-        let arquivoUrl = null;
-        
-        try {
-            console.log('Enviando capa...');
-            const capaResponse = await enviarArquivo('upload_card');
-            capaUrl = capaResponse?.fileUrl || null;
-            
-            console.log('Enviando arquivo principal...');
-            const arquivoResponse = await enviarArquivo('upload_arquivo');
-            arquivoUrl = arquivoResponse?.fileUrl || null;
-            
-            console.log('Arquivos enviados com sucesso:', {
-                capa: capaUrl,
-                arquivo: arquivoUrl
-            });
-        } catch (uploadError) {
-            console.error("Erro no upload do arquivo:", uploadError);
-            throw new Error(uploadError.message || "Falha ao enviar arquivos. Tente novamente.");
-        }
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Erro ${res.status}`);
+      }
+
+      const data = await res.json();
+      progressBar.style.width = '100%';
+      progressBar.style.backgroundColor = '#4CAF50';
 
 
-        // Preparar dados do post
-        const link = document.getElementById("linksocial").value.trim();
-        const publice = document.getElementById("public").checked;
-        const token = localStorage.getItem("auth_token");
-        
-        if (!token) {
-            window.location.href = "./login.html";
-            return;
-        }
-
-        const postData = { 
-            title, 
-            content, 
-            sociallink: link || null, 
-            publice, 
-            capa: capaUrl,
-            arquivo: arquivoUrl
-        };
-
-        console.log("Enviando dados para o servidor:", postData);
-
-        // Configura timeout de 60 segundos
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-        try {
-            const response = await fetch(`${webservice}/post`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(postData),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                console.error("Erro na resposta do servidor:", errorData);
-                
-                if (response.status === 401) {
-                    localStorage.removeItem('auth_token');
-                    window.location.href = "./login.html";
-                    return;
-                }
-                
-                throw new Error(errorData.error || errorData.message || `Erro ${response.status}`);
-            }
-
-            const responseData = await response.json();
-            console.log("Post criado com sucesso:", responseData);
-            
-            alert("Cardápio publicado com sucesso!");
-            window.location.href = "./index.html";
-
-        } catch (error) {
-            clearTimeout(timeoutId);
-            console.error("Erro ao publicar:", error);
-            
-            let errorMessage = error.message;
-            if (error.name === 'AbortError') {
-                errorMessage = "A operação demorou muito. Verifique sua conexão e tente novamente.";
-            } else if (error.message.includes('Failed to fetch')) {
-                errorMessage = "Falha na conexão com o servidor. Verifique sua internet.";
-            }
-            
-            showError(errorMessage);
-            throw error; // Re-lança o erro para ser capturado no bloco catch externo
-        }
-    } catch (error) {
-        console.error("Erro no processo de publicação:", error);
-    } finally {
-        isSubmitting = false;
-        showLoading(false);
-    }
-}
-
-// Verificação do token
-async function verificarToken() {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-        window.location.href = "./login.html";
-        return;
+      setTimeout(() => progressContainer.style.display = 'none', 2000);
+      return data;
     }
 
-    try {
-        const response = await fetch(`${webservice}/dados`, {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${token}` }
-        });
-
-        if (!response.ok) {
-            localStorage.removeItem('auth_token');
-            window.location.href = "./login.html";
-            return;
-        }
-
-        const data = await response.json();
-        if (!data.dono) {
-            alert("Apenas donos de restaurante podem publicar cardápios");
-            window.location.href = "./index.html";
-        }
-    } catch (err) {
-        console.error("Erro ao verificar token:", err);
-        window.location.href = "./login.html";
-    }
-}
-
-// Event Listeners
-document.addEventListener('DOMContentLoaded', function() {
-    verificarToken();
-    
-    document.getElementById('postar_btn').addEventListener('click', function(e) {
+    document.addEventListener('DOMContentLoaded', () => {
+      verificarToken();
+      document.getElementById('postar_btn').addEventListener('click', e => {
         e.preventDefault();
         enviarPostCompleto();
+      });
     });
-});
-    </script>
+  </script>
 </body>
 </html>

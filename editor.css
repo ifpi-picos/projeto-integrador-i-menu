@@ -8,6 +8,25 @@ body {
   align-items: center;
 }
 
+#header-container {
+   width: 1340px; /* largura A4 */
+  background: white;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0,0,0,0.05);
+
+}
+
+
+
+.wrapper {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+
 .back-button {
   margin-top: 20px;
   align-self: flex-start;
