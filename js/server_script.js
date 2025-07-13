@@ -19,6 +19,7 @@ function atualizarPostsUI(posts, containerId, isOwner = false) {
                 <span class="menu-dots">⋮</span>
                 <div class="menu-options" id="menu-${post.id || post._id}">
                     <div class="menu-option" onclick="editarPost('${post.id || post._id}', event)">Editar</div>
+                    <div class="menu-option qr-code" onclick="gerarQRCode('${post.id || post._id}', event)">Gerar QR Code</div>
                     <div class="menu-option delete" onclick="excluirPost('${post.id || post._id}', event)">Excluir</div>
                 </div>
             </div>` : ''}
@@ -34,6 +35,69 @@ function atualizarPostsUI(posts, containerId, isOwner = false) {
     `).join('');
 }
 
+function gerarQRCode(postId, event) {
+    event.stopPropagation();
+    
+    // URL base do seu site
+    const baseUrl = window.location.origin;
+    const postUrl = `${baseUrl}/vizualizador.html?id=${postId}`;
+    
+    // Criar modal para mostrar o QR Code
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.style.flexDirection = 'column';
+    
+    // Conteúdo do modal
+    modal.innerHTML = `
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <h3 style="margin-bottom: 15px;">QR Code do Cardápio</h3>
+            <div id="qrcode-container" style="margin: 0 auto 15px; width: 200px; height: 200px;"></div>
+            <p style="margin-bottom: 15px;">Escaneie este QR Code para acessar o cardápio</p>
+            <button onclick="this.closest('div').parentNode.remove()" 
+                    style="padding: 8px 15px; background: #3B1D0F; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Fechar
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Carregar a biblioteca qrcode-generator dinamicamente se não estiver disponível
+    if (typeof QRCode === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
+        script.onload = () => generateQR(postUrl);
+        document.head.appendChild(script);
+    } else {
+        generateQR(postUrl);
+    }
+    
+    function generateQR(url) {
+        // Usando qrcode-generator
+        const qr = qrcode(0, 'H'); // 'H' é o nível de correção de erro (High)
+        qr.addData(url);
+        qr.make();
+        
+        const qrContainer = document.getElementById('qrcode-container');
+        qrContainer.innerHTML = qr.createImgTag(8, 0); // 8 é o tamanho do módulo, 0 é a margem
+        
+        // Estiliza a imagem gerada
+        const qrImg = qrContainer.querySelector('img');
+        if (qrImg) {
+            qrImg.style.width = '100%';
+            qrImg.style.height = '100%';
+        }
+    }
+}
 
 // Criar usuário
 async function criaruser() {
@@ -476,25 +540,26 @@ async function CarregarPostsDono() {
         const postsContainerInfo = document.getElementById("cards_user_info");
 
         if (postsContainer && postsContainerInfo) {
-            postsContainer.innerHTML = userPosts.map(post => `
-                <div class="dono_card" data-post-id="${post.id}">
-                    <div class="card-menu" onclick="toggleMenu(event, '${post.id}')">
-                        <span class="menu-dots">⋮</span>
-                        <div class="menu-options" id="menu-${post.id}">
-                            <div class="menu-option" onclick="editarPost('${post.id}', event)">Editar</div>
-                            <div class="menu-option delete" onclick="excluirPost('${post.id}', event)">Excluir</div>
-                        </div>
-                    </div>
-                    <div onclick="abrirPost('${post.id}')">
-                        ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
-                        <div class="post-info">
-                            <h3>${post.title}</h3>
-                            <p>${post.content?.substring(0, 100)}...</p>
-                            <p>Autor: ${post.author?.name || 'Você'}</p>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+postsContainer.innerHTML = userPosts.map(post => `
+    <div class="dono_card" data-post-id="${post.id}">
+        <div class="card-menu" onclick="toggleMenu(event, '${post.id}')">
+            <span class="menu-dots">⋮</span>
+            <div class="menu-options" id="menu-${post.id}">
+                <div class="menu-option" onclick="editarPost('${post.id}', event)">Editar</div>
+                <div class="menu-option qr-code" onclick="gerarQRCode('${post.id}', event)">Gerar QR Code</div>
+                <div class="menu-option delete" onclick="excluirPost('${post.id}', event)">Excluir</div>
+            </div>
+        </div>
+        <div onclick="abrirPost('${post.id}')">
+            ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
+            <div class="post-info">
+                <h3>${post.title}</h3>
+                <p>${post.content?.substring(0, 100)}...</p>
+                <p>Autor: ${post.author?.name || 'Você'}</p>
+            </div>
+        </div>
+    </div>
+`).join('');
         }
         return userPosts;
     } catch (err) {

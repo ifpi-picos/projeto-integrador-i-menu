@@ -6,12 +6,51 @@
     <title>Editar Cardápio</title>
     <link rel="stylesheet" href="editar.css" />
     <style>
-        /* Adicione os mesmos estilos do publicar.css */
+        /* Estilos básicos para a página de edição */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        textarea {
+            min-height: 200px;
+        }
+        button {
+            background-color: #3B1D0F;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #upload-area {
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin-bottom: 15px;
+        }
+        .radio-group {
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
-    <!-- Adicione a estrutura HTML completa aqui -->
     <div class="container">
+        <h1>Editar Cardápio</h1>
         <input type="text" id="title" placeholder="Título">
         <textarea id="content" placeholder="Conteúdo"></textarea>
         <input type="text" id="linksocial" placeholder="Link Social">
@@ -25,178 +64,162 @@
             <img id="preview" style="display: none;">
             <span id="upload-text">Upload de imagem</span>
         </div>
-        <button onclick="salvarEdicao()">Salvar</button>
+        <button onclick="salvarEdicao()">Salvar Alterações</button>
     </div>
 
     <script>
         const webservice = "https://imenu-backend-pd3a.onrender.com";
-        
-async function carregarPost() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('id');
-    if (!postId || postId === 'undefined') {
-        alert('Post não encontrado: ID inválido');
-        window.location.href = 'index.html';
-        return;
-    }
-    try {
-        await registrarVisualizacao(postId);
-        const [postResponse, viewsResponse] = await Promise.all([
-            fetch(`${beleza}/posts/${postId}`),
-            fetch(`${beleza}/posts/${postId}/views`)
-        ]);
-        const post = await postResponse.json();
-        const viewsData = await viewsResponse.json();
+        let currentPostId = null;
+        let currentCapaUrl = null;
 
-            const profileBtn = document.getElementById('view-profile-btn');
-    if (post.authorId) {  // Alterado de post.author para post.authorId
-      profileBtn.style.display = 'block';
-      profileBtn.onclick = (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem("auth_token");
-        if (token) {
-          window.location.href = `perfil.html?userId=${post.authorId}`;
-        } else {
-          alert("Você precisa estar logado para ver perfis de usuários");
-          window.location.href = "login.html";
-        }
-      };
-    } else {
-      profileBtn.style.display = 'none';
-    }
-
-
-        document.getElementById('post-title').textContent = post.title || 'Sem título';
-        document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
-        document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
-        document.getElementById('post-views').textContent = `${viewsData.views || 0} visualizações`;
-
-        const postImage = document.getElementById('post-image');
-        if (post.capa) {
-            postImage.style.backgroundImage = `url('${post.capa}')`;
-            postImage.style.backgroundSize = 'cover';
-            postImage.style.backgroundPosition = 'center';
-            postImage.style.height = '300px';
-            postImage.style.cursor = 'pointer';
+        // Função para carregar os dados do post a ser editado
+        async function carregarPostParaEdicao() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentPostId = urlParams.get('id');
             
-            // Verifica se tem arquivo e se é PDF ou imagem
-            if (post.arquivo) {
-                const isPDF = post.arquivo.toLowerCase().endsWith('.pdf') || post.arquivo.includes('fl_attachment');
-                if (isPDF) {
-                    // Se for PDF, baixa o PDF ao clicar
-                    postImage.onclick = () => abrirArquivo();
-                    postImage.title = 'Clique para baixar o cardápio (PDF)';
-                } else {
-                    // Se for imagem, abre a imagem do arquivo em modal
-                    postImage.onclick = () => abrirImagemCapa(post.arquivo);
-                    postImage.title = 'Clique para ver o cardápio (Imagem)';
-                }
-            } else {
-                // Se não tem arquivo mas tem capa, abre a capa em modal
-                postImage.onclick = () => abrirImagemCapa(post.capa);
-                postImage.title = 'Clique para ver a imagem em tela cheia';
-            }
-        } else if (post.arquivo) {
-            // Se não tem capa mas tem arquivo (imagem)
-            const isPDF = post.arquivo.toLowerCase().endsWith('.pdf') || post.arquivo.includes('fl_attachment');
-            if (!isPDF) {
-                // Mostra a imagem do arquivo como imagem principal
-                postImage.style.backgroundImage = `url('${post.arquivo}')`;
-                postImage.style.backgroundSize = 'cover';
-                postImage.style.backgroundPosition = 'center';
-                postImage.style.height = '300px';
-                postImage.style.cursor = 'pointer';
-                postImage.onclick = () => abrirImagemCapa(post.arquivo);
-                postImage.title = 'Clique para ver o cardápio (Imagem)';
-            } else {
-                // Se for PDF sem capa, mostra um placeholder
-                postImage.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/337/337946.png")';
-                postImage.style.backgroundSize = 'contain';
-                postImage.style.backgroundColor = '#f0f0f0';
-                postImage.style.height = '300px';
-                postImage.style.cursor = 'pointer';
-                postImage.onclick = () => abrirArquivo();
-                postImage.title = 'Clique para baixar o cardápio (PDF)';
-            }
-        } else {
-            postImage.style.display = 'none';
-        }
-
-        // Restante do código permanece o mesmo...
-
-
-        await carregarMedia(postId);
-        ativarAvaliacao(postId);
-        await carregarComentarios(postId);
-    } catch (error) {
-        console.error('Erro ao carregar post:', error);
-        alert(`Erro ao carregar post: ${error.message}`);
-        setTimeout(() => window.location.href = 'index.html', 2000);
-    }
-}
-        
-    async function salvarEdicao() {
-        const params = new URLSearchParams(window.location.search);
-        const postId = params.get("id");
-        
-        if (!postId) {
-            alert("Post não encontrado");
-            window.location.href = "perfil.html";
-            return;
-        }
-
-        // Obter os valores dos campos
-        const title = document.getElementById("title").value;
-        const content = document.getElementById("content").value;
-        const sociallink = document.getElementById("linksocial").value;
-        const isPublic = document.getElementById("public").checked;
-        const previewElement = document.getElementById("preview");
-        const capa = previewElement.style.display !== 'none' ? previewElement.src : null;
-
-        if (!title || !content) {
-            alert("Título e conteúdo são obrigatórios!");
-            return;
-        }
-
-        try {
-            // Obter o token JWT do localStorage ou de onde você o armazena
-            const token = localStorage.getItem('auth_token'); // Ajuste conforme sua aplicação
-            
-            if (!token) {
-                alert("Sessão expirada. Faça login novamente.");
-                window.location.href = "login.html";
+            if (!currentPostId) {
+                alert('Post não encontrado: ID inválido');
+                window.location.href = 'perfil.html';
                 return;
             }
 
-            const response = await fetch(`${webservice}/posts/${postId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    title,
-                    content,
-                    sociallink,
-                    public: isPublic,
-                    capa
-                })
-            });
+            try {
+                const token = localStorage.getItem('auth_token');
+                if (!token) {
+                    alert('Você precisa estar logado para editar posts');
+                    window.location.href = 'login.html';
+                    return;
+                }
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Erro ao atualizar post");
+                const response = await fetch(`${webservice}/posts/${currentPostId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar post');
+                }
+
+                const post = await response.json();
+
+                // Preencher os campos com os dados do post
+                document.getElementById('title').value = post.title || '';
+                document.getElementById('content').value = post.content || '';
+                document.getElementById('linksocial').value = post.sociallink || '';
+                
+                // Definir a opção de visibilidade
+                if (post.public) {
+                    document.getElementById('public').checked = true;
+                } else {
+                    document.getElementById('private').checked = true;
+                }
+
+                // Mostrar a imagem de capa se existir
+                if (post.capa) {
+                    currentCapaUrl = post.capa;
+                    const preview = document.getElementById('preview');
+                    preview.src = post.capa;
+                    preview.style.display = 'block';
+                    document.getElementById('upload-text').style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar post:', error);
+                alert(`Erro ao carregar post: ${error.message}`);
+                window.location.href = 'perfil.html';
+            }
+        }
+
+        // Função para lidar com o upload de imagem
+        document.getElementById('upload-area').addEventListener('click', function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (file.size > 10 * 1024 * 1024) { // 10MB
+                    alert('O arquivo deve ter no máximo 10MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('upload-text').style.display = 'none';
+                    
+                    // Aqui você pode adicionar lógica para enviar a imagem para o servidor
+                    // e atualizar currentCapaUrl com a nova URL
+                };
+                reader.readAsDataURL(file);
+            };
+            
+            input.click();
+        });
+
+        // Função para salvar as alterações
+        async function salvarEdicao() {
+            if (!currentPostId) {
+                alert('Post não identificado');
+                return;
             }
 
-            alert("Post atualizado com sucesso!");
-            window.location.href = "perfil.html";
-        } catch (err) {
-            console.error("Erro ao salvar edição:", err);
-            alert("Erro ao salvar edição: " + err.message);
-        }
-    }
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const sociallink = document.getElementById('linksocial').value.trim();
+            const isPublic = document.getElementById('public').checked;
+            
+            if (!title || !content) {
+                alert('Título e conteúdo são obrigatórios');
+                return;
+            }
 
-    document.addEventListener('DOMContentLoaded', carregarPost);
+            try {
+                const token = localStorage.getItem('auth_token');
+                if (!token) {
+                    alert('Sessão expirada. Faça login novamente.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const postData = {
+                    title,
+                    content,
+                    sociallink: sociallink || null,
+                    public: isPublic,
+                    capa: currentCapaUrl
+                };
+
+                const response = await fetch(`${webservice}/posts/${currentPostId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(postData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Erro ao atualizar post');
+                }
+
+                alert('Post atualizado com sucesso!');
+                window.location.href = 'perfil.html';
+
+            } catch (error) {
+                console.error('Erro ao salvar edição:', error);
+                alert(`Erro ao salvar edição: ${error.message}`);
+            }
+        }
+
+        // Carregar o post quando a página for aberta
+        document.addEventListener('DOMContentLoaded', carregarPostParaEdicao);
     </script>
 </body>
 </html>
