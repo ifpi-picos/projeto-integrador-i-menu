@@ -41,9 +41,9 @@ function atualizarPostsUI(posts, containerId, isOwner = false) {
 function gerarQRCode(postId, event) {
     event.stopPropagation();
     
-    // URL base do seu site
-    const baseUrl = window.location.origin;
-    const postUrl = `${baseUrl}/projeto-integrador-i-menu/vizualizador.html?id=${postId}`;
+    // URL base do seu site - agora usando seu domínio personalizado
+    const baseUrl = "https://www.imenucorp.shop"; // Substitua pelo seu domínio completo
+    const postUrl = `${baseUrl}/vizualizador.html?id=${postId}`;
     
     // Criar modal para mostrar o QR Code
     const modal = document.createElement('div');
@@ -65,6 +65,7 @@ function gerarQRCode(postId, event) {
             <h3 style="margin-bottom: 15px;">QR Code do Cardápio</h3>
             <div id="qrcode-container" style="margin: 0 auto 15px; width: 200px; height: 200px;"></div>
             <p style="margin-bottom: 15px;">Escaneie este QR Code para acessar o cardápio</p>
+            <p style="margin-bottom: 15px; font-size: 12px; color: #666;">URL: ${postUrl}</p>
             <button onclick="this.closest('div').parentNode.remove()" 
                     style="padding: 8px 15px; background: #3B1D0F; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 Fechar
