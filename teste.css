@@ -18,7 +18,8 @@ a {
 
 /*Cardapios publicados recentemente*/
 #posts-recentes {
-    height: 49vh;
+    /* remova height: 49vh; ou substitua por: */
+    min-height: 300px; /* ou outro valor adequado */
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -26,6 +27,7 @@ a {
     scrollbar-width: none;
     -ms-overflow-style: none;
     scroll-snap-type: x mandatory;
+    padding: 20px 0; /* adicione algum padding */
 }
 
 #posts-recentes::-webkit-scrollbar {
@@ -42,13 +44,25 @@ a {
     justify-content: space-between;
 }
 
+.post-container {
+    display: flex;
+    flex-direction: column;
+    width: 35vw;
+    max-width: 40vw;
+    margin-left: 20px;
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+}
+
 .post {
     border-bottom: 2px solid black;
     border-right: 1px solid black;
     width: 35vw;
     max-width: 40vw;
     background-size: cover;
-    height: 90%;
+    height: 100px;  /* ou um valor mínimo */
+    min-height: 300px;
+    aspect-ratio: 1/1.2; /* mantém proporção */
     margin-top: 10px;
     margin-left: 20px;
     border-radius: 10px;
