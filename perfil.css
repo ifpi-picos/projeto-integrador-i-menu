@@ -6,6 +6,15 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/*IMG*/
+
+#profile-img{
+  
+}
+
+#profile-img:hover{
+  cursor: pointer;
+}
 /* Corpo */
 body.bodyp {
   background-color: #f3f3f3;
