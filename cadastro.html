@@ -88,6 +88,73 @@
         reader.readAsDataURL(file);
       }
     });
+
+
+      // Função para lidar com o upload da foto de perfil
+  document.getElementById('profile-pic-upload').addEventListener('change', async function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Mostrar preview da imagem
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profile-pic-preview').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    // Enviar para o servidor (opcional, se quiser salvar já no cadastro)
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch(`${webservicef}/api/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        imageUrl = data.fileUrl; // Armazena a URL da imagem para usar no cadastro
+      }
+    } catch (error) {
+      console.error('Erro ao enviar foto:', error);
+    }
+  });
+
+  // Modificar a função criaruser para incluir a foto
+  async function criaruser() {
+    const nome = document.getElementById("nome").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const dono = document.getElementById("dono").checked;
+
+    const novoUsuario = { 
+      name: nome, 
+      email, 
+      password: senha, 
+      dono,
+      foto: imageUrl || 'images/perfil.png' // Usa a imagem enviada ou a padrão
+    };
+
+    try {
+      const response = await fetch(`${webservice}/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(novoUsuario)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Usuário criado com sucesso!");
+        window.location.href = "./login.html";
+      } else {
+        alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
+      }
+    } catch (err) {
+      alert("Erro ao criar usuário: " + err.message);
+    }
+  }
   </script>
 </body>
 

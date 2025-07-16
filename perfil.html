@@ -138,6 +138,8 @@
     if (!userData?.dono) return;
 
     try {
+      const webservice = "https://imenu-backend-pd3a.onrender.com";
+
       const res = await fetch(`${webservice}/relatorio/views`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -191,6 +193,157 @@
     await verificarToken()
     await carregarRelatorioVisualizacoes();
   };
+
+
+// Função para converter File para Base64 (sem o prefixo data:)
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            // Remove o prefixo data:image/...;base64,
+            const base64String = reader.result.split(',')[1];
+            resolve(base64String);
+        };
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
+
+async function uploadProfilePicture(file) {
+    try {
+        const fileService = "https://imenu-back-files.onrender.com"; // Servidor de arquivos
+
+        // Validar o tipo de arquivo
+        if (!file.type.match('image.*')) {
+            throw new Error('Por favor, selecione uma imagem (JPEG, PNG)');
+        }
+
+        // Converter para base64
+        const base64Image = await fileToBase64(file);
+
+        // Mostrar estado de carregamento
+        const profileImg = document.getElementById('profile-img');
+        profileImg.classList.add('uploading');
+
+        // Enviar para o servidor de arquivos
+        const response = await fetch(`${fileService}/upload-profile-pic`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                file: base64Image
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Erro no servidor');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Erro no upload:', error);
+        throw error;
+    } finally {
+        document.getElementById('profile-img').classList.remove('uploading');
+    }
+}
+
+async function editarFotoPerfil() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+    input.onchange = async (event) => {
+        const webservice = "https://imenu-backend-pd3a.onrender.com";
+        const fileService = "https://imenu-back-files.onrender.com";
+
+        const file = event.target.files[0];
+        if (!file || file.size > 5 * 1024 * 1024) {
+            alert('Por favor, selecione uma imagem menor que 5MB');
+            return;
+        }
+
+        const profileImg = document.getElementById('profile-img');
+        const originalSrc = profileImg.src;
+        
+        try {
+            // Mostrar preview
+            profileImg.src = URL.createObjectURL(file);
+
+            // Fazer upload
+            const { url } = await uploadProfilePicture(file);
+
+            // Atualizar no banco de dados
+            const token = localStorage.getItem("auth_token");
+            if (!token) throw new Error("Sessão expirada");
+
+            const updateResponse = await fetch(`${webservice}/user/photo`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ foto: url })
+            });
+
+            if (!updateResponse.ok) {
+                throw new Error("Falha ao salvar no perfil");
+            }
+
+            // Forçar recarregamento da foto
+            await carregarFotoPerfil();
+            
+            alert('Foto atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar foto:', error);
+            profileImg.src = originalSrc;
+            alert(`Erro: ${error.message}`);
+        }
+    };
+    
+    input.click();
+}
+
+// Inicialização
+document.getElementById('profile-img').addEventListener('click', editarFotoPerfil);
+
+// Adicionar evento de clique à foto de perfil
+document.getElementById('profile-img').addEventListener('click', editarFotoPerfil);
+
+// Carregar a foto do usuário ao abrir a página
+async function carregarFotoPerfil() {
+    try {
+      const webservice = "https://imenu-backend-pd3a.onrender.com";
+
+        const token = localStorage.getItem("auth_token");
+        if (!token) return;
+        
+        const profileImg = document.getElementById('profile-img');
+        // Armazenar a imagem original
+        profileImg.dataset.originalSrc = profileImg.src;
+        
+        const response = await fetch(`${webservice}/dados`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+            const userData = await response.json();
+            if (userData.foto) {
+                profileImg.src = userData.foto;
+                // Atualizar a imagem original
+                profileImg.dataset.originalSrc = userData.foto;
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar foto:', error);
+    }
+}
+// Chamar a função quando a página carregar
+window.addEventListener('load', carregarFotoPerfil);
+  
+
 </script>
 
 </body>
