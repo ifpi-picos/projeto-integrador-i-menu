@@ -13,7 +13,10 @@ function parseJwt(token) {
 
 function atualizarPostsUI(posts, containerId, isOwner = false) {
     const container = document.getElementById(containerId);
-    if (!container) return;
+    if (!container) {
+        console.error(`Container ${containerId} não encontrado`);
+        return;
+    }
     
     container.innerHTML = posts.map(post => `
         <div class="dono_card" data-post-id="${post.id || post._id}">

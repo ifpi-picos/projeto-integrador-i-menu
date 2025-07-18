@@ -199,22 +199,20 @@
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 180000);
 
-      const res = await fetch(`${webservicef}/api/upload`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ file: fileBase64, fileType: file.type, isCardapio: inputId === 'upload_arquivo' }),
-        signal: controller.signal
-      });
+    const res = await fetch(`${webservicef}/api/upload`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ file: fileBase64, fileType: file.type, isCardapio: inputId === 'upload_arquivo' }),
+      signal: controller.signal
+    });
 
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `Erro ${res.status}`);
-      }
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `Erro ${res.status}: ${res.statusText}`);
+    }
 
       const data = await res.json();
       progressBar.style.width = '100%';
