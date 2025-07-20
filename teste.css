@@ -49,10 +49,40 @@ a {
     flex-direction: column;
     width: 35vw;
     max-width: 40vw;
-    margin-left: 20px;
+    margin-right: 20px;
     scroll-snap-align: start;
     flex: 0 0 auto;
 }
+
+@media (max-width: 768px) {
+    .post-container {
+        width: 80vw;
+        max-width: 90vw;
+        margin-right: 10px;
+    }
+}
+
+.post {
+    border-bottom: 2px solid black;
+    border-right: 1px solid black;
+    background-size: cover;
+    height: auto;
+    min-height: 300px;
+    aspect-ratio: 1/1.2;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    box-sizing: border-box;
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+    .post {
+        width: 100%;
+        min-height: 200px;
+    }
+}
+
 
 .post {
     border-bottom: 2px solid black;
@@ -636,22 +666,6 @@ header > div {
 /* Setas mais discretas no mobile */
 @media (max-width: 768px) {
     .arrow {
-        width: 28px;
-        height: 28px;
-        font-size: 1.2rem;
-        background-color: transparent;
-        color: #7B3F00;
-        border: 1px solid #7B3F00;
-        box-shadow: none;
-        transition: all 0.3s ease;
-    }
-
-    .arrow:hover {
-        background-color: #7B3F00;
-        color: #fff;
-    }
-
-    .posts-container {
-        gap: 0.25rem;
+        display: none;
     }
 }
