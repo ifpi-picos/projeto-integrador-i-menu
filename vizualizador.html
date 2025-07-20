@@ -86,36 +86,52 @@
       }
     }
 
-    async function downloadFile(pdfUrl) {
+async function downloadPDF(url, filename = 'cardapio.pdf') {
     try {
-        // Adiciona cabeçalho para forçar download
-        const response = await fetch(pdfUrl, {
-            headers: {
-                'Content-Disposition': 'attachment'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error('Erro ao baixar arquivo');
-        }
-
-        const blob = await response.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        
+        // Força o download sem abrir no navegador
         const link = document.createElement('a');
-        link.href = blobUrl;
-        link.setAttribute('download', 'cardapio.pdf');
+        link.href = url;
+        link.download = filename;
+        link.target = '_blank'; // Abre em nova aba para evitar problemas com bloqueios
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
         
-        // Limpeza
+        // Fallback caso o download direto não funcione
         setTimeout(() => {
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(blobUrl);
-        }, 100);
+            window.open(url, '_blank');
+        }, 200);
     } catch (err) {
         console.error('Erro no download:', err);
-        alert('Erro ao baixar o arquivo. Tente novamente.');
+        alert('Erro ao baixar o PDF. Tente novamente.');
+    }
+}
+
+async function abrirArquivo() {
+    const postId = new URLSearchParams(window.location.search).get('id');
+    if (!postId) return alert('Post não encontrado');
+    
+    try {
+        const response = await fetch(`${beleza}/posts/${postId}`);
+        const post = await response.json();
+        
+        if (!post.arquivo) return alert('Nenhum arquivo encontrado');
+        
+        // Verifica se é PDF ou imagem
+        const isPDF = post.arquivo.toLowerCase().endsWith('.pdf') || 
+                     post.arquivo.includes('application/pdf');
+        
+        if (isPDF) {
+            // Força o download do PDF com o nome correto
+            const filename = post.title ? `${post.title.replace(/[^a-z0-9]/gi, '_')}.pdf` : 'cardapio.pdf';
+            await downloadPDF(post.arquivo, filename);
+        } else {
+            // Se for imagem, abre em modal para visualização
+            abrirImagemCapa(post.arquivo);
+        }
+    } catch (error) {
+        console.error('Erro ao abrir arquivo:', error);
+        alert('Erro ao abrir o arquivo');
     }
 }
 
@@ -258,37 +274,8 @@
     });
 }
 
-async function abrirArquivo() {
-    const postId = new URLSearchParams(window.location.search).get('id');
-    if (!postId) return alert('Post não encontrado');
-    
-    try {
-        const response = await fetch(`${beleza}/posts/${postId}`);
-        const post = await response.json();
-        
-        if (!post.arquivo) return alert('Nenhum arquivo encontrado');
-        
-        // Verifica se é PDF ou imagem
-        const isPDF = post.arquivo.toLowerCase().endsWith('.pdf') || 
-                     post.arquivo.includes('fl_attachment') || 
-                     post.arquivo.includes('application/pdf');
-        
-        if (isPDF) {
-            // Se for PDF, força o download
-            const downloadUrl = post.arquivo.includes('fl_attachment') 
-                ? post.arquivo 
-                : post.arquivo + (post.arquivo.includes('?') ? '&' : '?') + 'fl_attachment';
-            await downloadFile(downloadUrl);
-        } else {
-            // Se for imagem, abre em modal para visualização
-            abrirImagemCapa(post.arquivo);
-        }
-    } catch (error) {
-        console.error('Erro ao abrir arquivo:', error);
-        alert('Erro ao abrir o arquivo');
-    }
-}
-    async function registrarVisualizacao(postId) {
+
+async function registrarVisualizacao(postId) {
       try {
         await fetch(`${beleza}/posts/${postId}/view`, { method: 'POST' });
       } catch (error) {
@@ -327,10 +314,20 @@ if (post.capa) {
   postImage.style.height = '300px';
   postImage.style.cursor = 'pointer';
   
-  // Corrigindo a lógica de clique:
+  // Lógica de clique corrigida
   if (post.arquivo) {
-    // Sempre abre o arquivo (PDF ou imagem) ao clicar na capa
-    postImage.onclick = () => abrirArquivo();
+    postImage.onclick = () => {
+      // Verifica se é PDF para download ou imagem para visualização
+      const isPDF = post.arquivo.toLowerCase().endsWith('.pdf') || 
+                   post.arquivo.includes('application/pdf');
+      
+      if (isPDF) {
+        const filename = post.title ? `${post.title.replace(/[^a-z0-9]/gi, '_')}.pdf` : 'cardapio.pdf';
+        downloadPDF(post.arquivo, filename);
+      } else {
+        abrirImagemCapa(post.arquivo);
+      }
+    };
     postImage.title = 'Clique para ver o cardápio';
   } else {
     // Se não tem arquivo, mas tem capa, abre a imagem em tela cheia

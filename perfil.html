@@ -220,46 +220,28 @@ function fileToBase64(file) {
     });
 }
 
-async function uploadProfilePicture(file) {
+    async function uploadProfilePicture(file) {
     try {
-        const fileService = "https://imenu-back-files.onrender.com"; // Servidor de arquivos
-
-        // Validar o tipo de arquivo
-        if (!file.type.match('image.*')) {
-            throw new Error('Por favor, selecione uma imagem (JPEG, PNG)');
-        }
-
-        // Converter para base64
-        const base64Image = await fileToBase64(file);
-
-        // Mostrar estado de carregamento
-        const profileImg = document.getElementById('profile-img');
-        profileImg.classList.add('uploading');
-
-        // Enviar para o servidor de arquivos
-        const response = await fetch(`${fileService}/upload-profile-pic`, {
+        const formData = new FormData();
+        formData.append('file', file); // Agora usando o campo 'file'
+        
+        const response = await fetch(`${webservicef}/api/upload`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                file: base64Image
-            })
+            body: formData
+            // Não definir Content-Type manualmente - o browser fará isso automaticamente
         });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Erro no servidor');
+        
+        const data = await response.json();
+        if (data.success) {
+            return data.fileUrl;
         }
-
-        return await response.json();
+        return 'images/perfil.png';
     } catch (error) {
-        console.error('Erro no upload:', error);
-        throw error;
-    } finally {
-        document.getElementById('profile-img').classList.remove('uploading');
+        console.error('Erro ao enviar foto:', error);
+        return 'images/perfil.png';
     }
 }
+
 
 async function editarFotoPerfil() {
     const input = document.createElement('input');
@@ -267,9 +249,6 @@ async function editarFotoPerfil() {
     input.accept = 'image/*';
     
     input.onchange = async (event) => {
-        const webservice = "https://imenu-backend-pd3a.onrender.com";
-        const fileService = "https://imenu-back-files.onrender.com";
-
         const file = event.target.files[0];
         if (!file || file.size > 5 * 1024 * 1024) {
             alert('Por favor, selecione uma imagem menor que 5MB');
@@ -278,15 +257,36 @@ async function editarFotoPerfil() {
 
         const profileImg = document.getElementById('profile-img');
         const originalSrc = profileImg.src;
+
+                // Criar e mostrar spinner
+        const spinner = document.createElement('div');
+        spinner.className = 'loading-spinner';
+        profileImg.parentNode.appendChild(spinner);
         
         try {
             // Mostrar preview
             profileImg.src = URL.createObjectURL(file);
 
-            // Fazer upload
-            const { url } = await uploadProfilePicture(file);
+            // 1. Fazer upload da imagem
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const uploadResponse = await fetch(`${webservicef}/api/upload`, {
+                method: 'POST',
+                body: formData
+                // Não definir Content-Type manualmente
+            });
 
-            // Atualizar no banco de dados
+            if (!uploadResponse.ok) {
+                throw new Error("Falha no upload da imagem");
+            }
+
+            const uploadData = await uploadResponse.json();
+            if (!uploadData.success || !uploadData.fileUrl) {
+                throw new Error("URL da imagem não recebida");
+            }
+
+            // 2. Atualizar no banco de dados
             const token = localStorage.getItem("auth_token");
             if (!token) throw new Error("Sessão expirada");
 
@@ -296,27 +296,29 @@ async function editarFotoPerfil() {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ foto: url })
+                body: JSON.stringify({ foto: uploadData.fileUrl })
             });
 
             if (!updateResponse.ok) {
-                throw new Error("Falha ao salvar no perfil");
+                const errorData = await updateResponse.json();
+                throw new Error(errorData.error || "Falha ao atualizar perfil");
             }
 
-            // Forçar recarregamento da foto
-            await carregarFotoPerfil();
-            
             alert('Foto atualizada com sucesso!');
+            
         } catch (error) {
             console.error('Erro ao atualizar foto:', error);
             profileImg.src = originalSrc;
             alert(`Erro: ${error.message}`);
         }
+              finally {
+            // Remover spinner
+            if (spinner) spinner.remove();
+        }
     };
     
     input.click();
 }
-
 // Inicialização
 document.getElementById('profile-img').addEventListener('click', editarFotoPerfil);
 

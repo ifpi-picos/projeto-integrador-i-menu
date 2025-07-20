@@ -1,5 +1,5 @@
 const webservice = "https://imenu-backend-pd3a.onrender.com";
-const webservicef = "https://imenu-back-files.onrender.com";
+const webservicef = "https://imenu-back-files-c7ii.onrender.com";
   //"http://localhost:3006"
   let imageUrl = null; // Adicione isso no topo do seu script
 
@@ -466,55 +466,48 @@ async function enviarPostCompleto() {
     try {
         showLoading(true);
         
-        // Faz upload da imagem de capa
-        const imagemCapa = await enviarArquivo("upload_card");
-        if (!imagemCapa || !imagemCapa.fileUrl) {
-            throw new Error("Erro ao enviar imagem de capa");
+        // Criar FormData
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content || '');
+        formData.append('sociallink', link || '');
+        formData.append('publice', publice.toString()); // Converter boolean para string
+
+        // Adicionar arquivos se existirem
+        const capaInput = document.getElementById('upload_card');
+        if (capaInput.files[0]) {
+            formData.append('capa', capaInput.files[0]);
         }
 
-        // Faz upload do arquivo do cardápio (PDF ou imagem)
-        const arquivoCardapio = await enviarArquivo("upload_arquivo");
-        if (!arquivoCardapio || !arquivoCardapio.fileUrl) {
-            throw new Error("Erro ao enviar arquivo do cardápio");
+        const arquivoInput = document.getElementById('upload_arquivo');
+        if (arquivoInput.files[0]) {
+            formData.append('arquivo', arquivoInput.files[0]);
         }
-
-        const novoPost = {
-            title,
-            content,
-            sociallink: link,
-            publice,
-            capa: imagemCapa.fileUrl,
-            arquivo: arquivoCardapio.fileUrl  // Adiciona o arquivo do cardápio ao post
-        };
 
         const response = await fetch(`${webservice}/post`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
+                // Não definir Content-Type - será definido automaticamente
             },
-            body: JSON.stringify(novoPost)
+            body: formData
         });
 
-        if (response.status === 401) {
-            throw new Error("Sessão expirada. Faça login novamente.");
-        }
-
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Erro ao criar post");
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.message || error.error || "Erro ao criar post");
         }
 
+        const result = await response.json();
         alert("Post criado com sucesso!");
         window.location.href = "./index.html";
     } catch (error) {
         console.error("Erro:", error);
-        showError(error.message);
+        showError(error.message || "Erro ao criar post");
     } finally {
         showLoading(false);
     }
 }
-
 
 // Carregar últimos posts
 async function carregarUltimosPosts() {
@@ -866,8 +859,11 @@ window.onload = () => {
 };
 
 // LOCALIZAÇAO NO PERFIL
-  window.addEventListener('load', () => {
+window.addEventListener('load', () => {
     const localizacaoEl = document.getElementById("localizacao");
+    
+    // Verifica se o elemento existe antes de tentar usá-lo
+    if (!localizacaoEl) return;
 
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -876,17 +872,16 @@ window.onload = () => {
           const lon = pos.coords.longitude;
 
           // Faz a requisição para Nominatim (OpenStreetMap)
-          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-            .then(response => response.json())
-            .then(data => {
-              const cidade = data.address.city || data.address.town || data.address.village || "Cidade desconhecida";
-              const estado = data.address.state || "";
-              const pais = data.address.country || "Brasil";
-              localizacaoEl.textContent = `📍 ${cidade} / ${pais}`;
-            })
-            .catch(() => {
-              localizacaoEl.textContent = "📍 Localização não encontrada";
-            });
+fetch(`${webservice}/reverse-geocode?lat=${lat}&lon=${lon}`)
+    .then(response => response.json())
+    .then(data => {
+        const cidade = data.address.city || data.address.town || data.address.village || "Cidade desconhecida";
+        const pais = data.address.country || "Brasil";
+        localizacaoEl.textContent = `📍 ${cidade} / ${pais}`;
+    })
+    .catch(() => {
+        localizacaoEl.textContent = "📍 Localização não encontrada";
+    });
         },
         (erro) => {
             

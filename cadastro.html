@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iMenu</title>
+  <title>iMenu - Cadastro</title>
   <link rel="stylesheet" href="cadastro.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
@@ -20,7 +20,7 @@
     <div class="img-box">
       <label for="profile-pic-upload" class="upload-label">
         <img id="profile-pic-preview" src="images/perfil.png" alt="Foto de Perfil" />
-        <p class="upload-hint">Clique na aqui para escolher sua foto de perfil</p>
+        <p class="upload-hint">Clique aqui para escolher sua foto de perfil</p>
       </label>
       <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;" />
     </div>
@@ -29,7 +29,7 @@
       <h2>Cadastre-se no iMenu!</h2>
       <p>Já é um membro? <a href="login.html">Login</a></p>
 
-      <!-- Novo seletor de papel -->
+      <!-- Seletor de papel -->
       <div class="role-selector">
         <button type="button" class="role-btn active" onclick="selectRole(false)">Cliente</button>
         <button type="button" class="role-btn" onclick="selectRole(true)">Dono de Restaurante</button>
@@ -38,7 +38,7 @@
       </div>
 
       <!-- Formulário -->
-      <form id="formulario" action="#">
+      <form id="formulario">
         <div class="input-group">
           <label for="nome">Nome Completo</label>
           <input type="text" id="nome" placeholder="Digite o seu nome completo" required />
@@ -55,107 +55,120 @@
         </div>
 
         <div class="input-group">
-          <button type="button" class="buttons_normais" id="create" onclick="criaruser()">Cadastre-se</button>
+          <button type="button" class="buttons_normais" id="create">Cadastre-se</button>
         </div>
       </form>
     </div>
   </div>
 
   <script src="js/server_script.js"></script>
-  <script>
+<script>
+    // Função para selecionar o tipo de usuário
     function selectRole(isDono) {
       const checkbox = document.getElementById('dono');
-      const toggleText = document.getElementById('toggle-text');
       const buttons = document.querySelectorAll('.role-btn');
 
       checkbox.checked = isDono;
-      toggleText.textContent = isDono ? 'Dono de Restaurante' : 'Cliente';
-
+      
       buttons.forEach(btn => btn.classList.remove('active'));
       buttons[isDono ? 1 : 0].classList.add('active');
     }
 
-    const fileInput = document.getElementById('profile-pic-upload');
-    const previewImage = document.getElementById('profile-pic-preview');
-
-    fileInput.addEventListener('change', function () {
-      const file = this.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          previewImage.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-
-      // Função para lidar com o upload da foto de perfil
-  document.getElementById('profile-pic-upload').addEventListener('change', async function(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // Mostrar preview da imagem
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('profile-pic-preview').src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-
-    // Enviar para o servidor (opcional, se quiser salvar já no cadastro)
+    // Função para upload da foto de perfil
+    async function uploadProfilePicture(file) {
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      const response = await fetch(`${webservicef}/api/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        imageUrl = data.fileUrl; // Armazena a URL da imagem para usar no cadastro
-      }
+        const formData = new FormData();
+        formData.append('file', file); // Agora usando o campo 'file'
+        
+        const response = await fetch(`${webservicef}/api/upload`, {
+            method: 'POST',
+            body: formData
+            // Não definir Content-Type manualmente - o browser fará isso automaticamente
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            return data.fileUrl;
+        }
+        return 'images/perfil.png';
     } catch (error) {
-      console.error('Erro ao enviar foto:', error);
+        console.error('Erro ao enviar foto:', error);
+        return 'images/perfil.png';
     }
-  });
+}
 
-  // Modificar a função criaruser para incluir a foto
-  async function criaruser() {
-    const nome = document.getElementById("nome").value;
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-    const dono = document.getElementById("dono").checked;
+    // Função principal para criar usuário
+    async function criaruser() {
+      const nome = document.getElementById("nome").value;
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+      const dono = document.getElementById("dono").checked;
+      const createBtn = document.getElementById('create');
 
-    const novoUsuario = { 
-      name: nome, 
-      email, 
-      password: senha, 
-      dono,
-      foto: imageUrl || 'images/perfil.png' // Usa a imagem enviada ou a padrão
-    };
+      if (!nome || !email || !senha) {
+        alert("Preencha todos os campos obrigatórios!");
+        return;
+      }
 
-    try {
-      const response = await fetch(`${webservice}/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(novoUsuario)
+      try {
+        createBtn.disabled = true;
+        createBtn.textContent = 'Cadastrando...';
+
+        // Upload da imagem se existir
+        const fileInput = document.getElementById('profile-pic-upload');
+        let fotoUrl = 'images/perfil.png';
+        if (fileInput.files[0]) {
+          fotoUrl = await uploadProfilePicture(fileInput.files[0]);
+        }
+
+        const novoUsuario = { 
+          name: nome, 
+          email, 
+          password: senha, 
+          dono,
+          foto: fotoUrl
+        };
+
+        const response = await fetch(`${webservice}/create`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(novoUsuario)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Usuário criado com sucesso!");
+          window.location.href = "./login.html";
+        } else {
+          alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
+        }
+      } catch (err) {
+        console.error("Erro:", err);
+        alert("Ocorreu um erro ao processar sua requisição. Tente novamente mais tarde.");
+      } finally {
+        createBtn.disabled = false;
+        createBtn.textContent = 'Cadastre-se';
+      }
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Preview da imagem de perfil
+      document.getElementById('profile-pic-upload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('profile-pic-preview').src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Usuário criado com sucesso!");
-        window.location.href = "./login.html";
-      } else {
-        alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
-      }
-    } catch (err) {
-      alert("Erro ao criar usuário: " + err.message);
-    }
-  }
-  </script>
+      // Botão de cadastro
+      document.getElementById('create').addEventListener('click', criaruser);
+    });
+</script>
 </body>
-
 </html>
