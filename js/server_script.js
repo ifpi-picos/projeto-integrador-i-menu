@@ -250,6 +250,12 @@ async function verificarToken() {
             // Atualiza a UI com os dados do usuário visitado
             const spanUser = document.getElementById("P-username");
             const spanTipo = document.getElementById("tipo-conta");
+
+                // Atualiza a foto do perfil com a do usuário visitado
+    const perfilImg = document.getElementById("profile-img");
+    if (perfilImg && userData.foto) {
+        perfilImg.src = userData.foto;
+    }
             
             if (spanUser) spanUser.innerText = userData.name;
             if (spanTipo) spanTipo.innerText = userData.dono ? "Dono de Restaurante" : "Cliente";

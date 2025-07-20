@@ -325,6 +325,9 @@ document.getElementById('profile-img').addEventListener('click', editarFotoPerfi
 
 // Carregar a foto do usuário ao abrir a página
 async function carregarFotoPerfil() {
+    const userIdParam = new URLSearchParams(window.location.search).get('userId');
+    if (userIdParam) return; // Não carrega se estiver vendo outro perfil
+
     try {
       const webservice = "https://imenu-backend-pd3a.onrender.com";
 
