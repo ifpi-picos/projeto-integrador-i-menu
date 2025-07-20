@@ -590,3 +590,68 @@ header > div {
   align-items: center;
   gap: 8px;
 }
+
+
+.posts-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#posts-recentes {
+    scroll-behavior: smooth;
+    overflow-x: auto;
+}
+
+.arrow {
+    background-color: #7B3F00;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.arrow:hover {
+    background-color: #4E2C1E;
+    transform: scale(1.1);
+}
+
+
+.arrow.left {
+    margin-right: 0.5rem;
+}
+
+.arrow.right {
+    margin-left: 0.5rem;
+}
+
+/* Setas mais discretas no mobile */
+@media (max-width: 768px) {
+    .arrow {
+        width: 28px;
+        height: 28px;
+        font-size: 1.2rem;
+        background-color: transparent;
+        color: #7B3F00;
+        border: 1px solid #7B3F00;
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+
+    .arrow:hover {
+        background-color: #7B3F00;
+        color: #fff;
+    }
+
+    .posts-container {
+        gap: 0.25rem;
+    }
+}
