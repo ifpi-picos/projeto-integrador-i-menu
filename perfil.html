@@ -27,8 +27,8 @@
     <button class="icon-button" id="locationicon" onclick="localizacao()">📍</button>
   </div>
 
-  <!-- Botão de Logout no canto direito com Bootstrap -->
-  <button class="btn btn-outline-danger btn-sm" onclick="fazerLogout()" title="Sair">Sair</button>
+  <!-- Botão de Logout no canto direito -->
+  <button id="logout-btn" class="btn btn-outline-danger btn-sm" onclick="fazerLogout()" title="Sair">Sair</button>
 </header>
 
 <!-- Banner -->
@@ -40,7 +40,13 @@
 <section class="main-p">
   <div class="profile-card">
     <div class="image">
-      <img src="images/perfil.png" alt="Foto de perfil" class="profile-pic" id="profile-img"/>
+      <div class="profile-pic-wrapper">
+        <img src="images/perfil.png" alt="Foto de perfil" class="profile-pic" id="profile-img"/>
+       <span class="edit-icon" title="Alterar foto de perfil">
+  <i data-lucide="pencil"></i>
+</span>
+
+      </div>
     </div>
 
     <div class="data">
@@ -111,8 +117,13 @@
 <!-- Scripts -->
 <script src="js/server_script.js"></script>
 <script src="js/script.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <script>
+
+
+lucide.createIcons();
+
 
   fetch('footer.html')
     .then(response => response.text())
@@ -342,7 +353,58 @@ async function carregarFotoPerfil() {
 }
 // Chamar a função quando a página carregar
 window.addEventListener('load', carregarFotoPerfil);
+
+// Ícone do lápis chama a função de edição de foto
+document.querySelector('.edit-icon').addEventListener('click', editarFotoPerfil);
+
+// Verifica se o perfil visualizado é do usuário logado
+window.onload = async () => {
+  await verificarToken();
+  await carregarRelatorioVisualizacoes();
+  await carregarFotoPerfil();
+
+  const token = localStorage.getItem("auth_token");
+  const userData = parseJwt(token);
+  const usuarioLogadoId = String(userData?.id || userData?.sub);
+
+  const perfilSendoVisualizadoId = getIdFromURL();
+
+  console.log("🚀 ID do usuário logado:", usuarioLogadoId);
+  console.log("👀 ID do perfil visualizado:", perfilSendoVisualizadoId);
+
+  //LAPIS SOME
   
+  const editIcon = document.querySelector(".edit-icon");
+
+if (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId) {
+  if (editIcon) editIcon.style.display = "flex";
+} else {
+  if (editIcon) editIcon.style.display = "none";
+}
+
+
+  const logoutBtn = document.getElementById("logout-btn");
+
+  if (!logoutBtn) {
+    console.error("Elemento #logout-btn não encontrado.");
+    return;
+  }
+
+  if (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId) {
+    logoutBtn.style.display = "inline-block";
+    console.log("✅ Exibindo botão de logout");
+  } else {
+    logoutBtn.style.display = "none";
+    console.log("❌ Escondendo botão de logout");
+  }
+};
+
+function getIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("userId"); // <- CORRETO
+}
+
+
 
 </script>
 
