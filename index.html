@@ -100,7 +100,16 @@
 
   <section class="section">
     <h2>Cardápios criados recentemente</h2>
+    <div class="posts-container">
+    <button class="arrow left" onclick="scrollPosts(-1)">&#10094;</button>
+
     <div id="posts-recentes"></div>
+
+    <button class="arrow right" onclick="scrollPosts(1)">&#10095;</button>
+</div>
+
+
+    </div>
     <div id="posts-infos"></div>
   </section>
 
@@ -140,6 +149,18 @@
       document.getElementById('footer-container').innerHTML = data;
     });
   
+
+    //PASSAR POSTS
+
+    function scrollPosts(direction) {
+    const container = document.getElementById('posts-recentes');
+    const scrollAmount = container.clientWidth / 1.2; // Ajuste esse valor conforme necessário
+    container.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+}
+
   document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggleSidebar");
