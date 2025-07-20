@@ -7,38 +7,10 @@ body {
   min-height: 100vh;
 }
 
-/* Views */
-
-.post-meta {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin: 0.5rem 0;
-}
-
-.post-views {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.profile-btn {
-  background: none;
-  border: none;
-  color: #3498db;
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 0;
-  margin-top: 5px;
-}
-
-.profile-btn:hover {
-  color: #2980b9;
-}
-
-/* 🔧 Container principal centralizado */
+/* Container principal centralizado */
 .post-container {
-  max-width: 1200px;
+  width: 100vw;
+  max-width: 100vw;
   margin: 0 auto;
   padding: 2rem 1rem;
   display: flex;
@@ -46,7 +18,7 @@ body {
   align-items: flex-start;
 }
 
-/* 🔧 Card ajustado */
+/* Card ajustado */
 .post-card {
   background-color: #FFFFFF;
   width: 100%;
@@ -58,8 +30,11 @@ body {
   overflow-y: auto;
   word-break: break-word;
   margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Restante do CSS permanece igual */
 .post-header h1 {
   font-size: 2rem;
   margin-bottom: 0.2rem;
@@ -80,6 +55,7 @@ body {
   border-radius: 10px;
   box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
   margin-bottom: 1.5rem;
+  cursor: pointer;
 }
 
 .post-content p {
@@ -118,6 +94,7 @@ body {
   background-color: #d1b286;
 }
 
+/* Estrelas de avaliação */
 .rating {
   margin-top: 1.5rem;
   font-size: 2rem;
