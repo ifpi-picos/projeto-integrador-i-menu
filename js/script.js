@@ -1,19 +1,21 @@
 // PERFIL  //
 
 function voltar(){
-    window.location.replace("index.html");
+    window.location.href = "index.html";
 }
 
 function localizacao(){
-    window.location.replace("mapa.html");
+    window.location.href = "mapa.html";
 }
 
 function goeditor(){
-    window.location.replace("editorcard.html");
+    window.location.href = "editorcard.html";
 }
+
 function goecadastro(){
-    window.location.replace("cadastro.html");
+    window.location.href = "cadastro.html";
 }
+
 function gologin(){
-    window.location.replace("login.html");
+    window.location.href = "login.html";
 }

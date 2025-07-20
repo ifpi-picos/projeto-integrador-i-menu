@@ -163,6 +163,24 @@ async function logar() {
     }
 }
 
+async function reenviarEmailVerificacao() {
+    const email = prompt("Digite seu e-mail cadastrado:");
+    if (!email) return;
+
+    try {
+        const response = await fetch(`${webservice}/reenviar-verificacao`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+        alert(data.message || "E-mail de verificação reenviado!");
+    } catch (err) {
+        alert("Erro ao reenviar e-mail: " + err.message);
+    }
+}
+
 // Verificar token e atualizar UI
 async function verificarToken() {
     const token = localStorage.getItem("auth_token");
