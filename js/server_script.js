@@ -105,31 +105,30 @@ function gerarQRCode(postId, event) {
 
 // Criar usuário
 async function criaruser() {
-    const nome = document.getElementById("nome").value;
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-    const dono = document.getElementById("dono").checked;
+  try {
+    const response = await fetch(`${webservice}/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(novoUsuario)
+    });
 
-    const novoUsuario = { name: nome, email, password: senha, dono };
-
-    try {
-        const response = await fetch(`${webservice}/create`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(novoUsuario)
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            alert("Usuário criado com sucesso!");
-            window.location.href = "./login.html";
-        } else {
-            alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
-        }
-    } catch (err) {
-        alert("Erro ao criar usuário: " + err.message);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Erro desconhecido");
     }
+
+    const data = await response.json();
+    alert(data.message);
+    window.location.href = "./login.html";
+    
+  } catch (err) {
+    const errorMsg = document.getElementById("login_ms");
+    if (errorMsg) {
+      errorMsg.textContent = err.message;
+      errorMsg.style.color = "red";
+    }
+    console.error("Erro detalhado:", err);
+  }
 }
 
 // Login
@@ -153,13 +152,21 @@ async function logar() {
             localStorage.setItem('auth_token', data.token);
             window.location.href = "./index.html";
         } else {
-            const logar_msg = document.getElementById("login_ms");
-            logar_msg.innerText = "Erro ao logar: " + (data.message || "Erro desconhecido");
+const errorElement = document.getElementById("login_ms");
+if (errorElement) {
+  errorElement.textContent = "Erro ao criar usuário: " + err.message;
+} else {
+  console.error("Elemento login_ms não encontrado");
+}
             
         }
     } catch (err) {
-        const logar_msg = document.getElementById("login_ms");
-        logar_msg.innerText = "Erro ao logar: " + err.message
+const errorElement = document.getElementById("login_ms");
+if (errorElement) {
+  errorElement.textContent = "Erro ao criar usuário: " + err.message;
+} else {
+  console.error("Elemento login_ms não encontrado");
+}
     }
 }
 
