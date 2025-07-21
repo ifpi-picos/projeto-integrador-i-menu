@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - iMenu</title>
+    <style>
+
+        .search-container {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex-grow: 1;
+    font-size: 14px;
+}
+
+.search-button {
+    padding: 8px 15px;
+    background-color: #3B1D0F;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.search-button:hover {
+    background-color: #2e160c;
+}
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #3B1D0F;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background-color: #3B1D0F;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3B1D0F;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #777;
+        }
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Painel de Administração - iMenu</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('posts')">Posts</div>
+            <div class="tab" onclick="switchTab('users')">Usuários</div>
+        </div>
+
+<div id="posts-tab" class="tab-content active">
+    <h2>Todos os Posts</h2>
+    <div class="search-container">
+        <input type="text" id="search-posts" placeholder="Pesquisar posts..." class="search-input">
+        <button onclick="searchPosts()" class="search-button">Buscar</button>
+    </div>
+    <div id="posts-loading" class="loading">Carregando posts...</div>
+    <div id="posts-error" class="error" style="display: none;"></div>
+    <table id="posts-table" style="display: none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Data</th>
+                <th>Visualizações</th>
+                <th>Visibilidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="posts-body"></tbody>
+    </table>
+</div>
+
+<div id="users-tab" class="tab-content">
+    <h2>Todos os Usuários</h2>
+    <div class="search-container">
+        <input type="text" id="search-users" placeholder="Pesquisar usuários..." class="search-input">
+        <button onclick="searchUsers()" class="search-button">Buscar</button>
+    </div>
+    <div id="users-loading" class="loading">Carregando usuários...</div>
+    <div id="users-error" class="error" style="display: none;"></div>
+    <table id="users-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th>Verificado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="users-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    const webservice = "https://imenu-backend-pd3a.onrender.com";
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+        window.location.href = '/login.html';
+    }
+
+    // Verificar se é admin
+    async function checkAdmin() {
+        try {
+            // Primeiro verifica se o usuário é admin
+            const userResponse = await fetch(`${webservice}/dados`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('Erro ao verificar usuário');
+            }
+
+            const userData = await userResponse.json();
+            
+            // Verifica se o email é o do admin
+            if (userData.email !== "imenucompany12@gmail.com") {
+                alert('Acesso negado. Somente o administrador pode acessar esta página.');
+                window.location.href = '/index.html';
+                return;
+            }
+
+            // Se chegou aqui, é admin - carrega os posts
+            loadPosts();
+        } catch (err) {
+            console.error('Erro ao verificar admin:', err);
+            window.location.href = '/index.html';
+        }
+    }
+
+// Variáveis para armazenar os dados originais
+let allPosts = [];
+let allUsers = [];
+
+// Modifique a função loadPosts para armazenar os dados
+async function loadPosts() {
+    try {
+        document.getElementById('posts-loading').style.display = 'block';
+        document.getElementById('posts-error').style.display = 'none';
+        
+        const response = await fetch(`${webservice}/posts/all`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Erro ao carregar posts');
+
+        allPosts = await response.json();
+        displayPosts(allPosts);
+    } catch (err) {
+        document.getElementById('posts-loading').style.display = 'none';
+        document.getElementById('posts-error').textContent = err.message;
+        document.getElementById('posts-error').style.display = 'block';
+    }
+}
+
+// Modifique a função loadUsers para armazenar os dados
+async function loadUsers() {
+    try {
+        document.getElementById('users-loading').style.display = 'block';
+        document.getElementById('users-error').style.display = 'none';
+        
+        const response = await fetch(`${webservice}/users/all`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Erro ao carregar usuários');
+
+        allUsers = await response.json();
+        displayUsers(allUsers);
+    } catch (err) {
+        document.getElementById('users-loading').style.display = 'none';
+        document.getElementById('users-error').textContent = err.message;
+        document.getElementById('users-error').style.display = 'block';
+    }
+}
+
+// Função de pesquisa para posts
+function searchPosts() {
+    const searchTerm = document.getElementById('search-posts').value.toLowerCase();
+    
+    if (!searchTerm) {
+        displayPosts(allPosts);
+        return;
+    }
+
+    const filteredPosts = allPosts.filter(post => 
+        post.title.toLowerCase().includes(searchTerm) ||
+        (post.author?.name && post.author.name.toLowerCase().includes(searchTerm)) ||
+        (post.author?.email && post.author.email.toLowerCase().includes(searchTerm)) ||
+        post.id.toString().includes(searchTerm)
+    );
+
+    displayPosts(filteredPosts);
+}
+
+// Função de pesquisa para usuários
+function searchUsers() {
+    const searchTerm = document.getElementById('search-users').value.toLowerCase();
+    
+    if (!searchTerm) {
+        displayUsers(allUsers);
+        return;
+    }
+
+    const filteredUsers = allUsers.filter(user => 
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm) ||
+        user.id.toString().includes(searchTerm) ||
+        (user.dono ? 'dono' : 'cliente').includes(searchTerm)
+    );
+
+    displayUsers(filteredUsers);
+}
+
+// Adicione evento de tecla Enter para os campos de pesquisa
+document.getElementById('search-posts').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') searchPosts();
+});
+
+document.getElementById('search-users').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') searchUsers();
+});
+
+    // Exibir posts na tabela
+    // Exibir posts na tabela (atualizada)
+    function displayPosts(posts) {
+        const tbody = document.getElementById('posts-body');
+        tbody.innerHTML = '';
+
+        posts.forEach(post => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${post.id}</td>
+                <td>${post.title}</td>
+                <td>${post.author?.name || 'N/A'} (${post.author?.email || 'N/A'})</td>
+                <td>${new Date(post.creatAt).toLocaleDateString()}</td>
+                <td>${post.views || 0}</td>
+                <td>
+                    <button class="action-btn ${post.public ? 'public-btn' : 'private-btn'}" 
+                            onclick="togglePostVisibility(${post.id}, ${post.public})">
+                        ${post.public ? 'Público' : 'Privado'}
+                    </button>
+                </td>
+                <td>
+                    <button class="action-btn delete-btn" onclick="deletePost(${post.id})">Excluir</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('posts-loading').style.display = 'none';
+        document.getElementById('posts-table').style.display = 'table';
+    }
+
+    // Função para alternar visibilidade do post
+async function togglePostVisibility(postId, isPublic) {
+    try {
+        const response = await fetch(`${webservice}/admin/posts/${postId}/visibility`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                public: !isPublic
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao alterar visibilidade');
+        }
+
+        alert('Visibilidade alterada com sucesso!');
+        loadPosts(); // Recarrega a lista de posts
+    } catch (err) {
+        console.error('Erro:', err);
+        alert('Erro: ' + err.message);
+    }
+}
+
+        // Exibir usuários na tabela
+        function displayUsers(users) {
+            const tbody = document.getElementById('users-body');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.dono ? 'Dono' : 'Cliente'}</td>
+                    <td>${new Date(user.creatAt).toLocaleDateString()}</td>
+                    <td>${user.EmailVer ? 'Sim' : 'Não'}</td>
+                    <td>
+                        <button class="action-btn delete-btn" onclick="deleteUser(${user.id})">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('users-loading').style.display = 'none';
+            document.getElementById('users-table').style.display = 'table';
+        }
+
+        // Excluir post (corrigido)
+async function deletePost(id) {
+    if (!confirm('Tem certeza que deseja excluir este post permanentemente?')) return;
+
+    try {
+        const response = await fetch(`${webservice}/posts/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Erro ao excluir post');
+
+        alert('Post excluído com sucesso!');
+        loadPosts();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// Excluir usuário (corrigido)
+async function deleteUser(id) {
+    if (!confirm('Tem certeza que deseja excluir este usuário permanentemente? Todos os posts do usuário também serão excluídos.')) return;
+
+    try {
+        const response = await fetch(`${webservice}/users/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Erro ao excluir usuário');
+
+        alert('Usuário excluído com sucesso!');
+        loadUsers();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+        // Alternar entre abas
+        function switchTab(tab) {
+            // Atualizar guias
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+            // Atualizar conteúdo
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+
+            // Carregar dados se necessário
+            if (tab === 'users' && document.getElementById('users-table').style.display === 'none') {
+                loadUsers();
+            }
+        }
+
+        // Inicializar
+        checkAdmin();
+    </script>
+</body>
+</html>
