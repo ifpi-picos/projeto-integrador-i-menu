@@ -232,6 +232,7 @@ async function verificarToken() {
     }
 
     try {
+        
         if (window.location.pathname.includes("perfil.html") && userIdParam) {
             const response = await fetch(`${webservice}/user/${userIdParam}`, {
                 method: "GET",
@@ -852,6 +853,7 @@ window.onload = () => {
     verificarToken();
     setTimeout(VerEmail, 500);
     carregarUltimosPosts();
+    carregarRestaurantesPopulares(); // Adicione esta linha
 
     if (window.location.pathname.includes("vizualizador.html")) {
         carregarMediaPost();

@@ -115,19 +115,8 @@
 
   <section class="section">
     <h2>Restaurantes Famosos</h2>
-    <div class="carousel">
-      <div class="carousel-item">
-        <img src="images/bistro-delicias.jpeg" alt="Restaurante 1" class="restaurant-image">
-        <p>Bistro Delicias</p>
-      </div>
-      <div class="carousel-item">
-        <img src="images/borcelle-logo.jpeg" alt="Restaurante 2" class="restaurant-image">
-        <p>Borcelle</p>
-      </div>
-      <div class="carousel-item">
-        <img src="images/cantinho-gourmet.jpeg" alt="Restaurante 3" class="restaurant-image">
-        <p>Cantinho Gourmet</p>
-      </div>
+    <div class="carousel" id="restaurantes-populares">
+      
     </div>
   </section>
 
@@ -160,6 +149,73 @@
         behavior: 'smooth'
     });
 }
+
+// Função para carregar restaurantes populares
+async function carregarRestaurantesPopulares() {
+    try {
+        const response = await fetch(`${webservice}/restaurantes/populares`);
+        
+        if (!response.ok) {
+            throw new Error(`Erro: ${response.status}`);
+        }
+
+        const restaurantes = await response.json();
+        const carousel = document.querySelector('.carousel');
+
+        if (!carousel) return;
+
+        if (restaurantes.length === 0) {
+            carousel.innerHTML = '<p>Nenhum restaurante popular encontrado</p>';
+            return;
+        }
+
+        carousel.innerHTML = restaurantes.map(restaurante => {
+            const restauranteId = restaurante.id;
+            if (!restauranteId) return '';
+            
+            const fotoUrl = restaurante.foto || 'https://img.freepik.com/vetores-premium/ilustracao-em-vetor-de-foto-de-perfil-minimalista_276184-161.jpg';
+            
+            return `
+                <div class="carousel-item" onclick="abrirRestaurante('${restauranteId}')">
+                    <img src="${fotoUrl}" 
+                         alt="${restaurante.name || 'Restaurante'}" 
+                         class="restaurant-image"
+                         onerror="this.onerror=null;this.src='https://img.freepik.com/vetores-premium/ilustracao-em-vetor-de-foto-de-perfil-minimalista_276184-161.jpg'">
+                    <div class="restaurant-info">
+                        <h3>${restaurante.name || 'Restaurante'}</h3>
+                        <div class="restaurant-stats">
+                            <span>👁️ ${restaurante.viewsRecentes || 0} visualizações recentes</span>
+                            <span>⭐ ${restaurante.avgRating || '0.0'}/5</span>
+                            <span>📋 ${restaurante.cardapiosRecentes || 0} cardápios novos</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error("Erro ao carregar restaurantes:", err);
+        const carousel = document.querySelector('.carousel');
+        if (carousel) {
+            carousel.innerHTML = '<p>Não foi possível carregar os restaurantes no momento.</p>';
+        }
+    }
+}
+
+// Modifique a função abrirRestaurante para lidar com erros
+function abrirRestaurante(restauranteId) {
+    try {
+        if (!restauranteId || restauranteId === 'undefined') {
+            throw new Error('ID do restaurante inválido');
+        }
+        
+        sessionStorage.setItem('currentRestaurantId', restauranteId);
+        window.location.href = `perfil.html?userId=${restauranteId}`;
+    } catch (error) {
+        console.error('Erro ao abrir restaurante:', error);
+        alert('Não foi possível abrir este restaurante no momento.');
+    }
+}
+
 
   document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById("sidebar");
