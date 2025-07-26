@@ -860,9 +860,9 @@ window.onload = () => {
     carregarUltimosPosts();
     if(window.location.pathname.includes("perfil.html")){
 
-        carregarRestaurantesPopulares(); // Adicione esta linha
         carregarRestaurantesPopularesP(); // Adicione esta linha
     }
+    carregarRestaurantesPopulares(); // Adicione esta linha
 
     if (window.location.pathname.includes("vizualizador.html")) {
         carregarMediaPost();

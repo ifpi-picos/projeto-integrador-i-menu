@@ -153,6 +153,7 @@
 
 // Função para carregar restaurantes populares
 async function carregarRestaurantesPopulares() {
+  const webservice = "https://imenu-backend-pd3a.onrender.com";
     try {
         const response = await fetch(`${webservice}/restaurantes/populares`);
         
