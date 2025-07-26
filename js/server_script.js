@@ -464,6 +464,10 @@ async function enviarPostCompleto() {
         return;
     }
 
+        // Obter tags selecionadas
+    const tagCheckboxes = document.querySelectorAll('input[name="tags"]:checked');
+    const tags = Array.from(tagCheckboxes).map(cb => cb.value);
+
     try {
         showLoading(true);
         
@@ -473,6 +477,7 @@ async function enviarPostCompleto() {
         formData.append('content', content || '');
         formData.append('sociallink', link || '');
         formData.append('publice', publice.toString()); // Converter boolean para string
+        formData.append('tags', JSON.stringify(tags));
 
         // Adicionar arquivos se existirem
         const capaInput = document.getElementById('upload_card');
@@ -853,7 +858,11 @@ window.onload = () => {
     verificarToken();
     setTimeout(VerEmail, 500);
     carregarUltimosPosts();
-    carregarRestaurantesPopulares(); // Adicione esta linha
+    if(window.location.pathname.includes("perfil.html")){
+
+        carregarRestaurantesPopulares(); // Adicione esta linha
+        carregarRestaurantesPopularesP(); // Adicione esta linha
+    }
 
     if (window.location.pathname.includes("vizualizador.html")) {
         carregarMediaPost();

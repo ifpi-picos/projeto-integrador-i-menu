@@ -15,18 +15,22 @@
 
     <div class="container">
       <!-- Botões de filtro e barra de busca -->
-      <div class="row mt-2" id="filter-buttons">
-        <div class="col-12 d-flex flex-wrap align-items-center gap-2">
-          <button class="btn active" data-filter="all">Todos</button>
-          <button class="btn" data-filter="nature">Bebidas</button>
-          <button class="btn" data-filter="cars">Refeições</button>
-          <button class="btn" data-filter="people">Sobremesas</button>
-          <input id="barP" type="text" placeholder="Buscar..." />
-        </div>
-      </div>
+<div class="row mt-2" id="filter-buttons">
+  <div class="col-12 d-flex flex-wrap align-items-center gap-2">
+    <button class="btn active" data-filter="all">Todos</button>
+    <button class="btn" data-filter="bebidas">Bebidas</button>
+    <button class="btn" data-filter="refeicoes">Refeições</button>
+    <button class="btn" data-filter="sobremesas">Sobremesas</button>
+    <button class="btn" data-filter="lanches">Lanches</button>
+    <button class="btn" data-filter="sushi">Sushi</button>
+    <button class="btn" data-filter="vegetariano">Vegetariano</button>
+    <input id="barP" type="text" placeholder="Buscar..." />
+  </div>
+</div>
 
       <!-- Cards de restaurantes -->
       <div class="row px-2 mt-4 gap-3 justify-content-start" id="filterable-cards">
+
         <div class="card p-0 card-wrapper" data-name="nature">
           <img src="images/cardapio 1.jpg" alt="img" />
           <div class="card-body">
@@ -123,6 +127,111 @@
     .then(data => {
       document.getElementById('footer-container').innerHTML = data;
     });
+
+
+
+    document.addEventListener('DOMContentLoaded', async () => {
+    await verificarToken();
+    await carregarCardapios();
+    
+    // Configuração dos filtros - agora com verificação
+    const filterButtons = document.querySelectorAll("#filter-buttons .btn");
+    const searchInput = document.getElementById("barP");
+    
+    if (filterButtons.length > 0 && searchInput) {
+        filterButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                filterButtons.forEach(button => button.classList.remove("active"));
+                btn.classList.add("active");
+                filtrarCardapios(btn.dataset.filter, searchInput.value);
+            });
+        });
+        
+        searchInput.addEventListener("input", () => {
+            const activeFilter = document.querySelector("#filter-buttons .btn.active");
+            if (activeFilter) {
+                filtrarCardapios(activeFilter.dataset.filter, searchInput.value);
+            }
+        });
+    }
+});
+
+async function carregarRestaurantesPopularesP() {
+    try {
+        const response = await fetch(`${webservice}/card/populares`);
+        if (!response.ok) throw new Error('Erro ao carregar restaurantes populares');
+        
+        const restaurantes = await response.json();
+        return restaurantes;
+    } catch (err) {
+        console.error('Erro ao carregar restaurantes populares:', err);
+        return [];
+    }
+}
+
+async function carregarCardapios() {
+    try {
+        // Modifique esta linha para buscar todos os cardápios públicos
+        const response = await fetch(`${webservice}/recentP?include=tags`);
+        if (!response.ok) throw new Error('Erro ao carregar cardápios');
+        
+        const cardapios = await response.json();
+        exibirCardapios(cardapios);
+    } catch (err) {
+        console.error('Erro:', err);
+        document.getElementById('filterable-cards').innerHTML = 
+            '<p class="text-center">Erro ao carregar cardápios. Tente novamente mais tarde.</p>';
+    }
+}
+
+function exibirCardapios(cardapios) {
+    const container = document.getElementById('filterable-cards');
+    container.innerHTML = '';
+    
+    if (!cardapios || cardapios.length === 0) {
+        container.innerHTML = '<p class="text-center">Nenhum cardápio encontrado.</p>';
+        return;
+    }
+    
+    cardapios.forEach(cardapio => {
+        // Garante que tags seja um array, mesmo quando undefined
+        const tags = (cardapio.tags || []).map(t => t.name).join(' ');
+        const card = document.createElement('div');
+        card.className = 'card p-0 card-wrapper';
+        card.dataset.name = tags || 'sem-tags'; // Valor padrão se não houver tags
+        card.onclick = () => abrirPost(cardapio.id);
+        
+        card.innerHTML = `
+            <img src="${cardapio.capa || 'images/default-cardapio.jpg'}" alt="${cardapio.title}" />
+            <div class="card-body">
+                <h6 class="card-title">${cardapio.title}</h6>
+                <div class="card-rating">
+                    ${cardapio.avgRating ? `⭐ ${cardapio.avgRating}` : 'Sem avaliações'}
+                </div>
+                ${cardapio.tags && cardapio.tags.length > 0 ? `
+                <div class="card-tags">
+                    ${cardapio.tags.map(t => `<span class="tag">${t.name}</span>`).join('')}
+                </div>` : ''}
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+function filtrarCardapios(filter, searchTerm) {
+    const cards = document.querySelectorAll('.card-wrapper');
+    const searchLower = searchTerm.toLowerCase();
+    
+    cards.forEach(card => {
+        const cardTags = card.dataset.name || '';
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const matchesFilter = filter === 'all' || cardTags.includes(filter);
+        const matchesSearch = title.includes(searchLower) || cardTags.includes(searchLower);
+        
+        card.style.display = matchesFilter && matchesSearch ? 'block' : 'none';
+    });
+}
 
     </script>
 

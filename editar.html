@@ -12,7 +12,7 @@
             margin: 0 auto;
             padding: 20px;
         }
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -29,6 +29,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+            margin-right: 10px;
         }
         #upload-area {
             border: 2px dashed #ddd;
@@ -46,6 +47,46 @@
         .radio-group {
             margin-bottom: 15px;
         }
+        
+        /* Estilos para as tags */
+        .tags-container {
+            margin: 20px 0;
+        }
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .tag-item {
+            background-color: #E0C097;
+            color: #4E342E;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .tag-item button {
+            background: none;
+            border: none;
+            color: #D32F2F;
+            margin-left: 5px;
+            padding: 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .add-tag-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .add-tag-container select {
+            flex: 1;
+        }
+        .add-tag-container button {
+            width: auto;
+        }
     </style>
 </head>
 <body>
@@ -54,23 +95,45 @@
         <input type="text" id="title" placeholder="Título">
         <textarea id="content" placeholder="Conteúdo"></textarea>
         <input type="text" id="linksocial" placeholder="Link Social">
+        
         <div class="radio-group">
             <input type="radio" id="public" name="visibility" value="public">
             <label for="public">Público</label>
             <input type="radio" id="private" name="visibility" value="private">
             <label for="private">Privado</label>
         </div>
+        
+        <!-- Seção de Tags -->
+        <div class="tags-container">
+            <h3>Tags do Cardápio</h3>
+            <div class="tags-list" id="tags-list">
+                <!-- Tags serão adicionadas dinamicamente aqui -->
+            </div>
+            
+            <div class="add-tag-container">
+                <select id="available-tags">
+                    <option value="">Selecione uma tag para adicionar</option>
+                    <!-- Tags disponíveis serão carregadas aqui -->
+                </select>
+                <button onclick="adicionarTag()">Adicionar Tag</button>
+            </div>
+        </div>
+        
         <div id="upload-area">
             <img id="preview" style="display: none;">
             <span id="upload-text">Upload de imagem</span>
         </div>
+        
         <button onclick="salvarEdicao()">Salvar Alterações</button>
+        <button onclick="window.history.back()">Cancelar</button>
     </div>
 
     <script>
         const webservice = "https://imenu-backend-pd3a.onrender.com";
         let currentPostId = null;
         let currentCapaUrl = null;
+        let currentTags = []; // Armazenará as tags atuais do post
+        let availableTags = []; // Armazenará todas as tags disponíveis
 
         // Função para carregar os dados do post a ser editado
         async function carregarPostParaEdicao() {
@@ -91,7 +154,8 @@
                     return;
                 }
 
-                const response = await fetch(`${webservice}/posts/${currentPostId}`, {
+                // Carrega o post e suas tags
+                const response = await fetch(`${webservice}/posts/${currentPostId}?include=tags`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -124,11 +188,105 @@
                     document.getElementById('upload-text').style.display = 'none';
                 }
 
+                // Carregar tags do post
+                if (post.tags && post.tags.length > 0) {
+                    currentTags = post.tags;
+                    atualizarListaDeTags();
+                }
+
+                // Carregar todas as tags disponíveis
+                await carregarTagsDisponiveis();
+
             } catch (error) {
                 console.error('Erro ao carregar post:', error);
                 alert(`Erro ao carregar post: ${error.message}`);
                 window.location.href = 'perfil.html';
             }
+        }
+
+        // Função para carregar todas as tags disponíveis
+        async function carregarTagsDisponiveis() {
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch(`${webservice}/tags`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar tags');
+                }
+
+                availableTags = await response.json();
+                preencherSelectDeTags();
+            } catch (error) {
+                console.error('Erro ao carregar tags:', error);
+                alert(`Erro ao carregar tags disponíveis: ${error.message}`);
+            }
+        }
+
+        // Função para preencher o select com as tags disponíveis
+        function preencherSelectDeTags() {
+            const select = document.getElementById('available-tags');
+            select.innerHTML = '<option value="">Selecione uma tag para adicionar</option>';
+            
+            // Filtra tags que ainda não foram adicionadas ao post
+            const tagsNaoAdicionadas = availableTags.filter(tag => 
+                !currentTags.some(t => t.id === tag.id)
+            );
+            
+            tagsNaoAdicionadas.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag.id;
+                option.textContent = tag.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Função para atualizar a lista de tags exibidas
+        function atualizarListaDeTags() {
+            const tagsList = document.getElementById('tags-list');
+            tagsList.innerHTML = '';
+            
+            currentTags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-item';
+                tagElement.innerHTML = `
+                    ${tag.name}
+                    <button onclick="removerTag(${tag.id})">×</button>
+                `;
+                tagsList.appendChild(tagElement);
+            });
+            
+            // Atualiza o select com as tags disponíveis
+            preencherSelectDeTags();
+        }
+
+        // Função para adicionar uma tag ao post
+        function adicionarTag() {
+            const select = document.getElementById('available-tags');
+            const tagId = select.value;
+            
+            if (!tagId) {
+                alert('Selecione uma tag para adicionar');
+                return;
+            }
+            
+            // Encontra a tag selecionada na lista de tags disponíveis
+            const tagParaAdicionar = availableTags.find(tag => tag.id == tagId);
+            
+            if (tagParaAdicionar && !currentTags.some(t => t.id == tagId)) {
+                currentTags.push(tagParaAdicionar);
+                atualizarListaDeTags();
+                select.value = '';
+            }
+        }
+
+        // Função para remover uma tag do post
+        function removerTag(tagId) {
+            currentTags = currentTags.filter(tag => tag.id != tagId);
+            atualizarListaDeTags();
         }
 
         // Função para lidar com o upload de imagem
@@ -163,62 +321,69 @@
         });
 
         // Função para salvar as alterações
-        async function salvarEdicao() {
-            if (!currentPostId) {
-                alert('Post não identificado');
-                return;
-            }
+async function salvarEdicao() {
+    if (!currentPostId) {
+        alert('Post não identificado');
+        return;
+    }
 
-            const title = document.getElementById('title').value.trim();
-            const content = document.getElementById('content').value.trim();
-            const sociallink = document.getElementById('linksocial').value.trim();
-            const isPublic = document.getElementById('public').checked;
-            
-            if (!title || !content) {
-                alert('Título e conteúdo são obrigatórios');
-                return;
-            }
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
+    const sociallink = document.getElementById('linksocial').value.trim();
+    const isPublic = document.getElementById('public').checked;
+    
+    if (!title || !content) {
+        alert('Título e conteúdo são obrigatórios');
+        return;
+    }
 
-            try {
-                const token = localStorage.getItem('auth_token');
-                if (!token) {
-                    alert('Sessão expirada. Faça login novamente.');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                const postData = {
-                    title,
-                    content,
-                    sociallink: sociallink || null,
-                    public: isPublic,
-                    capa: currentCapaUrl
-                };
-
-                const response = await fetch(`${webservice}/posts/${currentPostId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(postData)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Erro ao atualizar post');
-                }
-
-                alert('Post atualizado com sucesso!');
-                window.location.href = 'perfil.html';
-
-            } catch (error) {
-                console.error('Erro ao salvar edição:', error);
-                alert(`Erro ao salvar edição: ${error.message}`);
-            }
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            alert('Sessão expirada. Faça login novamente.');
+            window.location.href = 'login.html';
+            return;
         }
 
-        // Carregar o post quando a página for aberta
+        // Garantir que os IDs das tags são números
+        const tagIds = currentTags.map(tag => parseInt(tag.id)).filter(id => !isNaN(id));
+
+        const postData = {
+            title,
+            content,
+            sociallink: sociallink || null,
+            public: isPublic,
+            capa: currentCapaUrl,
+            tags: tagIds
+        };
+
+        console.log('Enviando dados:', postData); // Para debug
+
+        const response = await fetch(`${webservice}/posts/${currentPostId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(postData)
+        });
+
+        const responseData = await response.json(); // Sempre tentar ler a resposta JSON
+        
+        if (!response.ok) {
+            throw new Error(responseData.error || 'Erro ao atualizar post');
+        }
+
+        alert('Post atualizado com sucesso!');
+        window.location.href = 'perfil.html';
+
+    } catch (error) {
+        console.error('Erro ao salvar edição:', error);
+        alert(`Erro ao salvar edição: ${error.message}`);
+    }
+} 
+
+// Carregar o post quando a página for aberta
         document.addEventListener('DOMContentLoaded', carregarPostParaEdicao);
     </script>
 </body>

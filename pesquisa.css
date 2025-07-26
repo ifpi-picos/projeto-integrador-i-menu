@@ -9,6 +9,83 @@ body {
   padding: 20px;
 }
 
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.tag-option {
+    background: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tag-option:hover {
+    background: #e0e0e0;
+}
+
+.tag-option input {
+    margin-right: 5px;
+}
+
+.card-wrapper {
+    width: 200px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.card-wrapper:hover {
+    transform: translateY(-5px);
+}
+
+.card-wrapper img {
+    height: 120px;
+    object-fit: cover;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.card-tags .tag {
+    background: #3B1D0F;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+}
+
+.card-rating {
+    color: #FFD700;
+    font-weight: bold;
+}
+
+#filter-buttons .btn {
+    background: #f0f0f0;
+    border: none;
+    color: #333;
+}
+
+#filter-buttons .btn.active {
+    background: #3B1D0F;
+    color: white;
+}
+
+#barP {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    flex-grow: 1;
+    max-width: 300px;
+}
 /* Botões de filtro */
 #filter-buttons .btn {
   background-color: #fff;

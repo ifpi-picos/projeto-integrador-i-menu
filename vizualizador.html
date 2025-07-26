@@ -340,76 +340,85 @@ async function registrarVisualizacao(postId) {
       }
     }
 
-    async function carregarPost() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const postId = urlParams.get('id');
-      if (!postId || postId === 'undefined') {
+async function carregarPost() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    if (!postId || postId === 'undefined') {
         alert('Post não encontrado: ID inválido');
         window.location.href = 'index.html';
         return;
-      }
-      try {
+    }
+    
+    try {
         await registrarVisualizacao(postId);
-        const [postResponse, viewsResponse] = await Promise.all([
-          fetch(`${beleza}/posts/${postId}`),
-          fetch(`${beleza}/posts/${postId}/views`)
-        ]);
+        
+        // Faça apenas uma requisição que já inclui todos os dados necessários
+        const postResponse = await fetch(`${beleza}/posts/${postId}`);
         const post = await postResponse.json();
-        const viewsData = await viewsResponse.json();
 
+        if (!postResponse.ok) {
+            throw new Error(post.message || 'Erro ao carregar post');
+        }
+
+        // Preencha os dados na página
         document.getElementById('post-title').textContent = post.title || 'Sem título';
         document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
         document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
-        document.getElementById('post-views').textContent = `${viewsData.views || 0} visualizações`;
+        document.getElementById('post-views').textContent = `${post.views || 0} visualizações`;
 
+        // Mostrar tags se existirem
+        const tagsContainer = document.createElement('div');
+        tagsContainer.className = 'post-tags';
+        if (post.tags && post.tags.length > 0) {
+            tagsContainer.innerHTML = `
+                <h3>Categorias:</h3>
+                <div class="tags-list">
+                    ${post.tags.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
+                </div>
+            `;
+            document.querySelector('.post-content').appendChild(tagsContainer);
+        }
+
+        // Configurar imagem do post
         const postImage = document.getElementById('post-image');
-// Modificação principal aqui:
-if (post.capa) {
-  postImage.style.backgroundImage = `url('${post.capa}')`;
-  postImage.style.backgroundSize = 'cover';
-  postImage.style.backgroundPosition = 'center';
-  postImage.style.height = '300px';
-  postImage.style.cursor = 'pointer';
-  
-  // Sempre tenta abrir o arquivo primeiro (que agora faz download se for PDF)
-  if (post.arquivo) {
-    postImage.onclick = () => abrirArquivo();
-    postImage.title = 'Clique para baixar o cardápio';
-  } else {
-    // Se não tem arquivo, mas tem capa, abre a imagem em tela cheia
-    postImage.onclick = () => abrirImagemCapa(post.capa);
-    postImage.title = 'Clique para ampliar a imagem';
-  }
-} else {
-  postImage.style.display = 'none';
-}
+        if (post.capa) {
+            postImage.style.backgroundImage = `url('${post.capa}')`;
+            postImage.style.backgroundSize = 'cover';
+            postImage.style.backgroundPosition = 'center';
+            postImage.style.height = '300px';
+            postImage.style.cursor = 'pointer';
+            postImage.onclick = () => post.arquivo ? abrirArquivo() : abrirImagemCapa(post.capa);
+            postImage.title = post.arquivo ? 'Clique para baixar o cardápio' : 'Clique para ampliar a imagem';
+        } else {
+            postImage.style.display = 'none';
+        }
 
+        // Configurar botão de perfil
         const profileBtn = document.getElementById('view-profile-btn');
         if (post.author) {
-          profileBtn.style.display = 'block';
-          profileBtn.onclick = () => {
-            const token = localStorage.getItem("auth_token");
-            if (token) {
-              window.location.href = `perfil.html?userId=${post.authorId}`;
-            } else {
-              alert("Você precisa estar logado para ver perfis de usuários");
-              window.location.href = "login.html";
-            }
-          };
+            profileBtn.style.display = 'block';
+            profileBtn.onclick = () => {
+                const token = localStorage.getItem("auth_token");
+                if (token) {
+                    window.location.href = `perfil.html?userId=${post.authorId}`;
+                } else {
+                    alert("Você precisa estar logado para ver perfis de usuários");
+                    window.location.href = "login.html";
+                }
+            };
         } else {
-          profileBtn.style.display = 'none';
+            profileBtn.style.display = 'none';
         }
 
         await carregarMedia(postId);
         ativarAvaliacao(postId);
         await carregarComentarios(postId);
-      } catch (error) {
+    } catch (error) {
         console.error('Erro ao carregar post:', error);
         alert(`Erro ao carregar post: ${error.message}`);
         setTimeout(() => window.location.href = 'index.html', 2000);
-      }
     }
-
+}
     async function carregarMedia(postId) {
       try {
         const res = await fetch(`${beleza}/avaliacoes/media/${postId}`);
