@@ -859,11 +859,11 @@ window.onload = () => {
     setTimeout(VerEmail, 500);
     carregarUltimosPosts();
     if(window.location.pathname.includes("perfil.html")){
-
         carregarRestaurantesPopularesP(); // Adicione esta linha
     }
+     if(window.location.pathname.includes("index.html")){
     carregarRestaurantesPopulares(); // Adicione esta linha
-
+     }
     if (window.location.pathname.includes("vizualizador.html")) {
         carregarMediaPost();
     }

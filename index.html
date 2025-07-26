@@ -151,9 +151,8 @@
     });
 }
 
-// Função para carregar restaurantes populares
 async function carregarRestaurantesPopulares() {
-  const webservice = "https://imenu-backend-pd3a.onrender.com";
+    const webservice = "https://imenu-backend-pd3a.onrender.com";
     try {
         const response = await fetch(`${webservice}/restaurantes/populares`);
         
@@ -162,7 +161,7 @@ async function carregarRestaurantesPopulares() {
         }
 
         const restaurantes = await response.json();
-        const carousel = document.querySelector('.carousel');
+        const carousel = document.getElementById('restaurantes-populares');
 
         if (!carousel) return;
 
@@ -196,13 +195,12 @@ async function carregarRestaurantesPopulares() {
         }).join('');
     } catch (err) {
         console.error("Erro ao carregar restaurantes:", err);
-        const carousel = document.querySelector('.carousel');
+        const carousel = document.getElementById('restaurantes-populares');
         if (carousel) {
             carousel.innerHTML = '<p>Não foi possível carregar os restaurantes no momento.</p>';
         }
     }
 }
-
 // Modifique a função abrirRestaurante para lidar com erros
 function abrirRestaurante(restauranteId) {
     try {
@@ -210,14 +208,12 @@ function abrirRestaurante(restauranteId) {
             throw new Error('ID do restaurante inválido');
         }
         
-        sessionStorage.setItem('currentRestaurantId', restauranteId);
         window.location.href = `perfil.html?userId=${restauranteId}`;
     } catch (error) {
         console.error('Erro ao abrir restaurante:', error);
         alert('Não foi possível abrir este restaurante no momento.');
     }
 }
-
 
   document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById("sidebar");

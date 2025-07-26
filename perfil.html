@@ -407,6 +407,53 @@ if (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId) {
 function getIdFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get("userId"); // <- CORRETO
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+    
+    if (userId) {
+        carregarPerfilRestaurante(userId);
+    } else {
+        // Comportamento normal para o perfil do usuário logado
+        verificarToken();
+    }
+});
+
+async function carregarPerfilRestaurante(userId) {
+    try {
+        const token = localStorage.getItem('auth_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        
+        const response = await fetch(`https://imenu-backend-pd3a.onrender.com/user/${userId}`, {
+            headers: headers
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao carregar perfil');
+        }
+
+        const userData = await response.json();
+        
+        // Atualizar a UI com os dados do restaurante
+        document.getElementById('P-username').textContent = userData.name;
+        if (userData.foto) {
+            document.getElementById('profile-img').src = userData.foto;
+        }
+        
+        // Carregar cardápios públicos do restaurante
+        const postsResponse = await fetch(`https://imenu-backend-pd3a.onrender.com/user/${userId}/posts`, {
+            headers: headers
+        });
+        
+        const posts = await postsResponse.json();
+        atualizarPostsUI(posts, "cards_user");
+        
+    } catch (error) {
+        console.error('Erro ao carregar perfil do restaurante:', error);
+        alert('Não foi possível carregar o perfil deste restaurante.');
+    }
+}
 }
 
 
