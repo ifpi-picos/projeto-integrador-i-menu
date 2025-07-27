@@ -567,6 +567,10 @@ body.bodyp {
 }
 
 #config-btn {
+  display: none ;
+}
+
+#config-btn {
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -586,7 +590,4 @@ body.bodyp {
   }
 
 
-  #config-btn {
-  display: none;
-}
 
