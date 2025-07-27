@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Configurações</title>
+  <link rel="stylesheet" href="configuracoes.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bodyp">
+
+<header class="headerperfil d-flex align-items-center justify-content-between px-3">
+  <div class="d-flex align-items-center">
+    <a href="perfil.html" class="icon-back me-2" aria-label="Voltar">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <h4 class="mb-0">Configurações</h4>
+  </div>
+  <button class="btn-logout" onclick="logout()">Sair</button>
+</header>
+
+
+<div class="container mt-4">
+  <div class="profile-pic text-center mb-3">
+    <img id="profile-img" src="images/perfil.png" class="rounded-circle" width="100" height="100" style="object-fit: cover;" />
+    <div>
+  <a href="#" class="edit-photo" onclick="editarFotoPerfil()">Alterar foto</a>
+</div>
+
+  </div>
+
+  <form id="form-config">
+    <div class="mb-3">
+      <label for="nome" class="form-label">Nome</label>
+      <input type="text" id="nome" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label for="senha" class="form-label">Senha</label>
+      <input type="password" id="senha" class="form-control" placeholder="********" />
+    </div>
+
+   <div class="d-flex justify-content-between">
+  <button type="button" class="btn-cancelar" onclick="history.back()">Cancelar</button>
+  <button type="submit" class="btn-salvar">Salvar</button>
+</div>
+
+  </form>
+</div>
+
+<script src="scripts/server_script.js"></script>
+<script src="scripts/script.js"></script>
+
+
+<script>
+  const webservice = "https://imenu-backend-pd3a.onrender.com";
+
+  function parseJwt(token) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function carregarDadosUsuario() {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${webservice}/dados`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      document.getElementById('nome').value = data.name || '';
+      document.getElementById('email').value = data.email || '';
+      if (data.foto) {
+        document.getElementById('profile-img').src = data.foto;
+      }
+    } catch (e) {
+      console.error("Erro ao carregar dados:", e);
+    }
+  }
+
+  async function editarFotoPerfil() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file || file.size > 5 * 1024 * 1024) {
+        alert("Imagem muito grande (máx 5MB)");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const uploadRes = await fetch(`${webservice}/api/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const uploadData = await uploadRes.json();
+
+        if (!uploadData.success || !uploadData.fileUrl) {
+          throw new Error("Erro no upload");
+        }
+
+        const token = localStorage.getItem("auth_token");
+        await fetch(`${webservice}/user/photo`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ foto: uploadData.fileUrl })
+        });
+
+        document.getElementById('profile-img').src = uploadData.fileUrl;
+        alert("Foto atualizada com sucesso!");
+      } catch (e) {
+        console.error("Erro:", e);
+        alert("Erro ao enviar imagem");
+      }
+    };
+
+    input.click();
+  }
+
+  document.getElementById("form-config").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nome = document.getElementById("nome").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+
+    const token = localStorage.getItem("auth_token");
+
+    try {
+      const body = {
+        name: nome,
+        email: email
+      };
+      if (senha) body.password = senha;
+
+      const res = await fetch(`${webservice}/user/update`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) throw new Error("Erro ao atualizar");
+      alert("Dados atualizados com sucesso!");
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Falha ao atualizar dados");
+    }
+  });
+
+  function logout() {
+    localStorage.removeItem("auth_token");
+    window.location.href = "login.html"; // redirecione para sua tela de login
+  }
+
+  window.onload = carregarDadosUsuario;
+</script>
+
+</body>
+</html>

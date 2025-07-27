@@ -117,36 +117,97 @@ body {
   flex-grow: 1;
 }
 
-/* Cards */
+/* Cards refinados */
 .card {
-  width: 220px;
-  border-radius: 16px;
+  width: 260px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  border: none;
-  transition: transform 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid #eee;
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-8px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
 }
 
 .card img {
   width: 100%;
-  height: 140px;
+  height: 170px;
   object-fit: cover;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
+/* Corpo do card */
 .card-body {
-  padding: 10px 12px;
+  padding: 16px;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
+/* Título do card */
 .card-title {
+  font-size: 1.05rem;
   font-weight: 600;
-  font-size: 1rem;
-  color: #333;
+  color: #3B1D0F;
+  margin: 0;
+  line-height: 1.3;
 }
+
+/* Avaliação com estrela */
+.card-rating {
+  font-size: 0.9rem;
+  color: #e0a04a;
+  font-weight: 500;
+}
+
+/* Tags */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.card-tags .tag {
+  background-color: #3B1D0F;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+#filterable-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+
+#filter-buttons .btn {
+  background-color: #fff;
+  color: #3B1D0F;
+  border: 1px solid #c6935c;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+#filter-buttons .btn.active,
+#filter-buttons .btn:hover {
+  background-color: #c6935c;
+  color: #fff;
+  border-color: #c6935c;
+}
+
 
 /* Seções */
 .section-title {

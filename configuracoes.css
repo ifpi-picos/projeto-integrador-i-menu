@@ -1,0 +1,138 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+.headerperfil {
+  background-color: #ffffff;
+  padding: 20px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.headerperfil h4 {
+  font-size: 22px;
+  margin: 0;
+  color: #8b5e3c; /* marrom escuro */
+}
+
+.icon-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  border: 1px solid #c49a6c; /* marrom claro */
+  color: #8b5e3c;
+  text-decoration: none;
+  transition: 0.2s ease-in-out;
+}
+
+.icon-back:hover {
+  background-color: #f7f1ea; /* bege claro */
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.profile-pic img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #c49a6c; /* marrom claro */
+  object-fit: cover;
+}
+
+.profile-pic button {
+  font-size: 14px;
+  color: #8b5e3c; /* marrom escuro */
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.profile-pic button:hover {
+  text-decoration: underline;
+  color: #c49a6c; /* marrom claro */
+}
+
+.form-label {
+  font-weight: 600;
+  color: #8b5e3c;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #c49a6c;
+  padding: 10px;
+  color: #333;
+}
+
+.btn-cancelar {
+  background-color: transparent;
+  color: #8b5e3c;
+  border: 2px solid #8b5e3c;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-cancelar:hover {
+  background-color: #8b5e3c;
+  color: white;
+}
+
+.btn-salvar {
+  background-color: #633805; /* tom semelhante ao usado no botão "ver opções" */
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.btn-salvar:hover {
+  background-color: #c8914f; /* tom um pouco mais escuro no hover */
+}
+
+.btn-logout {
+  background-color: #8b5e3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #c8914f;
+}
+
+
+.edit-photo {
+  text-decoration: none;
+  color: #8b5e3c; /* mesma cor do tema */
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.edit-photo:hover {
+  color: #c49a6c;
+}
+
+

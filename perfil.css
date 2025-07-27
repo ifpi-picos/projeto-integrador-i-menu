@@ -308,10 +308,6 @@ body.bodyp {
   color: #333;
 }
 
-/* Cardápios em grade */
-
-
-
 /* Estrela extra (comentários) */
 .rating-small {
   font-size: 14px;
@@ -570,49 +566,27 @@ body.bodyp {
   }
 }
 
-
-.logout-btn {
-    font-family: 'Inter', sans-serif;
-    background-color: #e74c3c;
+#config-btn {
+    background-color: transparent;
     border: none;
-    color: white;
-    padding: 6px 14px;
-    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+    padding: 8px;
+    border-radius: px;
+    transition: background-color 0.2s;
   }
 
-  .logout-btn:hover {
-    background-color: #c0392b;
+  #config-btn:hover {
+    background-color: #f0f0f0;
   }
 
-  .profile-pic-wrapper {
-    position: relative;
-    display: inline-block;
+  #config-btn i {
+    width: 24px;
+    height: 24px;
+    stroke: #333;
   }
 
-  .edit-icon {
-  display: none; /* <- oculta por padrão, só mostra via JS se for dono */
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 50%;
-  padding: 2px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
+
+  #config-btn {
+  display: none;
 }
 
-
-.edit-icon:hover {
-  background-color: #f5f5f5;
-}
