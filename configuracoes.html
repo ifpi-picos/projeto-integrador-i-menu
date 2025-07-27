@@ -18,7 +18,10 @@
     </a>
     <h4 class="mb-0">Configurações</h4>
   </div>
-  <button class="btn-logout" onclick="logout()">Sair</button>
+  <button class="btn-logout" onclick="logout()" style="display: flex; align-items: center; gap: 8px;">
+  <i data-lucide="log-out"></i> Sair
+</button>
+
 </header>
 
 
@@ -57,10 +60,13 @@
 
 <script src="scripts/server_script.js"></script>
 <script src="scripts/script.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
 
 
 <script>
   const webservice = "https://imenu-backend-pd3a.onrender.com";
+  lucide.createIcons();
 
   function parseJwt(token) {
     try {
