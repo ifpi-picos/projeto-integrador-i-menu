@@ -245,3 +245,46 @@ button:active {
 }
 
 
+@media (max-width: 576px) {
+    .wrapper {
+        padding: 10px;
+        margin-top: -60px;
+    }
+
+    .container {
+        padding: 15px;
+        gap: 15px;
+        margin-top: 60px;
+    }
+
+    .upload-box {
+        height: auto;
+        aspect-ratio: 3 / 4;
+        padding: 20px;
+    }
+
+    .form-section {
+        padding: 0 5px;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .tag-option {
+        font-size: 13px;
+        padding: 5px 10px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 10px 16px;
+    }
+
+    input, textarea {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
