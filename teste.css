@@ -714,3 +714,113 @@ header > div {
         display: none;
     }
 }
+
+#restaurantes-populares {
+  min-height: 300px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+  padding: 20px 0;
+  scroll-behavior: smooth;
+  gap: 20px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+#restaurantes-populares::-webkit-scrollbar {
+  display: none;
+}
+
+#restaurantes-populares .carousel-item {
+  flex: 0 0 auto;
+  width: 100px; /* largura fixa */
+  scroll-snap-align: start;
+  border-radius: 0px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  background: white;
+}
+
+#restaurantes-populares .carousel-item:hover {
+  transform: translateY(-5px);
+}
+
+
+#restaurantes-populares .carousel-item {
+  flex: 0 0 auto;
+  width: 240px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease;
+  padding-bottom: 1rem;
+}
+
+#restaurantes-populares .carousel-item:hover {
+  transform: translateY(-5px);
+}
+
+#restaurantes-populares .restaurant-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 1rem;
+  border: 3px solid #fff;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}
+
+#restaurantes-populares .restaurant-info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+#restaurantes-populares .restaurant-info h3 {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #3e2723;
+  margin: 0;
+  text-align: center;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* permite até 2 linhas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+#restaurantes-populares .restaurant-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+#restaurantes-populares .restaurant-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+@media (max-width: 768px) {
+  #restaurantes-populares .carousel-item {
+    width: 80vw;
+  }
+}

@@ -43,7 +43,7 @@
   <button id="toggleSidebar" class="toggle-btn">☰</button>
 
   <header>
-    <div class="logo">iMenu</div>
+    <a href="index.html" class="logo">iMenu</a>
     <header>
       <nav class="horizontal-nav">
         <a href="index.html" class="nav-button"><p>Início</p></a>
@@ -96,7 +96,7 @@
             <button class="btn btn-card" onclick="filtrarPorCategoria('refeicoes')">Ver opções</button>
         </div>
     </div>
-</div>
+  </div>
 
   <section class="section">
     <h2>Cardápios criados recentemente</h2>
@@ -106,19 +106,20 @@
     <div id="posts-recentes"></div>
 
     <button class="arrow right" onclick="scrollPosts(1)">&#10095;</button>
-</div>
+  </div>
+</section>
 
+<!-- Restaurantes Famosos -->
+<section class="section">
+  <h2>Restaurantes Famosos</h2>
+  <div class="posts-container">
+    <button class="arrow left" onclick="scrollRestaurantes(-1)">&#10094;</button>
 
-    </div>
-    <div id="posts-infos"></div>
-  </section>
+    <div class="carousel" id="restaurantes-populares"></div>
 
-  <section class="section">
-    <h2>Restaurantes Famosos</h2>
-    <div class="carousel" id="restaurantes-populares">
-      
-    </div>
-  </section>
+    <button class="arrow right" onclick="scrollRestaurantes(1)">&#10095;</button>
+  </div>
+</section>
 
 
   <div id="footer-container"></div>
@@ -149,6 +150,15 @@
         left: direction * scrollAmount,
         behavior: 'smooth'
     });
+}
+
+function scrollRestaurantes(direction) {
+  const container = document.getElementById('restaurantes-populares');
+  const scrollAmount = container.clientWidth / 1.2;
+  container.scrollBy({
+    left: direction * scrollAmount,
+    behavior: 'smooth'
+  });
 }
 
 async function carregarRestaurantesPopulares() {
