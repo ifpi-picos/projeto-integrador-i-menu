@@ -188,3 +188,60 @@ button:active {
         width: 100%;
     }
 }
+
+
+/* Container das tags */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Cada tag como botão elegante */
+.tag-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f3ece7;
+    border: 1.5px solid #3b1d1a;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #3b1d1a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    font-weight: 500;
+}
+
+/* Checkbox oculto */
+.tag-option input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #3b1d1a;
+    border-radius: 4px;
+    background-color: white;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+/* Marcação com check bonitinho */
+.tag-option input[type="checkbox"]:checked {
+    background-color: #3b1d1a;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='10' viewBox='0 0 12 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5L4 8L11 1' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 10px;
+}
+
+/* Hover leve */
+.tag-option:hover {
+    background-color: #eee4dc;
+}
+
+

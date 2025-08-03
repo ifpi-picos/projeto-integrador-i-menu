@@ -467,7 +467,8 @@ async function carregarPerfilRestaurante(userId) {
         const userData = await response.json();
         
         // Atualizar a UI com os dados do restaurante
-        document.getElementById('P-username').textContent = userData.name;
+        document.getElementById('P-username').textContent = userData.dono && userData.restaurante ? userData.restaurante : userData.name;
+
         if (userData.foto) {
             document.getElementById('profile-img').src = userData.foto;
         }
