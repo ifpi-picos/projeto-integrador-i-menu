@@ -233,6 +233,51 @@ function filtrarCardapios(filter, searchTerm) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+    await verificarToken();
+    await carregarCardapios();
+    
+    // Verifica se há filtro na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterParam = urlParams.get('filter');
+    
+    // Ativa o filtro correspondente se houver parâmetro na URL
+    if (filterParam) {
+        const filterButton = document.querySelector(`.btn[data-filter="${filterParam}"]`);
+        if (filterButton) {
+            filterButton.classList.add('active');
+            filtrarCardapios(filterParam, '');
+        } else {
+            // Se o filtro não for encontrado, ativa "Todos"
+            document.querySelector('.btn[data-filter="all"]').classList.add('active');
+        }
+    } else {
+        // Padrão: ativa "Todos"
+        document.querySelector('.btn[data-filter="all"]').classList.add('active');
+    }
+    
+    // Configuração dos filtros - agora com verificação
+    const filterButtons = document.querySelectorAll("#filter-buttons .btn");
+    const searchInput = document.getElementById("barP");
+    
+    if (filterButtons.length > 0 && searchInput) {
+        filterButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                filterButtons.forEach(button => button.classList.remove("active"));
+                btn.classList.add("active");
+                filtrarCardapios(btn.dataset.filter, searchInput.value);
+            });
+        });
+        
+        searchInput.addEventListener("input", () => {
+            const activeFilter = document.querySelector("#filter-buttons .btn.active");
+            if (activeFilter) {
+                filtrarCardapios(activeFilter.dataset.filter, searchInput.value);
+            }
+        });
+    }
+});
+
     </script>
 
   </body>
