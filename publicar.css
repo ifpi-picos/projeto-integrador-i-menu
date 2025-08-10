@@ -16,12 +16,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 20px 20px; /* Reduzido de 40px */
-    min-height: auto; /* Ou ajuste para um valor menor se quiser garantir altura mínima */
-    margin-top: -100px; /* Adicione controle explícito do espaço */
+    padding: 20px 20px;
+    min-height: auto;
+    margin-top: -100px;
 }
-
-
 
 .container {
     display: flex;
@@ -34,29 +32,32 @@ body {
     width: 100%;
     gap: 30px;
     justify-content: center;
-    margin-top: 100px; /* ← ALTERADO: espaço abaixo do cabeçalho */
+    align-items: flex-start; /* Garantir alinhamento pelo topo */
+    margin-top: 100px;
 }
 
 .upload-box {
-    width: 250px;
-    height: 350px;
-    background: #3b1d1a;
-    color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 250px;
+    height: 350px;
+    background: #3b1d1a;
+    color: white;
+    text-align: center;
     border-radius: 10px;
     cursor: pointer;
     position: relative;
-    flex-shrink: 0;
     overflow: hidden;
-    text-align: center;
     padding: 10px;
+    flex-shrink: 0;
 }
 
-.upload-box input {
+.upload-box input[type="file"] {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     opacity: 0;
@@ -189,7 +190,6 @@ button:active {
     }
 }
 
-
 /* Container das tags */
 .tags-container {
     display: flex;
@@ -244,7 +244,6 @@ button:active {
     background-color: #eee4dc;
 }
 
-
 @media (max-width: 576px) {
     .wrapper {
         padding: 10px;
@@ -287,4 +286,70 @@ button:active {
         padding: 10px;
         font-size: 14px;
     }
+}
+
+/* OVERRIDE: forçar caixas de upload iguais e centralizar o conteúdo */
+.container {
+  /* garante alinhamento pelo topo */
+  align-items: flex-start !important;
+}
+
+/* Força largura/altura idênticas e centraliza o conteúdo */
+.upload-box {
+  box-sizing: border-box !important;
+  width: 250px !important;
+  height: 350px !important;
+  min-height: 350px !important;
+  max-height: 350px !important;
+  padding: 16px !important;
+  margin: 0 !important;
+  border-radius: 10px !important;
+  display: grid !important;
+  place-items: center !important; /* centraliza vertical + horizontal */
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+
+/* Normaliza qualquer elemento interno que possa alterar a altura */
+.upload-box * {
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.15 !important;
+}
+
+/* Garante que o input ocupe todo o bloco sem adicionar espaços */
+.upload-box input[type="file"] {
+  position: absolute !important;
+  inset: 0 !important; /* top:0; right:0; bottom:0; left:0; */
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  border: none !important;
+  display: block !important;
+}
+
+/* Caso algum dos blocos seja <label> (recomendado), forçamos comportamento idêntico) */
+label.upload-box { display: grid !important; }
+
+/* Evita que imagens internas "estourem" o bloco */
+.upload-box img {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+/* Se por acaso houver classes diferentes (ex.: .cover-upload / .menu-upload), aplicar mesmo estilo */
+.cover-upload, .menu-upload {
+  width: 250px !important;
+  height: 350px !important;
+  min-height: 350px !important;
+  display: grid !important;
+  place-items: center !important;
 }
