@@ -194,6 +194,7 @@ async function carregarRestaurantesPopulares() {
                          onerror="this.onerror=null;this.src='https://img.freepik.com/vetores-premium/ilustracao-em-vetor-de-foto-de-perfil-minimalista_276184-161.jpg'">
                     <div class="restaurant-info">
                         <h3>${restaurante.name || 'Restaurante'}</h3>
+                        ${restaurante.restaurante ? `<p class="restaurant-subtitle">${restaurante.restaurante}</p>` : ''}
                         <div class="restaurant-stats">
                             <span>👁️ ${restaurante.viewsRecentes || 0} visualizações recentes</span>
                             <span>⭐ ${restaurante.avgRating || '0.0'}/5</span>
@@ -211,6 +212,7 @@ async function carregarRestaurantesPopulares() {
         }
     }
 }
+
 // Modifique a função abrirRestaurante para lidar com erros
 function abrirRestaurante(restauranteId) {
     try {

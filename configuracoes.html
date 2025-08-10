@@ -43,10 +43,10 @@
       <input type="text" id="nome-restaurante" class="form-control" />
     </div>
 
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" id="email" class="form-control" />
-    </div>
+<div class="mb-3">
+  <label for="email" class="form-label">Email</label>
+  <input type="email" id="email" class="form-control" readonly />
+</div>
 
     <div class="mb-3">
       <label for="senha" class="form-label">Senha</label>
@@ -75,32 +75,53 @@
     }
   }
 
-  async function carregarDadosUsuario() {
+async function carregarDadosUsuario() {
     const token = localStorage.getItem("auth_token");
-    if (!token) return;
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
 
     try {
-      const res = await fetch(`${webservice}/dados`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+        const response = await fetch(`${webservice}/dados`, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-      document.getElementById('nome').value = data.name || '';
-      document.getElementById('email').value = data.email || '';
-      if (data.foto) {
-        document.getElementById('profile-img').src = data.foto;
-      }
+        if (!response.ok) {
+            throw new Error("Erro ao carregar dados do usuário");
+        }
 
-      // Se for dono, exibe campo de nome do restaurante
-      if (data.dono) {
-        document.getElementById('campo-restaurante-config').style.display = 'block';
-        document.getElementById('nome-restaurante').value = data.restaurante || '';
-      }
+        const userData = await response.json();
+        
+        // Preenche todos os campos
+        document.getElementById("nome").value = userData.name || '';
+        document.getElementById("email").value = userData.email || '';
+        document.getElementById("email").readOnly = true; // Adicione esta linha
+        
+        // Foto de perfil
+        const profileImg = document.getElementById("profile-img");
+        if (profileImg && userData.foto) {
+            profileImg.src = userData.foto;
+        }
 
-    } catch (e) {
-      console.error("Erro ao carregar dados:", e);
+        console.log("Dados do usuário:", userData);
+
+        // Se for dono, mostra campo do restaurante
+        if (userData.dono) {
+            document.getElementById("campo-restaurante-config").style.display = "block";
+            document.getElementById("nome-restaurante").value = userData.restaurante || '';
+        } else {
+            document.getElementById("campo-restaurante-config").style.display = "none";
+        }
+
+    } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        alert("Erro ao carregar dados do perfil. Tente novamente.");
     }
-  }
+}
 
   async function editarFotoPerfil() {
     const input = document.createElement('input');
@@ -159,83 +180,89 @@
     input.click();
   }
 
-  document.getElementById("form-config").addEventListener("submit", async (e) => {
+document.getElementById("form-config").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nome = document.getElementById("nome").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const senha = document.getElementById("senha").value;
     const token = localStorage.getItem("auth_token");
-
     if (!token) {
-      alert("Você precisa estar logado para atualizar seus dados");
-      window.location.href = "login.html";
-      return;
+        alert("Você precisa estar logado para atualizar seus dados");
+        window.location.href = "login.html";
+        return;
     }
 
-    if (!nome || !email) {
-      alert("Nome e email são obrigatórios");
-      return;
-    }
+    const nome = document.getElementById("nome").value.trim();
+    const senha = document.getElementById("senha").value;
+    const nomeRestaurante = document.getElementById("nome-restaurante")?.value.trim();
 
-    const btnSalvar = document.querySelector('.btn-salvar');
-    const originalText = btnSalvar.textContent;
-    btnSalvar.disabled = true;
-    btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
+    // Validação simplificada - apenas nome é obrigatório
+    if (!nome) {
+        alert("Nome é obrigatório");
+        return;
+    }
 
     try {
-      const body = {
-        name: nome,
-        email: email
-      };
+        // Mostrar loading
+        const btnSalvar = document.querySelector('.btn-salvar');
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
 
-      if (senha && senha.trim() !== '') {
-        if (senha.length < 6) {
-          alert("Senha deve ter pelo menos 6 caracteres");
-          return;
+        // Preparar dados para envio
+        const dadosAtualizacao = {
+            name: nome
+        };
+
+        // Adicionar senha apenas se foi alterada
+        if (senha && senha.trim() !== '') {
+            if (senha.length < 6) {
+                alert("Senha deve ter pelo menos 6 caracteres");
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = 'Salvar';
+                return;
+            }
+            dadosAtualizacao.password = senha;
         }
-        body.password = senha;
-      }
 
-      const tokenData = parseJwt(token);
-      if (tokenData?.dono) {
-        const restaurante = document.getElementById("nome-restaurante").value.trim();
-        body.restaurante = restaurante;
-      }
+        // Adicionar nome do restaurante se for dono
+        const userData = parseJwt(token);
+        if (userData.dono && nomeRestaurante !== undefined) {
+            dadosAtualizacao.restaurante = nomeRestaurante;
+        }
 
-      const res = await fetch(`${webservice}/user/update`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
+        // Enviar requisição
+        const response = await fetch(`${webservice}/user/update`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dadosAtualizacao)
+        });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || data.message || "Erro ao atualizar");
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || errorData.message || "Erro ao atualizar perfil");
+        }
 
-      if (email !== parseJwt(token).email && data.token) {
-        localStorage.setItem("auth_token", data.token);
-      }
-
-      const alertDiv = document.createElement('div');
-      alertDiv.className = 'alert alert-success mt-3';
-      alertDiv.textContent = 'Dados atualizados com sucesso!';
-      document.getElementById("form-config").appendChild(alertDiv);
-      setTimeout(() => alertDiv.remove(), 3000);
+        const data = await response.json();
+        
+        alert("Configurações salvas com sucesso!");
+        // Recarrega a página do perfil após 1 segundo
+        setTimeout(() => {
+            window.location.href = "perfil.html";
+        }, 1000);
 
     } catch (error) {
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'alert alert-danger mt-3';
-      errorDiv.textContent = `Erro ao atualizar: ${error.message || "Tente novamente mais tarde"}`;
-      document.getElementById("form-config").appendChild(errorDiv);
-      setTimeout(() => errorDiv.remove(), 5000);
+        console.error("Erro ao atualizar perfil:", error);
+        alert(`Erro: ${error.message}`);
     } finally {
-      btnSalvar.disabled = false;
-      btnSalvar.textContent = originalText;
+        // Restaurar botão
+        const btnSalvar = document.querySelector('.btn-salvar');
+        if (btnSalvar) {
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = 'Salvar';
+        }
     }
-  });
+});
 
   function logout() {
     localStorage.removeItem("auth_token");

@@ -94,64 +94,64 @@
     }
 
     async function criaruser() {
-      const nome = document.getElementById("nome").value;
-      const restaurante = document.getElementById("restaurante").value.trim();
-      const email = document.getElementById("email").value;
-      const senha = document.getElementById("senha").value;
-      const dono = document.getElementById("dono").checked;
-      const createBtn = document.getElementById('create');
+    const nome = document.getElementById("nome").value;
+    const restaurante = document.getElementById("restaurante").value.trim();
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const dono = document.getElementById("dono").checked;
+    const createBtn = document.getElementById('create');
 
-      if (!nome || !email || !senha) {
+    if (!nome || !email || !senha) {
         alert("Preencha todos os campos obrigatórios!");
         return;
-      }
+    }
 
-      if (dono && !restaurante) {
+    if (dono && !restaurante) {
         alert("Por favor, informe o nome do restaurante.");
         return;
-      }
+    }
 
-      try {
+    try {
         createBtn.disabled = true;
         createBtn.textContent = 'Cadastrando...';
 
         const fileInput = document.getElementById('profile-pic-upload');
         let fotoUrl = 'images/perfil.png';
         if (fileInput.files[0]) {
-          fotoUrl = await uploadProfilePicture(fileInput.files[0]);
+            fotoUrl = await uploadProfilePicture(fileInput.files[0]);
         }
 
         const novoUsuario = {
-          name: nome,
-          email,
-          password: senha,
-          dono,
-          foto: fotoUrl,
-          ...(dono && { restaurante })
+            name: nome,
+            email,
+            password: senha,
+            dono,
+            foto: fotoUrl,
+            restaurante: dono ? restaurante : undefined // Envia apenas se for dono
         };
 
         const response = await fetch(`${webservice}/create`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(novoUsuario)
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(novoUsuario)
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          alert("Usuário criado com sucesso!");
-          window.location.href = "./login.html";
+            alert("Usuário criado com sucesso!");
+            window.location.href = "./login.html";
         } else {
-          alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
+            alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
         }
-      } catch (err) {
+    } catch (err) {
         console.error("Erro:", err);
         alert("Ocorreu um erro ao processar sua requisição. Tente novamente mais tarde.");
-      } finally {
+    } finally {
         createBtn.disabled = false;
         createBtn.textContent = 'Cadastre-se';
-      }
     }
+}
 
     document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('profile-pic-upload').addEventListener('change', function (event) {

@@ -194,10 +194,6 @@ async function reenviarEmailVerificacao() {
 // Verificar token e atualizar UI
 async function verificarToken() {
     const token = localStorage.getItem("auth_token");
-
-    // Verifica se estamos na página de perfil e se há um userId na URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const userIdParam = urlParams.get('userId');
     
     // Elementos da UI
     const conta = document.getElementById("perfil-link");
@@ -213,179 +209,106 @@ async function verificarToken() {
     const perfilaba = document.getElementById("perfil_nav");
 
     if (!token) {
-        // Deslogado
+        // Comportamento para usuário não logado
         if (publicarSidebar) publicarSidebar.style.display = "none";
-        if (perfilaba) perfilaba.remove()
-        if (editorSidebar) editorSidebar.remove()
+        if (perfilaba) perfilaba.remove();
+        if (editorSidebar) editorSidebar.remove();
         if (conta) conta.style.display = "none";
         if (mapa) mapa.style.display = "flex";
         if (editor) editor.style.display = "none";
         if (publicar) publicar.style.display = "none";
-        if (publicar) publicar.style.display = "none";
 
-        cadastrarB.forEach(b => b.style.display = "block");
-        logarB.forEach(b => b.style.display = "block");
+        cadastrarB.forEach(b => b && (b.style.display = "block"));
+        logarB.forEach(b => b && (b.style.display = "block"));
 
         if (username) username.innerText = "";
 
+        // Redirecionar se estiver em páginas que exigem login
+        if (window.location.pathname.includes("perfil.html") || 
+            window.location.pathname.includes("configuracoes.html")) {
+            window.location.href = "login.html";
+        }
         return;
     }
 
     try {
-        
-        if (window.location.pathname.includes("perfil.html") && userIdParam) {
-            const response = await fetch(`${webservice}/user/${userIdParam}`, {
-                method: "GET",
-                headers: { 
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error("Erro ao carregar perfil do usuário");
-            }
-
-            const userData = await response.json();
-            
-            // Atualiza a UI com os dados do usuário visitado
-            const spanUser = document.getElementById("P-username");
-            const spanTipo = document.getElementById("tipo-conta");
-
-                // Atualiza a foto do perfil com a do usuário visitado
-    const perfilImg = document.getElementById("profile-img");
-    if (perfilImg && userData.foto) {
-        perfilImg.src = userData.foto;
-    }
-            
-            if (spanUser) spanUser.innerText = userData.name;
-            if (spanTipo) spanTipo.innerText = userData.dono ? "Dono de Restaurante" : "Cliente";
-            
-            // Carrega os posts públicos do usuário visitado
-            const publicPosts = await fetch(`${webservice}/user/${userIdParam}/posts`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            }).then(res => res.json());
-            
-            // Carrega os posts privados apenas se for o próprio usuário
-            const tokenData = parseJwt(token);
-            const isOwner = tokenData.id.toString() === userIdParam;
-            let privatePosts = [];
-            
-            if (isOwner) {
-                privatePosts = await fetch(`${webservice}/user/${userIdParam}/posts/private`, {
-                    headers: { "Authorization": `Bearer ${token}` }
-                }).then(res => res.json());
-            }
-            
-            // Atualiza a UI com os posts
-            if (publicPosts.length > 0) {
-                atualizarPostsUI(publicPosts, "cards_user", isOwner);
-            } else {
-                document.getElementById("cards_user").innerHTML = "<p>Nenhum cardápio público encontrado</p>";
-            }
-            
-            if (isOwner) {
-                if (privatePosts.length > 0) {
-                    atualizarPostsUI(privatePosts, "cards_user_p", true);
-                } else {
-                    document.getElementById("cards_user_p").innerHTML = "<p>Nenhum cardápio privado encontrado</p>";
-                }
-                
-                // Mostra o relatório apenas para donos vendo seu próprio perfil
-                if (userData.dono) {
-                    await carregarRelatorioVisualizacoes();
-                }
-            } else {
-                document.getElementById("relatorio")?.remove();
-            }
-            
-            // Esconde elementos que só o próprio usuário deve ver
-            if (!isOwner) {
-                document.getElementById("relatorio").style.display = "none";
-                if (userData.dono) {
-                    const localIcons = document.getElementsByName("localizacaoicon");
-                    Array.from(localIcons).forEach(icon => icon.remove());
-                    document.getElementById("locationicon")?.remove();
-                }
-                if (!userData.dono) {
-                    document.getElementById("stars")?.remove();
-                }
-            }
-            
-            return;
-        }
-
-
         const response = await fetch(`${webservice}/dados`, {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (!response.ok) {
             localStorage.removeItem('auth_token');
-            verificarToken();
+            window.location.reload();
             return;
         }
 
         const data = await response.json();
         
-        // Nome e foto
-        if (conta) conta.style.display = "flex";
+        // Atualizar elementos da UI
         if (username) username.innerText = data.name;
+        
         const perfilImg = document.getElementById("perfil");
         if (perfilImg && data.foto) {
             perfilImg.src = data.foto;
         }
         
-        // Para donos
+        // Comportamento para usuário logado
+        cadastrarB.forEach(b => b && (b.style.display = "none"));
+        logarB.forEach(b => b && (b.style.display = "none"));
+        
+        if (conta) conta.style.display = "flex";
+        if (perfilSidebar) perfilSidebar.style.display = "flex";
+
+        // Comportamento específico para donos
         if (data.dono) {
             if (mapa) mapa.style.display = "none";
             if (editor) editor.style.display = "flex";
             if (publicar) publicar.style.display = "flex";
-            // document.getElementById("tipo-conta").innerText = "Dono de Restaurante";
-            
             if (publicarSidebar) publicarSidebar.style.display = "flex";
             if (editorSidebar) editorSidebar.style.display = "flex";
         } else {
             if (mapa) mapa.style.display = "flex";
             if (editor) editor.style.display = "none";
             if (publicar) publicar.style.display = "none";
-            
             if (publicarSidebar) publicarSidebar.style.display = "none";
             if (editorSidebar) editorSidebar.style.display = "none";
         }
-        
-        if (perfilSidebar) perfilSidebar.style.display = "flex";
-        
-        // Esconde login e cadastro
-        cadastrarB.forEach(b => b.style.display = "none");
-        logarB.forEach(b => b.style.display = "none");
-        
-        // Página de perfil
+
+        // Carregar dados específicos da página de perfil
         if (window.location.pathname.includes("perfil.html")) {
             const spanUser = document.getElementById("P-username");
             const spanTipo = document.getElementById("tipo-conta");
-            CarregarPostsDono()
-            CarregarPostsDono_P()
             
             if (spanUser) spanUser.innerText = data.name;
             if (spanTipo) spanTipo.innerText = data.dono ? "Dono de Restaurante" : "Cliente";
             
+            // Carregar posts do usuário
+            await CarregarPostsDono();
+            await CarregarPostsDono_P();
+            
+            // Esconder elementos conforme o tipo de usuário
             if (data.dono) {
-                const localIcons = document.getElementsByName("localizacaoicon");
-                Array.from(localIcons).forEach(icon => icon.remove());
-                document.getElementById("locationicon").remove()
-            }
-            if(data.dono == false){
-                document.getElementById("stars").remove();
+                document.querySelectorAll("[name='localizacaoicon']").forEach(el => el.remove());
+                const locationIcon = document.getElementById("locationicon");
+                if (locationIcon) locationIcon.remove();
+            } else {
+                const stars = document.getElementById("stars");
+                if (stars) stars.remove();
             }
         }
-        return(data);
+        
+        return data;
         
     } catch (err) {
         console.error("Erro ao verificar token:", err);
+        localStorage.removeItem('auth_token');
+        if (window.location.pathname.includes("perfil.html") || 
+            window.location.pathname.includes("configuracoes.html")) {
+            window.location.href = "login.html";
+        }
     }
 }
+
 
 async function carregarRelatorioVisualizacoes() {
     const token = localStorage.getItem("auth_token");
@@ -549,6 +472,7 @@ async function carregarUltimosPosts() {
                     <p class="post-content"></p>
                     <div class="post-footer">
                         <p>Autor: ${post.author?.name || 'Desconhecido'}</p>
+                        ${post.author?.restaurante ? `<p class="restaurant-name">${post.author.restaurante}</p>` : ''}
                         <p class="post-views">${post.views || 0} visualizações</p>
                     </div>
                 `;
@@ -854,16 +778,22 @@ async function CarregarUserPosts(email) {
 }
 
 // Inicialização
-window.onload = () => {
-    verificarToken();
+window.onload = async () => {
+    // Verificar token primeiro
+    const userData = await verificarToken();
+    
+    // Depois carregar os outros componentes
     setTimeout(VerEmail, 500);
     carregarUltimosPosts();
+    
     if(window.location.pathname.includes("perfil.html")){
-        carregarRestaurantesPopularesP(); // Adicione esta linha
+        carregarRestaurantesPopularesP();
     }
-     if(window.location.pathname.includes("index.html")){
-    carregarRestaurantesPopulares(); // Adicione esta linha
-     }
+    
+    if(window.location.pathname.includes("index.html")){
+        carregarRestaurantesPopulares();
+    }
+    
     if (window.location.pathname.includes("vizualizador.html")) {
         carregarMediaPost();
     }

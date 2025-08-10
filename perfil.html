@@ -195,45 +195,67 @@ lucide.createIcons();
   }
  
 
-  window.onload = async () => {
+window.onload = async () => {
   await verificarToken();
-  await carregarRelatorioVisualizacoes();
-  await carregarFotoPerfil();
-
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const userId = urlParams.get('userId');
   const token = localStorage.getItem("auth_token");
   const userData = parseJwt(token);
-  const usuarioLogadoId = String(userData?.id || userData?.sub);
-  const perfilSendoVisualizadoId = getIdFromURL();
-
-  console.log("🚀 ID do usuário logado:", usuarioLogadoId);
-  console.log("👀 ID do perfil visualizado:", perfilSendoVisualizadoId);
-
-  // Mostrar/esconder ícone de editar
-  const editIcon = document.querySelector(".edit-icon");
-  if (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId) {
-    if (editIcon) editIcon.style.display = "flex";
-  } else {
-    if (editIcon) editIcon.style.display = "none";
-  }
-
-  // Mostrar/esconder botão de logout
-  const logoutBtn = document.getElementById("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.style.display = (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId)
-      ? "inline-block"
-      : "none";
-  }
-
-  // Mostrar/esconder botão de configurações
+  
+  // Elementos da UI
   const configBtn = document.getElementById("config-btn");
-  if (configBtn) {
-    configBtn.style.display = (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId)
-      ? "inline-block"
-      : "none";
+  
+  // Sempre mostra o botão de configurações para o próprio usuário
+  if (!userId && configBtn) {
+    configBtn.style.display = "inline-block";
   }
+  
+  if (userId) {
+    await carregarPerfilRestaurante(userId);
+    // Esconde botão de configurações se estiver vendo perfil de outro usuário
+    if (configBtn) configBtn.style.display = "none";
+  } else {
+    // Carrega dados completos do usuário logado
+    try {
+      const response = await fetch(`${webservice}/dados`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const userDataComplete = await response.json();
+        
+        const spanUser = document.getElementById("P-username");
+        const spanTipo = document.getElementById("tipo-conta");
+        
+        if (spanUser) {
+          spanUser.innerText = userDataComplete.dono && userDataComplete.restaurante 
+            ? userDataComplete.restaurante 
+            : userDataComplete.name;
+        }
+        
+        if (spanTipo) {
+          spanTipo.innerText = userDataComplete.dono 
+            ? "Dono de Restaurante" 
+            : "Cliente";
+        }
+        
+        // Carrega foto se existir
+        const profileImg = document.getElementById("profile-img");
+        if (profileImg && userDataComplete.foto) {
+          profileImg.src = userDataComplete.foto;
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar dados completos:", error);
+    }
+  }
+  
+  await carregarRelatorioVisualizacoes();
+  await carregarFotoPerfil();
+  await CarregarPostsDono();
+  await CarregarPostsDono_P();
 };
-
-
 
 // Função para converter File para Base64 (sem o prefixo data:)
 function fileToBase64(file) {
@@ -392,46 +414,6 @@ window.addEventListener('load', carregarFotoPerfil);
 document.querySelector('.edit-icon').addEventListener('click', editarFotoPerfil);
 
 // Verifica se o perfil visualizado é do usuário logado
-window.onload = async () => {
-  await verificarToken();
-  await carregarRelatorioVisualizacoes();
-  await carregarFotoPerfil();
-
-  const token = localStorage.getItem("auth_token");
-  const userData = parseJwt(token);
-  const usuarioLogadoId = String(userData?.id || userData?.sub);
-
-  const perfilSendoVisualizadoId = getIdFromURL();
-
-  console.log("🚀 ID do usuário logado:", usuarioLogadoId);
-  console.log("👀 ID do perfil visualizado:", perfilSendoVisualizadoId);
-
-  //LAPIS SOME
-  
-  const editIcon = document.querySelector(".edit-icon");
-
-if (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId) {
-  if (editIcon) editIcon.style.display = "flex";
-} else {
-  if (editIcon) editIcon.style.display = "none";
-}
-
-
-  const logoutBtn = document.getElementById("logout-btn");
-
-  if (!logoutBtn) {
-    console.error("Elemento #logout-btn não encontrado.");
-    return;
-  }
-
-  if (!perfilSendoVisualizadoId || perfilSendoVisualizadoId === usuarioLogadoId) {
-    logoutBtn.style.display = "inline-block";
-    console.log("✅ Exibindo botão de logout");
-  } else {
-    logoutBtn.style.display = "none";
-    console.log("❌ Escondendo botão de logout");
-  }
-};
 
 function getIdFromURL() {
   const params = new URLSearchParams(window.location.search);
@@ -447,7 +429,7 @@ function getIdFromURL() {
         // Comportamento normal para o perfil do usuário logado
         verificarToken();
     }
-});
+})};
 
 async function carregarPerfilRestaurante(userId) {
     try {
@@ -464,27 +446,57 @@ async function carregarPerfilRestaurante(userId) {
 
         const userData = await response.json();
         
-        // Atualizar a UI com os dados do restaurante
-        document.getElementById('P-username').textContent = userData.dono && userData.restaurante ? userData.restaurante : userData.name;
+        // Atualizar a UI com os dados do usuário
+        const spanUser = document.getElementById('P-username');
+        const spanTipo = document.getElementById('tipo-conta');
+
+// Modifique esta parte:
+if (spanUser) {
+    spanUser.innerText = userData.dono && userData.restaurante 
+        ? userData.restaurante 
+        : userData.name;
+}
+        
+        if (spanTipo) {
+            spanTipo.innerText = userData.dono 
+                ? "Dono de Restaurante" 
+                : "Cliente";
+        }
+
 
         if (userData.foto) {
-            document.getElementById('profile-img').src = userData.foto;
+            const perfilImg = document.getElementById("profile-img");
+            if (perfilImg) perfilImg.src = userData.foto;
         }
         
-        // Carregar cardápios públicos do restaurante
+        // Carrega os posts do usuário/restaurante
         const postsResponse = await fetch(`https://imenu-backend-pd3a.onrender.com/user/${userId}/posts`, {
             headers: headers
         });
         
-        const posts = await postsResponse.json();
-        atualizarPostsUI(posts, "cards_user");
+        if (postsResponse.ok) {
+            const posts = await postsResponse.json();
+            // Atualiza a UI com os posts
+            const container = document.getElementById("cards_user");
+            if (container) {
+                container.innerHTML = posts.map(post => `
+                    <div class="dono_card" onclick="abrirPost('${post.id}')">
+                        ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
+                        <div class="post-info">
+                            <h3>${post.title}</h3>
+                            <p>${post.content?.substring(0, 100)}...</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
         
     } catch (error) {
         console.error('Erro ao carregar perfil do restaurante:', error);
         alert('Não foi possível carregar o perfil deste restaurante.');
     }
 }
-}
+
 </script>
 
 </body>

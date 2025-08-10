@@ -10,12 +10,15 @@
   <div id="header-container"></div>
 
     <div class="post-card">
-      <div class="post-header">
-        <h1 id="post-title">none</h1>
-        <p class="post-author" id="post-author"></p>
-        <p class="post-views" id="post-views">0 visualizações</p>
-        <button id="view-profile-btn" class="profile-btn">Ver Perfil</button>
-      </div>
+<div class="post-header">
+  <h1 id="post-title">none</h1>
+  <div class="author-info">
+    <p class="post-author" id="post-author"></p>
+    <p class="restaurant-name" id="restaurant-name"></p>
+  </div>
+  <p class="post-views" id="post-views">0 visualizações</p>
+  <button id="view-profile-btn" class="profile-btn">Ver Perfil</button>
+</div>
 
       <div class="post-image" id="post-image"></div>
 
@@ -361,11 +364,12 @@ async function carregarPost() {
         }
 
         // Preencha os dados na página
-        document.getElementById('post-title').textContent = post.title || 'Sem título';
-        document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
-        document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
-        document.getElementById('post-views').textContent = `${post.views || 0} visualizações`;
-
+// Preencha os dados na página
+document.getElementById('post-title').textContent = post.title || 'Sem título';
+document.getElementById('post-content').textContent = post.content || 'Sem conteúdo';
+document.getElementById('post-author').textContent = `Por: ${post.author?.name || 'Anônimo'}`;
+document.getElementById('restaurant-name').textContent = post.author?.restaurante ? `Restaurante: ${post.author.restaurante}` : '';
+document.getElementById('post-views').textContent = `${post.views || 0} visualizações`;
         // Mostrar tags se existirem
         const tagsContainer = document.createElement('div');
         tagsContainer.className = 'post-tags';
