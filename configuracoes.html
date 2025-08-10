@@ -53,7 +53,51 @@
       <input type="password" id="senha" class="form-control" placeholder="********" />
     </div>
 
-    <div class="d-flex justify-content-between">
+    <!-- Botão para avançadas -->
+    <button type="button" class="btn-avancadas w-100" onclick="toggleAvancadas()">
+      Configurações Avançadas ▼
+    </button>
+
+    <!-- Seção avançada -->
+    <div id="avancadas" style="display:none; margin-top:20px;">
+      <div class="mb-3">
+        <label class="form-label">Telefone</label>
+        <input type="tel" id="telefone" class="form-control" placeholder="(00) 00000-0000">
+      </div>
+      <div class="mb-3 dono-only" style="display:none;">
+        <label class="form-label">Endereço do Restaurante</label>
+        <input type="text" id="endereco-restaurante" class="form-control">
+      </div>
+      <div class="mb-3 dono-only" style="display:none;">
+        <label class="form-label">Horário de Funcionamento</label>
+        <select id="horario-funcionamento" class="form-control">
+          <option value="">Selecione um horário</option>
+          <option value="Seg-Sex 08h-18h">Seg-Sex 08h-18h</option>
+          <option value="Seg-Sáb 09h-20h">Seg-Sáb 09h-20h</option>
+          <option value="Seg-Dom 10h-22h">Seg-Dom 10h-22h</option>
+          <option value="24 horas">24 horas</option>
+          <option value="Personalizado">Personalizado</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Notificações</label>
+        <select id="notificacoes" class="form-control">
+          <option value="todas">Receber todas</option>
+          <option value="importantes">Apenas importantes</option>
+          <option value="nenhuma">Nenhuma</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Tema</label>
+        <select id="tema" class="form-control">
+          <option value="claro">Claro</option>
+          <option value="escuro">Escuro</option>
+        </select>
+      </div>
+      <button type="button" class="btn-cancelar w-100">Excluir conta</button>
+    </div>
+
+    <div class="d-flex justify-content-between mt-3">
       <button type="button" class="btn-cancelar" onclick="history.back()">Cancelar</button>
       <button type="submit" class="btn-salvar">Salvar</button>
     </div>
@@ -67,6 +111,19 @@
 <script>
   lucide.createIcons();
 
+  function toggleAvancadas() {
+    const secao = document.getElementById("avancadas");
+    const botao = document.querySelector(".btn-avancadas");
+
+    if (secao.style.display === "none" || secao.style.display === "") {
+      secao.style.display = "block";
+      botao.innerHTML = "Configurações Avançadas ▲";
+    } else {
+      secao.style.display = "none";
+      botao.innerHTML = "Configurações Avançadas ▼";
+    }
+  }
+
   function parseJwt(token) {
     try {
       return JSON.parse(atob(token.split('.')[1]));
@@ -74,6 +131,29 @@
       return null;
     }
   }
+
+  function exibirCamposDono() {
+    document.querySelectorAll(".dono-only").forEach(field => {
+      field.style.display = "block";
+    });
+  }
+
+  // Mostrar campo personalizado se for escolhido
+  document.getElementById('horario-funcionamento').addEventListener('change', function() {
+    let personalizado = document.getElementById('horario-personalizado');
+    if (this.value === "Personalizado") {
+      if (!personalizado) {
+        personalizado = document.createElement('input');
+        personalizado.type = 'text';
+        personalizado.id = 'horario-personalizado';
+        personalizado.placeholder = 'Digite seu horário...';
+        personalizado.className = 'form-control mt-2';
+        this.insertAdjacentElement('afterend', personalizado);
+      }
+    } else {
+      if (personalizado) personalizado.remove();
+    }
+  });
 
   async function carregarDadosUsuario() {
     const token = localStorage.getItem("auth_token");
@@ -87,76 +167,39 @@
 
       document.getElementById('nome').value = data.name || '';
       document.getElementById('email').value = data.email || '';
+      document.getElementById('telefone').value = data.telefone || '';
+      document.getElementById('notificacoes').value = data.notificacoes || 'todas';
+      document.getElementById('tema').value = data.tema || 'claro';
+
+      if (data.horario) {
+        const select = document.getElementById('horario-funcionamento');
+        if ([...select.options].some(opt => opt.value === data.horario)) {
+          select.value = data.horario;
+        } else {
+          select.value = "Personalizado";
+          const personalizado = document.createElement('input');
+          personalizado.type = 'text';
+          personalizado.id = 'horario-personalizado';
+          personalizado.value = data.horario;
+          personalizado.className = 'form-control mt-2';
+          select.insertAdjacentElement('afterend', personalizado);
+        }
+      }
+
       if (data.foto) {
         document.getElementById('profile-img').src = data.foto;
       }
 
-      // Se for dono, exibe campo de nome do restaurante
       if (data.dono) {
         document.getElementById('campo-restaurante-config').style.display = 'block';
         document.getElementById('nome-restaurante').value = data.restaurante || '';
+        document.getElementById('endereco-restaurante').value = data.endereco || '';
+        exibirCamposDono();
       }
 
     } catch (e) {
       console.error("Erro ao carregar dados:", e);
     }
-  }
-
-  async function editarFotoPerfil() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-
-    input.onchange = async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Imagem muito grande (máx 5MB)");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const webservicef = "https://imenu-back-files-c7ii.onrender.com";
-        const imgElement = document.getElementById('profile-img');
-        imgElement.src = 'data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==';
-
-        const uploadRes = await fetch(`${webservicef}/api/upload`, {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!uploadRes.ok) throw new Error("Erro no upload");
-
-        const uploadData = await uploadRes.json();
-        if (!uploadData.success || !uploadData.fileUrl) throw new Error("URL da imagem não recebida");
-
-        const token = localStorage.getItem("auth_token");
-        if (!token) throw new Error("Usuário não autenticado");
-
-        const updateRes = await fetch(`${webservice}/user/photo`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ foto: uploadData.fileUrl })
-        });
-
-        if (!updateRes.ok) throw new Error("Erro ao atualizar foto no perfil");
-
-        imgElement.src = uploadData.fileUrl;
-        alert("Foto atualizada com sucesso!");
-      } catch (e) {
-        console.error("Erro:", e);
-        alert("Erro ao enviar imagem: " + (e.message || "Tente novamente mais tarde"));
-      }
-    };
-
-    input.click();
   }
 
   document.getElementById("form-config").addEventListener("submit", async (e) => {
@@ -165,8 +208,18 @@
     const nome = document.getElementById("nome").value.trim();
     const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value;
-    const token = localStorage.getItem("auth_token");
+    const telefone = document.getElementById("telefone").value.trim();
+    const notificacoes = document.getElementById("notificacoes").value;
+    const tema = document.getElementById("tema").value;
+    const endereco = document.getElementById("endereco-restaurante")?.value.trim();
 
+    let horario = document.getElementById("horario-funcionamento").value;
+    const horarioPers = document.getElementById("horario-personalizado");
+    if (horario === "Personalizado" && horarioPers) {
+      horario = horarioPers.value.trim();
+    }
+
+    const token = localStorage.getItem("auth_token");
     if (!token) {
       alert("Você precisa estar logado para atualizar seus dados");
       window.location.href = "login.html";
@@ -186,7 +239,10 @@
     try {
       const body = {
         name: nome,
-        email: email
+        email: email,
+        telefone: telefone,
+        notificacoes: notificacoes,
+        tema: tema
       };
 
       if (senha && senha.trim() !== '') {
@@ -199,8 +255,9 @@
 
       const tokenData = parseJwt(token);
       if (tokenData?.dono) {
-        const restaurante = document.getElementById("nome-restaurante").value.trim();
-        body.restaurante = restaurante;
+        body.restaurante = document.getElementById("nome-restaurante").value.trim();
+        body.endereco = endereco;
+        body.horario = horario;
       }
 
       const res = await fetch(`${webservice}/user/update`, {
