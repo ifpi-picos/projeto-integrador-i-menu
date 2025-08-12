@@ -9,7 +9,7 @@ function localizacao(){
 }
 
 function goeditor(){
-    window.location.href = "editorcard.html";
+    window.location.href = "edit.html";
 }
 
 function goecadastro(){
