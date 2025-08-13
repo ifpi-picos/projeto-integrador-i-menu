@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Editor Profissional Avançado</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
@@ -24,6 +24,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            touch-action: manipulation;
         }
 
         body {
@@ -32,6 +33,7 @@
             color: #333;
             height: 100vh;
             overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #app {
@@ -208,7 +210,7 @@
         }
 
         .tool-button i {
-            font-size: 1rem;
+            font-size: 1.2rem;
             margin-bottom: 5px;
         }
 
@@ -225,7 +227,13 @@
             align-items: center;
             background: #e9ecef;
             overflow: auto;
+            cursor: default;
             padding: 20px;
+            touch-action: none;
+        }
+
+        .canvas-container:active {
+            cursor: grabbing;
         }
 
         .canvas-wrapper {
@@ -233,10 +241,15 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             background: white;
             display: inline-block;
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+                        will-change: transform;
+
         }
 
         #main-canvas {
             background: white;
+            touch-action: none;
         }
 
         /* Properties Panel */
@@ -280,10 +293,6 @@
         }
 
         /* Melhor visualização durante o arraste */
-        .canvas-container {
-            cursor: default;
-        }
-
         .canvas-container .upper-canvas, 
         .canvas-container .lower-canvas {
             position: absolute;
@@ -729,6 +738,34 @@
             border-radius: 6px;
         }
 
+        /* Mobile specific styles */
+        .mobile-toolbar {
+            display: none;
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            border-radius: 25px;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .mobile-tool-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
         /* Responsive styles */
         @media (max-width: 1200px) {
             .main-content {
@@ -785,6 +822,7 @@
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
+                grid-template-rows: 60px 1fr;
             }
             
             .tools-panel {
@@ -820,6 +858,24 @@
             
             .canvas-container {
                 padding: 10px;
+                overflow: hidden;
+            }
+
+            .mobile-toolbar {
+                display: flex;
+            }
+
+            .footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }
+
+            /* Adjust canvas for mobile */
+            .canvas-wrapper {
+                transform-origin: center center;
             }
         }
 
@@ -893,34 +949,27 @@
             </button>
             
             <div class="logo">
-                <i class="fas fa-image"></i>
-                <span>Editor Profissional</span>
+                <span>Editor iMenu</span>
             </div>
             
             <div class="menu-bar">
                 <div class="menu-item" id="file-menu">
-                    <i class="fas fa-file"></i>
-                    <span>Arquivo</span>
+                    <span></span>
                 </div>
                 <div class="menu-item" id="edit-menu">
-                    <i class="fas fa-edit"></i>
-                    <span>Editar</span>
+                    <span></span>
                 </div>
                 <div class="menu-item" id="image-menu">
-                    <i class="fas fa-image"></i>
-                    <span>Imagem</span>
+                    <span></span>
                 </div>
                 <div class="menu-item" id="text-menu">
-                    <i class="fas fa-font"></i>
-                    <span>Texto</span>
+                    <span></span>
                 </div>
                 <div class="menu-item" id="layer-menu">
-                    <i class="fas fa-layer-group"></i>
-                    <span>Camadas</span>
+                    <span></span>
                 </div>
                 <div class="menu-item" id="settings-menu">
-                    <i class="fas fa-cog"></i>
-                    <span>Configurações</span>
+                    <span></span>
                 </div>
             </div>
             
@@ -1280,13 +1329,28 @@
             </div>
         </footer>
         
+        <!-- Mobile toolbar -->
+        <div class="mobile-toolbar" id="mobile-toolbar">
+            <button class="mobile-tool-button" id="mobile-select" data-tool="select">
+                <i class="fas fa-mouse-pointer"></i>
+            </button>
+            <button class="mobile-tool-button" id="mobile-pan" data-tool="pan">
+                <i class="fas fa-hand-paper"></i>
+            </button>
+            <button class="mobile-tool-button" id="mobile-text" data-tool="text">
+                <i class="fas fa-font"></i>
+            </button>
+            <button class="mobile-tool-button" id="mobile-upload">
+                <i class="fas fa-image"></i>
+            </button>
+            <button class="mobile-tool-button" id="mobile-toggle-properties">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+        </div>
+        
         <!-- Mobile toggle buttons -->
         <button class="toggle-tools" id="mobile-toggle-tools" title="Mostrar/Ocultar Ferramentas">
             <i class="fas fa-tools"></i>
-        </button>
-        
-        <button class="toggle-properties" id="mobile-toggle-properties" title="Mostrar/Ocultar Propriedades">
-            <i class="fas fa-sliders-h"></i>
         </button>
     </div>
     
@@ -1371,6 +1435,8 @@
             let lastPosX = 0;
             let lastPosY = 0;
             let bgImage = null;
+            let lastDistance = 0;
+            let isPinching = false;
             
             // UI Elements
             const tools = document.querySelectorAll('[data-tool]');
@@ -1427,6 +1493,13 @@
             const togglePropertiesBtn = document.getElementById('mobile-toggle-properties');
             const toolsPanel = document.getElementById('tools-panel');
             const propertiesPanel = document.getElementById('properties-panel');
+            const canvasContainer = document.getElementById('canvas-container');
+            const canvasWrapper = document.querySelector('.canvas-wrapper');
+            const mobileToolbar = document.getElementById('mobile-toolbar');
+            const mobileSelectBtn = document.getElementById('mobile-select');
+            const mobilePanBtn = document.getElementById('mobile-pan');
+            const mobileTextBtn = document.getElementById('mobile-text');
+            const mobileUploadBtn = document.getElementById('mobile-upload');
             
             // Properties panel elements
             const posX = document.getElementById('pos-x');
@@ -1455,6 +1528,66 @@
             // Tab controls
             const panelTabs = document.querySelectorAll('.panel-tab');
             const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Mobile detection
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Initialize mobile UI
+            if (isMobile) {
+                // Hide desktop toggle buttons
+                toggleToolsBtn.style.display = 'none';
+                togglePropertiesBtn.style.display = 'none';
+                
+                // Set up mobile toolbar
+                mobileToolbar.style.display = 'flex';
+                
+                // Mobile toolbar event listeners
+                mobileSelectBtn.addEventListener('click', function() {
+                    document.querySelector('[data-tool="select"]').click();
+                    setActiveMobileTool('select');
+                });
+                
+                mobilePanBtn.addEventListener('click', function() {
+                    document.querySelector('[data-tool="pan"]').click();
+                    setActiveMobileTool('pan');
+                });
+                
+                mobileTextBtn.addEventListener('click', function() {
+                    document.querySelector('[data-tool="text"]').click();
+                    setActiveMobileTool('text');
+                });
+                
+                mobileUploadBtn.addEventListener('click', function() {
+                    document.getElementById('upload-btn').click();
+                });
+                
+                mobileToggleProperties.addEventListener('click', function() {
+                    propertiesPanel.classList.toggle('active');
+                });
+                
+                // Set initial active tool
+                setActiveMobileTool('select');
+            }
+            
+            function setActiveMobileTool(tool) {
+                // Reset all buttons
+                mobileSelectBtn.style.background = 'var(--primary)';
+                mobilePanBtn.style.background = 'var(--primary)';
+                mobileTextBtn.style.background = 'var(--primary)';
+                
+                // Set active button
+                switch(tool) {
+                    case 'select':
+                        mobileSelectBtn.style.background = 'var(--secondary)';
+                        break;
+                    case 'pan':
+                        mobilePanBtn.style.background = 'var(--secondary)';
+                        break;
+                    case 'text':
+                        mobileTextBtn.style.background = 'var(--secondary)';
+                        break;
+                }
+            }
             
             // Save state to history
             function saveState() {
@@ -1567,6 +1700,11 @@
                     }
                     
                     saveState();
+                    
+                    // Update mobile toolbar
+                    if (isMobile) {
+                        setActiveMobileTool(activeTool);
+                    }
                 });
             });
             
@@ -1894,26 +2032,60 @@
             });
             
             // Zoom controls
+            // Zoom controls - MODIFICADO para zoom visual
             zoomInBtn.addEventListener('click', function() {
                 zoomLevel = Math.min(3, zoomLevel + 0.1);
-                updateZoom();
+                applyZoom();
             });
             
             zoomOutBtn.addEventListener('click', function() {
                 zoomLevel = Math.max(0.1, zoomLevel - 0.1);
-                updateZoom();
+                applyZoom();
             });
             
             zoomResetBtn.addEventListener('click', function() {
                 zoomLevel = 1;
-                updateZoom();
+                applyZoom();
             });
             
-            function updateZoom() {
-                canvas.setZoom(zoomLevel);
+            // Zoom function - MODIFICADO para zoom visual sem alterar o tamanho real
+            // Nova função para aplicar o zoom visual
+            function applyZoom() {
+                canvasWrapper.style.transform = `scale(${zoomLevel})`;
                 zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
+                
+                // Ajusta a posição para manter o foco no centro
+                centerCanvasView();
             }
             
+            // Centraliza a visualização do canvas
+            function centerCanvasView() {
+                const container = canvasContainer;
+                const wrapper = canvasWrapper;
+                
+                // Calcula as dimensões escaladas
+                const scaledWidth = canvas.width * zoomLevel;
+                const scaledHeight = canvas.height * zoomLevel;
+                
+                // Calcula os offsets para centralizar
+                const offsetX = Math.max(0, (container.clientWidth - scaledWidth) / 2);
+                const offsetY = Math.max(0, (container.clientHeight - scaledHeight) / 2);
+                
+                // Aplica a transformação
+                wrapper.style.left = `${offsetX}px`;
+                wrapper.style.top = `${offsetY}px`;
+            }
+            
+            // Centraliza o canvas (reset de zoom e posição)
+            function centerCanvas() {
+                zoomLevel = 1;
+                canvasWrapper.style.transform = 'scale(1)';
+                canvasWrapper.style.left = '0';
+                canvasWrapper.style.top = '0';
+                zoomLevelDisplay.textContent = '100%';
+            }
+            
+
             // Update layers list
             function updateLayersList() {
                 layersList.innerHTML = '';
@@ -2043,84 +2215,39 @@
                 saveState();
             }
             
-            // Center canvas function
-            function centerCanvas() {
-                canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                canvas.renderAll();
-            }
-            
+// E a função centerCanvas deve ser:
+function centerCanvas() {
+    zoomLevel = 1;
+    updateZoom();
+}         
             // Context menu
-            canvas.on('mouse:down', function(options) {
-                if (options.target && options.button === 3) { // Right click
-                    const activeObject = options.target;
-                    
-                    // Show/hide context menu items based on object type
-                    editTextItem.style.display = activeObject instanceof fabric.Text ? 'block' : 'none';
-                    
-                    // Position context menu
-                    contextMenu.style.display = 'block';
-                    contextMenu.style.left = `${options.e.clientX}px`;
-                    contextMenu.style.top = `${options.e.clientY}px`;
-                    
-                    // Context menu actions
-                    editTextItem.onclick = function() {
-                        openTextEditor(activeObject);
-                        contextMenu.style.display = 'none';
-                    };
-                    
-                    bringToFrontItem.onclick = function() {
-                        canvas.bringToFront(activeObject);
-                        saveState();
-                        updateLayersList();
-                        contextMenu.style.display = 'none';
-                    };
-                    
-                    sendToBackItem.onclick = function() {
-                        canvas.sendToBack(activeObject);
-                        saveState();
-                        updateLayersList();
-                        contextMenu.style.display = 'none';
-                    };
-                    
-                    duplicateItem.onclick = function() {
-                        activeObject.clone(function(clone) {
-                            clone.set({
-                                left: activeObject.left + 10,
-                                top: activeObject.top + 10
-                            });
-                            canvas.add(clone);
-                            saveState();
-                            updateLayersList();
-                            contextMenu.style.display = 'none';
-                        });
-                    };
-                    
-                    deleteItem.onclick = function() {
-                        canvas.remove(activeObject);
-                        saveState();
-                        updateLayersList();
-                        contextMenu.style.display = 'none';
-                    };
-                    
-                    centerObjectItem.onclick = function() {
-                        centerObject(activeObject);
-                        contextMenu.style.display = 'none';
-                    };
-                    
-                    return;
-                }
-                
-                // Hide context menu on any other click
-                contextMenu.style.display = 'none';
-                
-                // Handle pan tool
+                        canvas.on('mouse:down', function(options) {
                 if (activeTool === 'pan' && options.button === 1) {
                     isPanning = true;
                     lastPosX = options.e.clientX;
                     lastPosY = options.e.clientY;
-                    document.getElementById('canvas-container').classList.add('grabbing');
+                    canvas.selection = false;
+                    canvasContainer.style.cursor = 'grabbing';
                 }
             });
+
+                        canvas.on('mouse:move', function(options) {
+                if (isPanning) {
+                    const deltaX = options.e.clientX - lastPosX;
+                    const deltaY = options.e.clientY - lastPosY;
+                    
+                    // Calcula a nova posição do wrapper
+                    const currentLeft = parseFloat(canvasWrapper.style.left || '0');
+                    const currentTop = parseFloat(canvasWrapper.style.top || '0');
+                    
+                    canvasWrapper.style.left = `${currentLeft + deltaX}px`;
+                    canvasWrapper.style.top = `${currentTop + deltaY}px`;
+                    
+                    lastPosX = options.e.clientX;
+                    lastPosY = options.e.clientY;
+                }
+            });
+
 
             // Handle object moving with padding
             canvas.on('object:moving', function(e) {
@@ -2134,28 +2261,30 @@
                 // We keep this handler to ensure objects can be selected even when outside canvas
             });
             
-            // Handle mouse move for pan tool
-            canvas.on('mouse:move', function(options) {
-                if (isPanning) {
-                    const deltaX = options.e.clientX - lastPosX;
-                    const deltaY = options.e.clientY - lastPosY;
-                    
-                    const vpt = canvas.viewportTransform;
-                    vpt[4] += deltaX;
-                    vpt[5] += deltaY;
-                    canvas.setViewportTransform(vpt);
-                    canvas.requestRenderAll();
-                    
-                    lastPosX = options.e.clientX;
-                    lastPosY = options.e.clientY;
-                }
-            });
-            
-            // Handle mouse up for pan tool
-            canvas.on('mouse:up', function() {
+            // Handle mouse move for pan tool - MODIFICADO para mover o wrapper do canvas
+canvas.on('mouse:move', function(options) {
+    if (isPanning) {
+        const deltaX = options.e.clientX - lastPosX;
+        const deltaY = options.e.clientY - lastPosY;
+        
+        // Ajusta o viewportTransform para mover o canvas
+        const vpt = canvas.viewportTransform;
+        vpt[4] += deltaX;
+        vpt[5] += deltaY;
+        canvas.setViewportTransform(vpt);
+        
+        lastPosX = options.e.clientX;
+        lastPosY = options.e.clientY;
+        canvas.renderAll();
+    }
+}); 
+
+canvas.on('mouse:up', function() {
                 if (isPanning) {
                     isPanning = false;
-                    document.getElementById('canvas-container').classList.remove('grabbing');
+                    canvas.selection = true;
+                    canvas.defaultCursor = 'default';
+                    canvasContainer.style.cursor = 'default';
                 }
             });
             
@@ -2282,6 +2411,23 @@
                     posXValue.textContent = this.value;
                 }
             });
+
+            canvasContainer.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Determina a direção do zoom
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                
+                // Limita o zoom
+                const oldZoom = zoomLevel;
+                zoomLevel = Math.max(0.1, Math.min(3, zoomLevel * delta));
+                
+                // Se o zoom mudou, aplica a transformação
+                if (Math.abs(oldZoom - zoomLevel) > 0.01) {
+                    applyZoom();
+                }
+            }, { passive: false });
             
             posY.addEventListener('input', function() {
                 const activeObject = canvas.getActiveObject();
@@ -2626,10 +2772,81 @@
                 return rgb;
             }
             
+            // Touch events for mobile zoom and pan
+            canvasContainer.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 1) {
+                    // Single touch - pan or select
+                    const touch = e.touches[0];
+                    lastPosX = touch.clientX;
+                    lastPosY = touch.clientY;
+                    
+                    if (activeTool === 'pan') {
+                        isPanning = true;
+                        canvasContainer.classList.add('grabbing');
+                    }
+                } else if (e.touches.length === 2) {
+                    // Two touches - pinch to zoom
+                    isPinching = true;
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    lastDistance = Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+                }
+            }, { passive: false });
+            
+canvasContainer.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1 && activeTool === 'pan' && isPanning) {
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - lastPosX;
+        const deltaY = touch.clientY - lastPosY;
+        
+        const vpt = canvas.viewportTransform;
+        vpt[4] += deltaX;
+        vpt[5] += deltaY;
+        canvas.setViewportTransform(vpt);
+        
+        lastPosX = touch.clientX;
+        lastPosY = touch.clientY;
+        e.preventDefault();
+    } else if (e.touches.length === 2 && isPinching) {                   // Pinch to zoom
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const currentDistance = Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+                    
+                    if (lastDistance > 0) {
+                        const scaleFactor = currentDistance / lastDistance;
+                        zoomLevel = Math.max(0.1, Math.min(3, zoomLevel * scaleFactor));
+                        
+                        // Atualiza o zoom
+                        updateZoom();
+                    }
+                    
+                    lastDistance = currentDistance;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            canvasContainer.addEventListener('touchend', function(e) {
+                if (e.touches.length === 0) {
+                    isPanning = false;
+                    isPinching = false;
+                    canvasContainer.classList.remove('grabbing');
+                } else if (e.touches.length === 1) {
+                    // One finger remaining - reset pinch
+                    isPinching = false;
+                }
+            }, { passive: false });
+            
             // Initialize
             saveState();
             updateLayersList();
             updatePropertiesPanel();
+            centerCanvas(); // Centraliza o canvas inicialmente
         });
     </script>
 </body>
