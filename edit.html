@@ -1529,46 +1529,149 @@
             const panelTabs = document.querySelectorAll('.panel-tab');
             const tabContents = document.querySelectorAll('.tab-content');
             
-            // Mobile detection
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+              const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
             // Initialize mobile UI
             if (isMobile) {
-                // Hide desktop toggle buttons
-                toggleToolsBtn.style.display = 'none';
-                togglePropertiesBtn.style.display = 'none';
+                // Ajusta o tamanho do canvas para mobile
+                canvas.setWidth(window.innerWidth);
+                canvas.setHeight(window.innerHeight - 100); // Considera header e footer
                 
-                // Set up mobile toolbar
+                // Esconde elementos desktop
+                document.querySelectorAll('.menu-item span').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.action-button span').forEach(el => el.style.display = 'none');
+                
+                // Mostra a toolbar mobile
                 mobileToolbar.style.display = 'flex';
                 
+                // Configura eventos para a toolbar mobile
+                setupMobileToolbar();
+                
+                // Ajusta o painel de propriedades para mobile
+                propertiesPanel.style.width = '80%';
+                
+                // Configura eventos de toque
+                setupTouchEvents();
+            }
+
+            function setupMobileToolbar() {
                 // Mobile toolbar event listeners
                 mobileSelectBtn.addEventListener('click', function() {
-                    document.querySelector('[data-tool="select"]').click();
+                    setActiveTool('select');
                     setActiveMobileTool('select');
                 });
                 
                 mobilePanBtn.addEventListener('click', function() {
-                    document.querySelector('[data-tool="pan"]').click();
+                    setActiveTool('pan');
                     setActiveMobileTool('pan');
                 });
                 
                 mobileTextBtn.addEventListener('click', function() {
-                    document.querySelector('[data-tool="text"]').click();
+                    setActiveTool('text');
                     setActiveMobileTool('text');
                 });
                 
                 mobileUploadBtn.addEventListener('click', function() {
-                    document.getElementById('upload-btn').click();
+                    fileInput.click();
                 });
                 
                 mobileToggleProperties.addEventListener('click', function() {
                     propertiesPanel.classList.toggle('active');
+                    toolsPanel.classList.remove('active');
+                });
+            }
+
+            function setupTouchEvents() {
+                const canvasEl = canvas.upperCanvasEl;
+                
+                // Toque simples - seleção
+                canvasEl.addEventListener('touchstart', function(e) {
+                    if (activeTool === 'select') {
+                        // Deixa o Fabric.js lidar com a seleção
+                        return;
+                    }
+                    
+                    if (activeTool === 'pan' && e.touches.length === 1) {
+                        isPanning = true;
+                        lastPosX = e.touches[0].clientX;
+                        lastPosY = e.touches[0].clientY;
+                        canvas.defaultCursor = 'grabbing';
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                canvasEl.addEventListener('touchmove', function(e) {
+                    if (activeTool === 'pan' && isPanning && e.touches.length === 1) {
+                        const touch = e.touches[0];
+                        const deltaX = touch.clientX - lastPosX;
+                        const deltaY = touch.clientY - lastPosY;
+                        
+                        // Move o viewport
+                        const vpt = canvas.viewportTransform;
+                        vpt[4] += deltaX;
+                        vpt[5] += deltaY;
+                        canvas.setViewportTransform(vpt);
+                        
+                        lastPosX = touch.clientX;
+                        lastPosY = touch.clientY;
+                        canvas.renderAll();
+                        e.preventDefault();
+                    } else if (e.touches.length === 2) {
+                        // Pinch to zoom
+                        const touch1 = e.touches[0];
+                        const touch2 = e.touches[1];
+                        const currentDistance = Math.hypot(
+                            touch2.clientX - touch1.clientX,
+                            touch2.clientY - touch1.clientY
+                        );
+                        
+                        if (lastDistance > 0) {
+                            const scaleFactor = currentDistance / lastDistance;
+                            zoomLevel = Math.max(0.1, Math.min(3, zoomLevel * scaleFactor));
+                            updateZoom();
+                        }
+                        
+                        lastDistance = currentDistance;
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                canvasEl.addEventListener('touchend', function(e) {
+                    isPanning = false;
+                    isPinching = false;
+                    lastDistance = 0;
+                    canvas.defaultCursor = 'default';
+                }, { passive: false });
+            }
+
+            function setActiveTool(tool) {
+                activeTool = tool;
+                
+                // Atualiza o estado das ferramentas
+                document.querySelectorAll('[data-tool]').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tool === tool);
                 });
                 
-                // Set initial active tool
-                setActiveMobileTool('select');
+                // Configura o canvas de acordo com a ferramenta
+                canvas.isDrawingMode = false;
+                canvas.selection = tool === 'select';
+                
+                if (tool === 'brush') {
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+                    canvas.freeDrawingBrush.width = parseInt(strokeWidth.value);
+                    canvas.freeDrawingBrush.color = fillColor.value;
+                } else if (tool === 'eraser') {
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+                    canvas.freeDrawingBrush.width = parseInt(strokeWidth.value);
+                } else if (tool === 'text') {
+                    openTextEditor();
+                } else if (tool === 'pan') {
+                    canvas.selection = false;
+                }
             }
-            
+
             function setActiveMobileTool(tool) {
                 // Reset all buttons
                 mobileSelectBtn.style.background = 'var(--primary)';
@@ -2057,7 +2160,13 @@
                 // Ajusta a posição para manter o foco no centro
                 centerCanvasView();
             }
-            
+
+                        // Função para aplicar zoom
+            function updateZoom() {
+                canvas.setZoom(zoomLevel);
+                zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
+            }
+
             // Centraliza a visualização do canvas
             function centerCanvasView() {
                 const container = canvasContainer;
@@ -2079,9 +2188,8 @@
             // Centraliza o canvas (reset de zoom e posição)
             function centerCanvas() {
                 zoomLevel = 1;
-                canvasWrapper.style.transform = 'scale(1)';
-                canvasWrapper.style.left = '0';
-                canvasWrapper.style.top = '0';
+                canvas.setZoom(1);
+                canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
                 zoomLevelDisplay.textContent = '100%';
             }
             
