@@ -10,12 +10,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --dark: #1a1a2e;
+            --primary: #4E342E;
+            --secondary: #E0C097;
+            --dark: #332a27;
             --light: #f8f9fa;
             --danger: #ef233c;
-            --success: #4cc9f0;
+            --success: #4E342E;
             --warning: #f8961e;
             --border-radius: 8px;
         }
@@ -49,6 +49,7 @@
             padding: 0 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             z-index: 100;
+            flex-wrap: wrap;
         }
 
         .logo {
@@ -57,11 +58,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            white-space: nowrap;
         }
 
         .menu-bar {
             display: flex;
             margin-left: 30px;
+            flex-wrap: wrap;
         }
 
         .tools-panel, .properties-panel {
@@ -85,6 +88,7 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .menu-item:hover {
@@ -104,6 +108,7 @@
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .action-button:hover {
@@ -135,6 +140,7 @@
             display: grid;
             grid-template-columns: 250px 1fr 300px;
             height: 100%;
+            overflow: hidden;
         }
 
         /* Tools Panel */
@@ -177,7 +183,7 @@
 
         .tool-buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
 
@@ -202,7 +208,7 @@
         }
 
         .tool-button i {
-            font-size: 1.2rem;
+            font-size: 1rem;
             margin-bottom: 5px;
         }
 
@@ -262,6 +268,7 @@
             display: flex;
             border-bottom: 1px solid #e2e8f0;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .panel-tab {
@@ -269,6 +276,7 @@
             font-size: 0.9rem;
             cursor: pointer;
             border-bottom: 2px solid transparent;
+            white-space: nowrap;
         }
 
         /* Melhor visualização durante o arraste */
@@ -354,6 +362,7 @@
             padding: 0 20px;
             font-size: 0.8rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
         }
 
         .zoom-controls {
@@ -386,6 +395,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
 
         .text-editor-input {
@@ -406,10 +416,11 @@
         .text-editor-buttons {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
 
         /* File Input */
-        #file-input, #bg-image-input {
+        #file-input, #bg-image-input, #load-project-input {
             display: none;
         }
         
@@ -717,12 +728,170 @@
             background-color: #c1c1c1;
             border-radius: 6px;
         }
+
+        /* Responsive styles */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 200px 1fr 250px;
+            }
+            
+            .menu-bar {
+                margin-left: 15px;
+            }
+            
+            .menu-item {
+                padding: 0 10px;
+            }
+            
+            .action-button span {
+                display: none;
+            }
+            
+            .action-button {
+                padding: 8px;
+                margin-left: 5px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 180px 1fr;
+            }
+            
+            .properties-panel {
+                display: none;
+                position: fixed;
+                right: 0;
+                top: 60px;
+                bottom: 40px;
+                width: 300px;
+                z-index: 100;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            }
+            
+            .properties-panel.active {
+                display: flex;
+            }
+            
+            .menu-item span {
+                display: none;
+            }
+            
+            .menu-item {
+                padding: 0 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-panel {
+                display: none;
+                position: fixed;
+                left: 0;
+                top: 60px;
+                bottom: 40px;
+                width: 250px;
+                z-index: 100;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            }
+            
+            .tools-panel.active {
+                display: block;
+            }
+            
+            .header {
+                padding: 0 10px;
+            }
+            
+            .logo span {
+                display: none;
+            }
+            
+            .menu-bar {
+                margin-left: auto;
+            }
+            
+            .action-button {
+                margin-left: 5px;
+            }
+            
+            .canvas-container {
+                padding: 10px;
+            }
+        }
+
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 10px;
+        }
+
+        @media (max-width: 992px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Toggle buttons for mobile */
+        .toggle-tools {
+            position: fixed;
+            left: 10px;
+            bottom: 50px;
+            z-index: 101;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .toggle-properties {
+            position: fixed;
+            right: 10px;
+            bottom: 50px;
+            z-index: 101;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        @media (min-width: 993px) {
+            .toggle-tools, .toggle-properties {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <!-- Header -->
         <header class="header">
+            <button class="mobile-menu-toggle" id="toggle-tools">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <div class="logo">
                 <i class="fas fa-image"></i>
                 <span>Editor Profissional</span>
@@ -756,6 +925,10 @@
             </div>
             
             <div style="margin-left: auto; display: flex; gap: 10px;">
+                <button class="action-button" id="load-btn">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Carregar</span>
+                </button>
                 <button class="action-button" id="save-btn">
                     <i class="fas fa-save"></i>
                     <span>Salvar</span>
@@ -770,7 +943,7 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Tools Panel -->
-            <div class="tools-panel">
+            <div class="tools-panel" id="tools-panel">
                 <div class="tool-group">
                     <div class="tool-group-title">Ferramentas</div>
                     <div class="tool-buttons">
@@ -922,7 +1095,7 @@
             </div>
             
             <!-- Properties Panel -->
-            <div class="properties-panel">
+            <div class="properties-panel" id="properties-panel">
                 <div class="panel-tabs">
                     <div class="panel-tab active" data-tab="properties">Propriedades</div>
                     <div class="panel-tab" data-tab="history">Histórico</div>
@@ -1106,11 +1279,21 @@
                 <button id="zoom-in" title="Zoom In (+)"><i class="fas fa-search-plus"></i></button>
             </div>
         </footer>
+        
+        <!-- Mobile toggle buttons -->
+        <button class="toggle-tools" id="mobile-toggle-tools" title="Mostrar/Ocultar Ferramentas">
+            <i class="fas fa-tools"></i>
+        </button>
+        
+        <button class="toggle-properties" id="mobile-toggle-properties" title="Mostrar/Ocultar Propriedades">
+            <i class="fas fa-sliders-h"></i>
+        </button>
     </div>
     
     <!-- Hidden file inputs -->
     <input type="file" id="file-input" accept="image/*">
     <input type="file" id="bg-image-input" accept="image/*">
+    <input type="file" id="load-project-input" accept=".json">
     
     <!-- Save Modal -->
     <div class="modal" id="save-modal">
@@ -1153,30 +1336,6 @@
             </div>
             <div class="modal-footer">
                 <button id="cancel-save" class="action-button warning">
-                    <i class="fas fa-times"></i>
-                    <span>Cancelar</span>
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Load Project Modal -->
-    <div class="modal" id="load-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Carregar Projeto</h3>
-                <button id="close-load-modal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="property-item">
-                    <label class="property-label">Selecione um arquivo de projeto (.json)</label>
-                    <button id="load-project-btn" class="action-button" style="width: 100%;">
-                        <i class="fas fa-folder-open"></i> Selecionar Arquivo
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="cancel-load" class="action-button warning">
                     <i class="fas fa-times"></i>
                     <span>Cancelar</span>
                 </button>
@@ -1228,7 +1387,9 @@
             const cancelTextBtn = document.getElementById('cancel-text');
             const fileInput = document.getElementById('file-input');
             const bgImageInput = document.getElementById('bg-image-input');
+            const loadProjectInput = document.getElementById('load-project-input');
             const uploadBtn = document.getElementById('upload-btn');
+            const loadBtn = document.getElementById('load-btn');
             const saveBtn = document.getElementById('save-btn');
             const clearBtn = document.getElementById('clear-btn');
             const zoomInBtn = document.getElementById('zoom-in');
@@ -1252,10 +1413,6 @@
             const saveJpg = document.getElementById('save-jpg');
             const savePdf = document.getElementById('save-pdf');
             const saveJson = document.getElementById('save-json');
-            const loadModal = document.getElementById('load-modal');
-            const closeLoadModal = document.getElementById('close-load-modal');
-            const cancelLoad = document.getElementById('cancel-load');
-            const loadProjectBtn = document.getElementById('load-project-btn');
             const selectBgImageBtn = document.getElementById('select-bg-image-btn');
             const canvasWidthSetting = document.getElementById('canvas-width-setting');
             const canvasHeightSetting = document.getElementById('canvas-height-setting');
@@ -1266,6 +1423,10 @@
             const bgRepeat = document.getElementById('bg-repeat');
             const centerObjectBtn = document.getElementById('center-object-btn');
             const centerCanvasBtn = document.getElementById('center-canvas');
+            const toggleToolsBtn = document.getElementById('mobile-toggle-tools');
+            const togglePropertiesBtn = document.getElementById('mobile-toggle-properties');
+            const toolsPanel = document.getElementById('tools-panel');
+            const propertiesPanel = document.getElementById('properties-panel');
             
             // Properties panel elements
             const posX = document.getElementById('pos-x');
@@ -1608,6 +1769,33 @@
                 }
             });
             
+            // Load project
+            loadBtn.addEventListener('click', function() {
+                loadProjectInput.click();
+            });
+            
+            loadProjectInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            canvas.loadFromJSON(data, function() {
+                                canvas.renderAll();
+                                updateLayersList();
+                                updatePropertiesPanel();
+                                saveState();
+                            });
+                        } catch (error) {
+                            alert('Erro ao carregar o arquivo. Certifique-se de que é um projeto válido.');
+                        }
+                    };
+                    
+                    reader.readAsText(e.target.files[0]);
+                }
+            });
+            
             // Save options
             saveBtn.addEventListener('click', function() {
                 saveModal.classList.add('active');
@@ -1690,37 +1878,6 @@
                 link.click();
                 
                 saveModal.classList.remove('active');
-            });
-            
-            // Load project
-            loadProjectBtn.addEventListener('click', function() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.json';
-                
-                input.onchange = e => {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(event) {
-                        try {
-                            const data = JSON.parse(event.target.result);
-                            canvas.loadFromJSON(data, function() {
-                                canvas.renderAll();
-                                updateLayersList();
-                                updatePropertiesPanel();
-                                saveState();
-                            });
-                            loadModal.classList.remove('active');
-                        } catch (error) {
-                            alert('Erro ao carregar o arquivo. Certifique-se de que é um projeto válido.');
-                        }
-                    };
-                    
-                    reader.readAsText(file);
-                };
-                
-                input.click();
             });
             
             // Clear canvas
@@ -2342,6 +2499,29 @@
                     }
                     canvas.renderAll();
                     saveState();
+                }
+            });
+            
+            // Toggle panels for mobile
+            toggleToolsBtn.addEventListener('click', function() {
+                toolsPanel.classList.toggle('active');
+                propertiesPanel.classList.remove('active');
+            });
+            
+            togglePropertiesBtn.addEventListener('click', function() {
+                propertiesPanel.classList.toggle('active');
+                toolsPanel.classList.remove('active');
+            });
+            
+            // Close panels when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 992) {
+                    if (!toolsPanel.contains(e.target) && e.target !== toggleToolsBtn) {
+                        toolsPanel.classList.remove('active');
+                    }
+                    if (!propertiesPanel.contains(e.target) && e.target !== togglePropertiesBtn) {
+                        propertiesPanel.classList.remove('active');
+                    }
                 }
             });
             
