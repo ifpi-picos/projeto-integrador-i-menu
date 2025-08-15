@@ -29,8 +29,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            background-color: #F3ECE7;
+            color: #3E2723;
             height: 100vh;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
@@ -74,6 +74,7 @@
             overflow-y: auto;
             position: sticky;
             top: 60px;
+            background-color: #FFF9F5;
         }
 
         .tool-group, .property-group {
@@ -147,7 +148,7 @@
 
         /* Tools Panel */
         .tools-panel {
-            background: white;
+            background: #FFF9F5;
             border-right: 1px solid #e2e8f0;
             padding: 15px;
             overflow-y: auto;
@@ -243,8 +244,7 @@
             display: inline-block;
             transform-origin: 0 0;
             transition: transform 0.1s ease-out;
-                        will-change: transform;
-
+            will-change: transform;
         }
 
         #main-canvas {
@@ -254,7 +254,7 @@
 
         /* Properties Panel */
         .properties-panel {
-            background: white;
+            background: #FFF9F5;
             border-left: 1px solid #e2e8f0;
             padding: 15px;
             overflow-y: auto;
@@ -290,19 +290,6 @@
             cursor: pointer;
             border-bottom: 2px solid transparent;
             white-space: nowrap;
-        }
-
-        /* Melhor visualização durante o arraste */
-        .canvas-container .upper-canvas, 
-        .canvas-container .lower-canvas {
-            position: absolute;
-            touch-action: none;
-        }
-
-        /* Feedback visual para objetos sendo movidos */
-        .canvas-container .moving {
-            opacity: 0.8;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
         .panel-tab.active {
@@ -344,6 +331,7 @@
             padding: 8px;
             border: 1px solid #e2e8f0;
             border-radius: var(--border-radius);
+            background-color: white;
         }
 
         .range-container {
@@ -877,6 +865,17 @@
             .canvas-wrapper {
                 transform-origin: center center;
             }
+            
+            /* Make canvas fit mobile screen */
+            #main-canvas {
+                max-width: 100%;
+                max-height: calc(100vh - 150px);
+            }
+            
+            .text-editor {
+                width: 90%;
+                max-width: 300px;
+            }
         }
 
         /* Mobile menu toggle */
@@ -1295,7 +1294,7 @@
                             <div class="property-group-title">Fundo com Imagem</div>
                             <div class="property-item">
                                 <button id="select-bg-image-btn" class="action-button" style="width: 100%;">
-                                    <i class="fas fa-image"></i> Selecionar Imagem de Fundo
+                                    <i class="fas fa-image"></i> Imagem de Fundo
                                 </button>
                             </div>
                             <div class="property-item">
@@ -1529,7 +1528,7 @@
             const panelTabs = document.querySelectorAll('.panel-tab');
             const tabContents = document.querySelectorAll('.tab-content');
             
-              const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
             // Initialize mobile UI
             if (isMobile) {
@@ -2161,7 +2160,7 @@
                 centerCanvasView();
             }
 
-                        // Função para aplicar zoom
+            // Função para aplicar zoom
             function updateZoom() {
                 canvas.setZoom(zoomLevel);
                 zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
@@ -2323,13 +2322,14 @@
                 saveState();
             }
             
-// E a função centerCanvas deve ser:
-function centerCanvas() {
-    zoomLevel = 1;
-    updateZoom();
-}         
+            // E a função centerCanvas deve ser:
+            function centerCanvas() {
+                zoomLevel = 1;
+                updateZoom();
+            }         
+            
             // Context menu
-                        canvas.on('mouse:down', function(options) {
+            canvas.on('mouse:down', function(options) {
                 if (activeTool === 'pan' && options.button === 1) {
                     isPanning = true;
                     lastPosX = options.e.clientX;
@@ -2339,7 +2339,7 @@ function centerCanvas() {
                 }
             });
 
-                        canvas.on('mouse:move', function(options) {
+            canvas.on('mouse:move', function(options) {
                 if (isPanning) {
                     const deltaX = options.e.clientX - lastPosX;
                     const deltaY = options.e.clientY - lastPosY;
@@ -2370,24 +2370,24 @@ function centerCanvas() {
             });
             
             // Handle mouse move for pan tool - MODIFICADO para mover o wrapper do canvas
-canvas.on('mouse:move', function(options) {
-    if (isPanning) {
-        const deltaX = options.e.clientX - lastPosX;
-        const deltaY = options.e.clientY - lastPosY;
-        
-        // Ajusta o viewportTransform para mover o canvas
-        const vpt = canvas.viewportTransform;
-        vpt[4] += deltaX;
-        vpt[5] += deltaY;
-        canvas.setViewportTransform(vpt);
-        
-        lastPosX = options.e.clientX;
-        lastPosY = options.e.clientY;
-        canvas.renderAll();
-    }
-}); 
+            canvas.on('mouse:move', function(options) {
+                if (isPanning) {
+                    const deltaX = options.e.clientX - lastPosX;
+                    const deltaY = options.e.clientY - lastPosY;
+                    
+                    // Ajusta o viewportTransform para mover o canvas
+                    const vpt = canvas.viewportTransform;
+                    vpt[4] += deltaX;
+                    vpt[5] += deltaY;
+                    canvas.setViewportTransform(vpt);
+                    
+                    lastPosX = options.e.clientX;
+                    lastPosY = options.e.clientY;
+                    canvas.renderAll();
+                }
+            }); 
 
-canvas.on('mouse:up', function() {
+            canvas.on('mouse:up', function() {
                 if (isPanning) {
                     isPanning = false;
                     canvas.selection = true;
@@ -2904,21 +2904,21 @@ canvas.on('mouse:up', function() {
                 }
             }, { passive: false });
             
-canvasContainer.addEventListener('touchmove', function(e) {
-    if (e.touches.length === 1 && activeTool === 'pan' && isPanning) {
-        const touch = e.touches[0];
-        const deltaX = touch.clientX - lastPosX;
-        const deltaY = touch.clientY - lastPosY;
-        
-        const vpt = canvas.viewportTransform;
-        vpt[4] += deltaX;
-        vpt[5] += deltaY;
-        canvas.setViewportTransform(vpt);
-        
-        lastPosX = touch.clientX;
-        lastPosY = touch.clientY;
-        e.preventDefault();
-    } else if (e.touches.length === 2 && isPinching) {                   // Pinch to zoom
+            canvasContainer.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 1 && activeTool === 'pan' && isPanning) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - lastPosX;
+                    const deltaY = touch.clientY - lastPosY;
+                    
+                    const vpt = canvas.viewportTransform;
+                    vpt[4] += deltaX;
+                    vpt[5] += deltaY;
+                    canvas.setViewportTransform(vpt);
+                    
+                    lastPosX = touch.clientX;
+                    lastPosY = touch.clientY;
+                    e.preventDefault();
+                } else if (e.touches.length === 2 && isPinching) {                   // Pinch to zoom
                     const touch1 = e.touches[0];
                     const touch2 = e.touches[1];
                     const currentDistance = Math.hypot(
