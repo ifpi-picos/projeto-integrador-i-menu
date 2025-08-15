@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Editor Profissional Avançado</title>
+    <title>Editor iMenu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #4E342E;
@@ -808,28 +807,12 @@
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                grid-template-rows: 60px 1fr;
-            }
-            
-            .tools-panel {
-                display: none;
-                position: fixed;
-                left: 0;
-                top: 60px;
-                bottom: 40px;
-                width: 250px;
-                z-index: 100;
-                box-shadow: 5px 0 15px rgba(0,0,0,0.1);
-            }
-            
-            .tools-panel.active {
-                display: block;
+            #app {
+                grid-template-rows: 50px 1fr 40px;
             }
             
             .header {
-                padding: 0 10px;
+                padding: 0 5px;
             }
             
             .logo span {
@@ -837,44 +820,90 @@
             }
             
             .menu-bar {
-                margin-left: auto;
+                display: none;
             }
             
-            .action-button {
-                margin-left: 5px;
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
             }
             
             .canvas-container {
-                padding: 10px;
-                overflow: hidden;
+                padding: 5px;
+                overflow: auto;
+                touch-action: none;
             }
-
-            .mobile-toolbar {
-                display: flex;
+            
+            #main-canvas {
+                width: 100% !important;
+                height: auto !important;
+                max-width: 100%;
+                max-height: calc(100vh - 90px);
             }
-
-            .footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 100;
-            }
-
-            /* Adjust canvas for mobile */
+            
             .canvas-wrapper {
+                margin: 0 auto;
                 transform-origin: center center;
             }
             
-            /* Make canvas fit mobile screen */
-            #main-canvas {
-                max-width: 100%;
-                max-height: calc(100vh - 150px);
+            .mobile-toolbar {
+                display: flex !important;
+                bottom: 45px;
+                padding: 6px;
+                background: var(--dark);
+                border-radius: 25px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+            
+            .mobile-tool-button {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+                margin: 0 3px;
+            }
+            
+            .tools-panel, .properties-panel {
+                position: fixed;
+                top: 50px;
+                bottom: 40px;
+                width: 80%;
+                z-index: 1000;
+                box-shadow: 0 0 15px rgba(0,0,0,0.2);
+                display: none;
+            }
+            
+            .tools-panel {
+                left: 0;
+            }
+            
+            .properties-panel {
+                right: 0;
+            }
+            
+            .tools-panel.active, .properties-panel.active {
+                display: block;
+            }
+            
+            .toggle-tools, .toggle-properties {
+                display: flex !important;
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+                bottom: 50px;
+            }
+            
+            .toggle-tools {
+                left: 10px;
+            }
+            
+            .toggle-properties {
+                right: 10px;
             }
             
             .text-editor {
                 width: 90%;
-                max-width: 300px;
+                left: 5%;
+                top: 20%;
             }
         }
 
@@ -1351,6 +1380,10 @@
         <button class="toggle-tools" id="mobile-toggle-tools" title="Mostrar/Ocultar Ferramentas">
             <i class="fas fa-tools"></i>
         </button>
+        
+        <button class="toggle-properties" id="mobile-toggle-properties-btn" title="Mostrar/Ocultar Propriedades">
+            <i class="fas fa-sliders-h"></i>
+        </button>
     </div>
     
     <!-- Hidden file inputs -->
@@ -1408,7 +1441,7 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize canvas
+            // Initialize canvas with mobile support
             const canvas = new fabric.Canvas('main-canvas', {
                 preserveObjectStacking: true,
                 backgroundColor: '#ffffff',
@@ -1417,7 +1450,8 @@
                 allowTouchScrolling: true,
                 fireMiddleClick: true,
                 fireRightClick: true,
-                stopContextMenu: true
+                stopContextMenu: true,
+                enablePointerEvents: true
             });
 
             // Initialize jsPDF
@@ -1489,7 +1523,7 @@
             const centerObjectBtn = document.getElementById('center-object-btn');
             const centerCanvasBtn = document.getElementById('center-canvas');
             const toggleToolsBtn = document.getElementById('mobile-toggle-tools');
-            const togglePropertiesBtn = document.getElementById('mobile-toggle-properties');
+            const togglePropertiesBtn = document.getElementById('mobile-toggle-properties-btn');
             const toolsPanel = document.getElementById('tools-panel');
             const propertiesPanel = document.getElementById('properties-panel');
             const canvasContainer = document.getElementById('canvas-container');
@@ -1499,6 +1533,7 @@
             const mobilePanBtn = document.getElementById('mobile-pan');
             const mobileTextBtn = document.getElementById('mobile-text');
             const mobileUploadBtn = document.getElementById('mobile-upload');
+            const mobileToggleProperties = document.getElementById('mobile-toggle-properties');
             
             // Properties panel elements
             const posX = document.getElementById('pos-x');
@@ -1528,33 +1563,43 @@
             const panelTabs = document.querySelectorAll('.panel-tab');
             const tabContents = document.querySelectorAll('.tab-content');
             
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            // Mobile detection
+            function isMobile() {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            }
             
             // Initialize mobile UI
-            if (isMobile) {
-                // Ajusta o tamanho do canvas para mobile
-                canvas.setWidth(window.innerWidth);
-                canvas.setHeight(window.innerHeight - 100); // Considera header e footer
+            if (isMobile()) {
+                setupMobileUI();
+            }
+
+            function setupMobileUI() {
+                // Adjust canvas size for mobile
+                const canvasWidth = Math.min(window.innerWidth, 800);
+                const canvasHeight = Math.min(window.innerHeight * 0.6, 600);
                 
-                // Esconde elementos desktop
+                canvas.setWidth(canvasWidth);
+                canvas.setHeight(canvasHeight);
+                canvasSizeDisplay.textContent = `${canvasWidth}x${canvasHeight}`;
+                
+                // Hide desktop elements
                 document.querySelectorAll('.menu-item span').forEach(el => el.style.display = 'none');
                 document.querySelectorAll('.action-button span').forEach(el => el.style.display = 'none');
                 
-                // Mostra a toolbar mobile
+                // Show mobile toolbar
                 mobileToolbar.style.display = 'flex';
                 
-                // Configura eventos para a toolbar mobile
+                // Setup mobile toolbar events
                 setupMobileToolbar();
                 
-                // Ajusta o painel de propriedades para mobile
-                propertiesPanel.style.width = '80%';
-                
-                // Configura eventos de toque
+                // Setup touch events
                 setupTouchEvents();
+                
+                // Center canvas initially
+                centerCanvasView();
             }
 
             function setupMobileToolbar() {
-                // Mobile toolbar event listeners
                 mobileSelectBtn.addEventListener('click', function() {
                     setActiveTool('select');
                     setActiveMobileTool('select');
@@ -1583,40 +1628,42 @@
             function setupTouchEvents() {
                 const canvasEl = canvas.upperCanvasEl;
                 
-                // Toque simples - seleção
                 canvasEl.addEventListener('touchstart', function(e) {
-                    if (activeTool === 'select') {
-                        // Deixa o Fabric.js lidar com a seleção
-                        return;
-                    }
-                    
-                    if (activeTool === 'pan' && e.touches.length === 1) {
+                    if (e.touches.length === 1 && activeTool === 'pan') {
                         isPanning = true;
                         lastPosX = e.touches[0].clientX;
                         lastPosY = e.touches[0].clientY;
-                        canvas.defaultCursor = 'grabbing';
+                        e.preventDefault();
+                    } else if (e.touches.length === 2) {
+                        // Pinch to zoom
+                        const touch1 = e.touches[0];
+                        const touch2 = e.touches[1];
+                        lastDistance = Math.hypot(
+                            touch2.clientX - touch1.clientX,
+                            touch2.clientY - touch1.clientY
+                        );
+                        isPinching = true;
                         e.preventDefault();
                     }
                 }, { passive: false });
-                
+
                 canvasEl.addEventListener('touchmove', function(e) {
-                    if (activeTool === 'pan' && isPanning && e.touches.length === 1) {
+                    if (isPanning && e.touches.length === 1) {
                         const touch = e.touches[0];
                         const deltaX = touch.clientX - lastPosX;
                         const deltaY = touch.clientY - lastPosY;
                         
-                        // Move o viewport
-                        const vpt = canvas.viewportTransform;
-                        vpt[4] += deltaX;
-                        vpt[5] += deltaY;
-                        canvas.setViewportTransform(vpt);
+                        // Move canvas wrapper
+                        const currentLeft = parseFloat(canvasWrapper.style.left || '0');
+                        const currentTop = parseFloat(canvasWrapper.style.top || '0');
+                        
+                        canvasWrapper.style.left = `${currentLeft + deltaX}px`;
+                        canvasWrapper.style.top = `${currentTop + deltaY}px`;
                         
                         lastPosX = touch.clientX;
                         lastPosY = touch.clientY;
-                        canvas.renderAll();
                         e.preventDefault();
-                    } else if (e.touches.length === 2) {
-                        // Pinch to zoom
+                    } else if (isPinching && e.touches.length === 2) {
                         const touch1 = e.touches[0];
                         const touch2 = e.touches[1];
                         const currentDistance = Math.hypot(
@@ -1634,24 +1681,22 @@
                         e.preventDefault();
                     }
                 }, { passive: false });
-                
+
                 canvasEl.addEventListener('touchend', function(e) {
                     isPanning = false;
                     isPinching = false;
-                    lastDistance = 0;
-                    canvas.defaultCursor = 'default';
                 }, { passive: false });
             }
 
             function setActiveTool(tool) {
                 activeTool = tool;
                 
-                // Atualiza o estado das ferramentas
+                // Update tool buttons
                 document.querySelectorAll('[data-tool]').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.tool === tool);
                 });
                 
-                // Configura o canvas de acordo com a ferramenta
+                // Configure canvas based on tool
                 canvas.isDrawingMode = false;
                 canvas.selection = tool === 'select';
                 
@@ -1668,6 +1713,13 @@
                     openTextEditor();
                 } else if (tool === 'pan') {
                     canvas.selection = false;
+                }
+                
+                saveState();
+                
+                // Update mobile toolbar
+                if (isMobile()) {
+                    setActiveMobileTool(activeTool);
                 }
             }
 
@@ -1689,6 +1741,56 @@
                         mobileTextBtn.style.background = 'var(--secondary)';
                         break;
                 }
+            }
+            
+            // Update zoom function for mobile
+            function updateZoom() {
+                if (isMobile()) {
+                    // On mobile, use CSS transform on wrapper
+                    canvasWrapper.style.transform = `scale(${zoomLevel})`;
+                    zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
+                    
+                    // Center view after zoom
+                    centerCanvasView();
+                } else {
+                    // On desktop, use Fabric's native zoom
+                    canvas.setZoom(zoomLevel);
+                    zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
+                }
+            }
+
+            // Center canvas view (for mobile)
+            function centerCanvasView() {
+                if (!isMobile()) return;
+                
+                const container = canvasContainer;
+                const wrapper = canvasWrapper;
+                const canvasEl = document.getElementById('main-canvas');
+                
+                // Calculate scaled dimensions
+                const scaledWidth = canvasEl.width * zoomLevel;
+                const scaledHeight = canvasEl.height * zoomLevel;
+                
+                // Calculate offsets to center
+                const offsetX = Math.max(0, (container.clientWidth - scaledWidth) / 2);
+                const offsetY = Math.max(0, (container.clientHeight - scaledHeight) / 2);
+                
+                // Apply transformation
+                wrapper.style.left = `${offsetX}px`;
+                wrapper.style.top = `${offsetY}px`;
+            }
+
+            // Center canvas (reset zoom and position)
+            function centerCanvas() {
+                zoomLevel = 1;
+                if (isMobile()) {
+                    canvasWrapper.style.transform = 'scale(1)';
+                    centerCanvasView();
+                } else {
+                    canvas.setZoom(1);
+                    canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+                }
+                zoomLevelDisplay.textContent = '100%';
             }
             
             // Save state to history
@@ -1779,34 +1881,7 @@
             // Tool selection
             tools.forEach(tool => {
                 tool.addEventListener('click', function() {
-                    tools.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    activeTool = this.dataset.tool;
-                    
-                    canvas.isDrawingMode = false;
-                    canvas.selection = activeTool === 'select';
-                    
-                    if (activeTool === 'brush') {
-                        canvas.isDrawingMode = true;
-                        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                        canvas.freeDrawingBrush.width = parseInt(strokeWidth.value);
-                        canvas.freeDrawingBrush.color = fillColor.value;
-                    } else if (activeTool === 'eraser') {
-                        canvas.isDrawingMode = true;
-                        canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
-                        canvas.freeDrawingBrush.width = parseInt(strokeWidth.value);
-                    } else if (activeTool === 'text') {
-                        openTextEditor();
-                    } else if (activeTool === 'pan') {
-                        canvas.selection = false;
-                    }
-                    
-                    saveState();
-                    
-                    // Update mobile toolbar
-                    if (isMobile) {
-                        setActiveMobileTool(activeTool);
-                    }
+                    setActiveTool(this.dataset.tool);
                 });
             });
             
@@ -2134,65 +2209,21 @@
             });
             
             // Zoom controls
-            // Zoom controls - MODIFICADO para zoom visual
             zoomInBtn.addEventListener('click', function() {
                 zoomLevel = Math.min(3, zoomLevel + 0.1);
-                applyZoom();
+                updateZoom();
             });
             
             zoomOutBtn.addEventListener('click', function() {
                 zoomLevel = Math.max(0.1, zoomLevel - 0.1);
-                applyZoom();
+                updateZoom();
             });
             
             zoomResetBtn.addEventListener('click', function() {
                 zoomLevel = 1;
-                applyZoom();
+                updateZoom();
             });
             
-            // Zoom function - MODIFICADO para zoom visual sem alterar o tamanho real
-            // Nova função para aplicar o zoom visual
-            function applyZoom() {
-                canvasWrapper.style.transform = `scale(${zoomLevel})`;
-                zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
-                
-                // Ajusta a posição para manter o foco no centro
-                centerCanvasView();
-            }
-
-            // Função para aplicar zoom
-            function updateZoom() {
-                canvas.setZoom(zoomLevel);
-                zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
-            }
-
-            // Centraliza a visualização do canvas
-            function centerCanvasView() {
-                const container = canvasContainer;
-                const wrapper = canvasWrapper;
-                
-                // Calcula as dimensões escaladas
-                const scaledWidth = canvas.width * zoomLevel;
-                const scaledHeight = canvas.height * zoomLevel;
-                
-                // Calcula os offsets para centralizar
-                const offsetX = Math.max(0, (container.clientWidth - scaledWidth) / 2);
-                const offsetY = Math.max(0, (container.clientHeight - scaledHeight) / 2);
-                
-                // Aplica a transformação
-                wrapper.style.left = `${offsetX}px`;
-                wrapper.style.top = `${offsetY}px`;
-            }
-            
-            // Centraliza o canvas (reset de zoom e posição)
-            function centerCanvas() {
-                zoomLevel = 1;
-                canvas.setZoom(1);
-                canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-                zoomLevelDisplay.textContent = '100%';
-            }
-            
-
             // Update layers list
             function updateLayersList() {
                 layersList.innerHTML = '';
@@ -2322,12 +2353,6 @@
                 saveState();
             }
             
-            // E a função centerCanvas deve ser:
-            function centerCanvas() {
-                zoomLevel = 1;
-                updateZoom();
-            }         
-            
             // Context menu
             canvas.on('mouse:down', function(options) {
                 if (activeTool === 'pan' && options.button === 1) {
@@ -2344,7 +2369,7 @@
                     const deltaX = options.e.clientX - lastPosX;
                     const deltaY = options.e.clientY - lastPosY;
                     
-                    // Calcula a nova posição do wrapper
+                    // Move canvas wrapper
                     const currentLeft = parseFloat(canvasWrapper.style.left || '0');
                     const currentTop = parseFloat(canvasWrapper.style.top || '0');
                     
@@ -2355,37 +2380,6 @@
                     lastPosY = options.e.clientY;
                 }
             });
-
-
-            // Handle object moving with padding
-            canvas.on('object:moving', function(e) {
-                const obj = e.target;
-                obj.setCoords();
-                
-                // Allow objects to go outside canvas freely
-                const padding = 1000; // Large padding to allow free movement
-                
-                // No constraints on movement - objects can go anywhere
-                // We keep this handler to ensure objects can be selected even when outside canvas
-            });
-            
-            // Handle mouse move for pan tool - MODIFICADO para mover o wrapper do canvas
-            canvas.on('mouse:move', function(options) {
-                if (isPanning) {
-                    const deltaX = options.e.clientX - lastPosX;
-                    const deltaY = options.e.clientY - lastPosY;
-                    
-                    // Ajusta o viewportTransform para mover o canvas
-                    const vpt = canvas.viewportTransform;
-                    vpt[4] += deltaX;
-                    vpt[5] += deltaY;
-                    canvas.setViewportTransform(vpt);
-                    
-                    lastPosX = options.e.clientX;
-                    lastPosY = options.e.clientY;
-                    canvas.renderAll();
-                }
-            }); 
 
             canvas.on('mouse:up', function() {
                 if (isPanning) {
@@ -2524,16 +2518,16 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // Determina a direção do zoom
+                // Determine zoom direction
                 const delta = e.deltaY > 0 ? 0.9 : 1.1;
                 
-                // Limita o zoom
+                // Limit zoom
                 const oldZoom = zoomLevel;
                 zoomLevel = Math.max(0.1, Math.min(3, zoomLevel * delta));
                 
-                // Se o zoom mudou, aplica a transformação
+                // Apply zoom if changed
                 if (Math.abs(oldZoom - zoomLevel) > 0.01) {
-                    applyZoom();
+                    updateZoom();
                 }
             }, { passive: false });
             
@@ -2880,81 +2874,11 @@
                 return rgb;
             }
             
-            // Touch events for mobile zoom and pan
-            canvasContainer.addEventListener('touchstart', function(e) {
-                if (e.touches.length === 1) {
-                    // Single touch - pan or select
-                    const touch = e.touches[0];
-                    lastPosX = touch.clientX;
-                    lastPosY = touch.clientY;
-                    
-                    if (activeTool === 'pan') {
-                        isPanning = true;
-                        canvasContainer.classList.add('grabbing');
-                    }
-                } else if (e.touches.length === 2) {
-                    // Two touches - pinch to zoom
-                    isPinching = true;
-                    const touch1 = e.touches[0];
-                    const touch2 = e.touches[1];
-                    lastDistance = Math.hypot(
-                        touch2.clientX - touch1.clientX,
-                        touch2.clientY - touch1.clientY
-                    );
-                }
-            }, { passive: false });
-            
-            canvasContainer.addEventListener('touchmove', function(e) {
-                if (e.touches.length === 1 && activeTool === 'pan' && isPanning) {
-                    const touch = e.touches[0];
-                    const deltaX = touch.clientX - lastPosX;
-                    const deltaY = touch.clientY - lastPosY;
-                    
-                    const vpt = canvas.viewportTransform;
-                    vpt[4] += deltaX;
-                    vpt[5] += deltaY;
-                    canvas.setViewportTransform(vpt);
-                    
-                    lastPosX = touch.clientX;
-                    lastPosY = touch.clientY;
-                    e.preventDefault();
-                } else if (e.touches.length === 2 && isPinching) {                   // Pinch to zoom
-                    const touch1 = e.touches[0];
-                    const touch2 = e.touches[1];
-                    const currentDistance = Math.hypot(
-                        touch2.clientX - touch1.clientX,
-                        touch2.clientY - touch1.clientY
-                    );
-                    
-                    if (lastDistance > 0) {
-                        const scaleFactor = currentDistance / lastDistance;
-                        zoomLevel = Math.max(0.1, Math.min(3, zoomLevel * scaleFactor));
-                        
-                        // Atualiza o zoom
-                        updateZoom();
-                    }
-                    
-                    lastDistance = currentDistance;
-                    e.preventDefault();
-                }
-            }, { passive: false });
-            
-            canvasContainer.addEventListener('touchend', function(e) {
-                if (e.touches.length === 0) {
-                    isPanning = false;
-                    isPinching = false;
-                    canvasContainer.classList.remove('grabbing');
-                } else if (e.touches.length === 1) {
-                    // One finger remaining - reset pinch
-                    isPinching = false;
-                }
-            }, { passive: false });
-            
             // Initialize
             saveState();
             updateLayersList();
             updatePropertiesPanel();
-            centerCanvas(); // Centraliza o canvas inicialmente
+            centerCanvas();
         });
     </script>
 </body>
