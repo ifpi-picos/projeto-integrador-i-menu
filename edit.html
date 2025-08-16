@@ -73,10 +73,11 @@ body {
         }
 
         .tools-panel, .properties-panel {
-            max-height: calc(100vh - 100px);
+            max-height: calc(100vh - 60px);
             overflow-y: auto;
             position: sticky;
             top: 60px;
+            
             background-color: #FFF9F5;
         }
 
@@ -146,6 +147,7 @@ body {
             display: grid;
             grid-template-columns: 250px 1fr 300px;
             height: 100%;
+            background-color: #F3ECE7; /* Corrige as laterais */
             overflow: hidden;
         }
 
@@ -226,16 +228,12 @@ body {
         /* Canvas Area */
     /* Atualizar o container do canvas */
 .canvas-container {
-    flex: 1;
+    background-color: #e9ecef; /* Mantém o cinza claro apenas na área do canvas */
+    position: relative;
     overflow: hidden;
     touch-action: none;
-    background-color: #e9ecef;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
     width: 100%;
-    height: calc(100vh - 100px); /* Ajuste conforme o tamanho do header/footer */
+    height: calc(100vh - 60px); /* Ajusta para o header */
 }
         .canvas-container:active {
             cursor: grabbing;
@@ -871,12 +869,36 @@ body {
             .tools-panel, .properties-panel {
                 position: fixed;
                 top: 50px;
+                    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%);
                 bottom: 40px;
                 width: 80%;
                 z-index: 1000;
                 box-shadow: 0 0 15px rgba(0,0,0,0.2);
                 display: none;
             }
+
+            .tools-panel.active {
+    transform: translateX(0);
+}
+
+.properties-panel {
+    transform: translateX(100%);
+}
+
+.properties-panel.active {
+    transform: translateX(0);
+}
+
+/* Garanta que os painéis não fiquem piscando no load */
+.tools-panel:not(.active), .properties-panel:not(.active) {
+    display: block !important;
+    visibility: hidden;
+}
+
+.tools-panel.active, .properties-panel.active {
+    visibility: visible;
+}
             
             .tools-panel {
                 left: 0;
