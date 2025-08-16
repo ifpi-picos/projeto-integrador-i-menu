@@ -26,20 +26,24 @@
             touch-action: manipulation;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #F3ECE7;
-            color: #3E2723;
-            height: 100vh;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        #app {
-            display: grid;
-            grid-template-rows: 60px 1fr 40px;
-            height: 100vh;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #F3ECE7;
+    color: #3E2723;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh; /* Alterado para vh */
+    overflow: hidden; /* Impede a barra de rolagem */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+}
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
 
         /* Header */
         .header {
@@ -220,36 +224,38 @@
         }
 
         /* Canvas Area */
-        .canvas-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #e9ecef;
-            overflow: auto;
-            cursor: default;
-            padding: 20px;
-            touch-action: none;
-        }
-
+    /* Atualizar o container do canvas */
+.canvas-container {
+    flex: 1;
+    overflow: hidden;
+    touch-action: none;
+    background-color: #e9ecef;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 100px); /* Ajuste conforme o tamanho do header/footer */
+}
         .canvas-container:active {
             cursor: grabbing;
         }
 
-        .canvas-wrapper {
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            background: white;
-            display: inline-block;
-            transform-origin: 0 0;
-            transition: transform 0.1s ease-out;
-            will-change: transform;
-        }
+/* Canvas Wrapper */
+.canvas-wrapper {
+    position: relative;
+    transform-origin: center center;
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+}
 
-        #main-canvas {
-            background: white;
-            touch-action: none;
-        }
+    /* Estilo do canvas principal */
+/* Main Canvas */
+#main-canvas {
+    display: block;
+    background: white;
+    touch-action: none;
+}
 
         /* Properties Panel */
         .properties-panel {
@@ -807,6 +813,10 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                -webkit-overflow-scrolling: touch;
+                height: 10px;
+            }
             #app {
                 grid-template-rows: 50px 1fr 40px;
             }
@@ -828,31 +838,27 @@
                 grid-template-rows: auto 1fr;
             }
             
-            .canvas-container {
-                padding: 5px;
-                overflow: auto;
-                touch-action: none;
-            }
+    .canvas-container {
+        height: calc(100vh - 60px); /* Ajuste para mobile */
+    }
             
-            #main-canvas {
-                width: 100% !important;
-                height: auto !important;
-                max-width: 100%;
-                max-height: calc(100vh - 90px);
-            }
+    #main-canvas {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100%;
+        max-height: 100%;
+    }
             
-            .canvas-wrapper {
-                margin: 0 auto;
-                transform-origin: center center;
-            }
+    .canvas-wrapper {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1);
+    }
             
             .mobile-toolbar {
-                display: flex !important;
-                bottom: 45px;
-                padding: 6px;
-                background: var(--dark);
-                border-radius: 25px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                background-color: var(--dark) !important;
+                z-index: 1000;
             }
             
             .mobile-tool-button {
@@ -1744,54 +1750,59 @@
             }
             
             // Update zoom function for mobile
-            function updateZoom() {
-                if (isMobile()) {
-                    // On mobile, use CSS transform on wrapper
-                    canvasWrapper.style.transform = `scale(${zoomLevel})`;
-                    zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
-                    
-                    // Center view after zoom
-                    centerCanvasView();
-                } else {
-                    // On desktop, use Fabric's native zoom
-                    canvas.setZoom(zoomLevel);
-                    zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
-                }
-            }
+function updateZoom() {
+    if (isMobile()) {
+        // Zoom para mobile (usando transform CSS)
+        canvasWrapper.style.transform = `scale(${zoomLevel})`;
+        zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
+    } else {
+    // Aplicar o zoom usando transform CSS
+    canvasWrapper.style.transform = `scale(${zoomLevel})`;
+    zoomLevelDisplay.textContent = `${Math.round(zoomLevel * 100)}%`;
+    
+    // Centralizar o canvas após o zoom
+    centerCanvasView();
+    }
+}
 
             // Center canvas view (for mobile)
-            function centerCanvasView() {
+function centerCanvasView() {
                 if (!isMobile()) return;
                 
-                const container = canvasContainer;
-                const wrapper = canvasWrapper;
-                const canvasEl = document.getElementById('main-canvas');
-                
-                // Calculate scaled dimensions
-                const scaledWidth = canvasEl.width * zoomLevel;
-                const scaledHeight = canvasEl.height * zoomLevel;
-                
-                // Calculate offsets to center
-                const offsetX = Math.max(0, (container.clientWidth - scaledWidth) / 2);
-                const offsetY = Math.max(0, (container.clientHeight - scaledHeight) / 2);
-                
-                // Apply transformation
-                wrapper.style.left = `${offsetX}px`;
-                wrapper.style.top = `${offsetY}px`;
+    const container = canvasContainer;
+    const wrapper = canvasWrapper;
+    const canvasEl = document.getElementById('main-canvas');
+    
+    // Calcular dimensões escaladas
+    const scaledWidth = canvasEl.width * zoomLevel;
+    const scaledHeight = canvasEl.height * zoomLevel;
+    
+    // Calcular offsets para centralizar
+    const offsetX = (container.clientWidth - scaledWidth) / 2;
+    const offsetY = (container.clientHeight - scaledHeight) / 2;
+    
+    // Aplicar transformação
+    wrapper.style.left = `${offsetX}px`;
+    wrapper.style.top = `${offsetY}px`;
             }
 
             // Center canvas (reset zoom and position)
-            function centerCanvas() {
-                zoomLevel = 1;
-                if (isMobile()) {
-                    canvasWrapper.style.transform = 'scale(1)';
-                    centerCanvasView();
-                } else {
-                    canvas.setZoom(1);
-                    canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-                }
-                zoomLevelDisplay.textContent = '100%';
-            }
+// Atualizar a função centerCanvas
+function centerCanvas() {
+    zoomLevel = 1;
+    if (isMobile()) {
+        canvasWrapper.style.transform = 'scale(1)';
+        canvasWrapper.style.left = '0';
+        canvasWrapper.style.top = '0';
+    } else {
+    zoomLevel = 1;
+    canvasWrapper.style.transform = 'scale(1)';
+    centerCanvasView();
+    zoomLevelDisplay.textContent = '100%';
+    }
+    zoomLevelDisplay.textContent = '100%';
+    canvas.renderAll();
+}
             
             // Save state to history
             function saveState() {
@@ -2514,22 +2525,20 @@
                 }
             });
 
-            canvasContainer.addEventListener('wheel', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Determine zoom direction
-                const delta = e.deltaY > 0 ? 0.9 : 1.1;
-                
-                // Limit zoom
-                const oldZoom = zoomLevel;
-                zoomLevel = Math.max(0.1, Math.min(3, zoomLevel * delta));
-                
-                // Apply zoom if changed
-                if (Math.abs(oldZoom - zoomLevel) > 0.01) {
-                    updateZoom();
-                }
-            }, { passive: false });
+// Substituir o event listener do wheel por este:
+canvasContainer.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Determinar direção do zoom
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    
+    // Limitar zoom
+    zoomLevel = Math.max(0.1, Math.min(3, zoomLevel * delta));
+    
+    // Aplicar zoom
+    updateZoom();
+}, { passive: false });
             
             posY.addEventListener('input', function() {
                 const activeObject = canvas.getActiveObject();
