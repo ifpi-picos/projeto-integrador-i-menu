@@ -1,249 +1,283 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
 
-
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 body {
-    background-image: url(images/background-cad.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    min-height: 100vh;
-}
-
-.w50 {
-    width: 50%;
-    float: left;
-    padding-right: 15px;
+  background-image: url(images/background-cad.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
 }
 
 .box {
-    display: flex;
-    width: 930px;
+  display: flex;
+  width: 930px;
 }
 
 .img-box {
-    background-color: rgba(255, 255, 255, 0.5);
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    border-radius: 20px 0 0 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 20px 0 0 20px;
 }
 
 .upload-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer; /* Faz com que o texto e a imagem indiquem que podem ser clicados */
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
 }
 
 .upload-label img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #ccc;
-    transition: transform 0.2s;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  transition: transform 0.2s;
 }
 
 .upload-label img:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .upload-hint {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #555;
-    font-style: italic;
-    transform: scale(1.05);
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #555;
+  font-style: italic;
+  transform: scale(1.05);
 }
 
-
 .form-box {
-    background-color: rgba(255, 255, 255, 0.46);
-    backdrop-filter: blur(40px);
-    padding: 30px 40px;
-    width: 50%;
-    border-radius: 0 20px 20px 0;
+  background-color: rgba(255, 255, 255, 0.46);
+  backdrop-filter: blur(40px);
+  padding: 30px 40px;
+  width: 50%;
+  border-radius: 0 20px 20px 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .form-box h2 {
-    font-size: 30px;
+  font-size: 30px;
 }
 
 .form-box p {
-    font-weight: bold;
-    color: #3D3D3D;
+  font-weight: bold;
+  color: #3D3D3D;
 }
 
 .form-box p a {
-    color: #3b1d0f;
-    text-decoration: none;
+  color: #3b1d0f;
+  text-decoration: none;
 }
 
 .form-box form {
-    margin: 20px 0;
+  margin: 20px 0;
 }
 
 form .input-group {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
+  position: relative;
 }
 
 form .input-group label {
-    color: #3D3D3D;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
+  color: #3D3D3D;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
 }
 
-form .input-group input {
-    width: 100%;
-    height: 47px;
-    background-color: rgba(255, 255, 255, 0.32);
-    border-radius: 20px;
-    outline: none;
-    border: 2px solid transparent;
-    padding: 15px;
-    font-size: 15px;
-    color: #616161;
-    transition: all 0.4s ease;
+form .input-group input,
+form .input-group select {
+  width: 100%;
+  height: 47px;
+  background-color: rgba(255, 255, 255, 0.32);
+  border-radius: 20px;
+  outline: none;
+  border: 2px solid transparent;
+  padding: 0 15px;
+  font-size: 15px;
+  color: #616161;
+  transition: all 0.4s ease;
+  appearance: none;
 }
 
-form .input-group input:focus {
-    border-color: #3b1d0f;
+form .input-group input:focus,
+form .input-group select:focus {
+  border-color: #3b1d0f;
 }
 
-form .input-group button {
-    width: 100%;
-    height: 47px;
-    background: #3b1d0f;
-    border-radius: 20px;
-    outline: none;
-    border: none;
-    margin-top: 15px;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
+/* Campo de senha LIMPO (sem nada por cima) */
+.icon-input {
+  display: flex;
+  align-items: center;
+}
+
+.icon-input input {
+  flex: 1;
+  padding: 0 15px;
+  height: 47px;
+  background-color: rgba(255,255,255,0.32);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  color: #616161;
+  transition: border-color 0.4s ease;
+}
+
+.icon-input i,
+.show-pass {
+  display: none; /* Remove ícones/botão de mostrar senha */
+}
+
+/* Botão principal */
+form button {
+  width: 100%;
+  height: 47px;
+  background: linear-gradient(90deg, #3b1d0f, #5c3221);
+  border-radius: 20px;
+  outline: none;
+  border: none;
+  margin-top: 15px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: box-shadow 0.3s ease;
+}
+
+form button:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* Campos lado a lado */
+.two-columns {
+  display: flex;
+  gap: 15px;
+}
+
+.two-columns .input-group {
+  flex: 1;
 }
 
 /* Estilo dos botões de seleção de papel */
 .role-selector {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .role-btn {
-    padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.32);
-    border: 2px solid transparent;
-    border-radius: 20px;
-    color: #3D3D3D;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.32);
+  border: 2px solid transparent;
+  border-radius: 20px;
+  color: #3D3D3D;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .role-btn:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .role-btn.active {
-    background-color: #3b1d0f;
-    color: white;
-    border-color: #3b1d0f;
+  background-color: #3b1d0f;
+  color: white;
+  border-color: #3b1d0f;
 }
 
 #dono {
-    display: none;
+  display: none;
 }
 
-/* RESPONSIVIDADE APRIMORADA */
+/* RESPONSIVIDADE */
 @media (max-width: 930px) {
-    .img-box {
-        display: none;
-    }
+  .img-box {
+    display: none;
+  }
 
-    .box {
-        width: 100%;
-        flex-direction: column;
-    }
+  .box {
+    width: 100%;
+    flex-direction: column;
+  }
 
-    .form-box {
-        width: 100%;
-        border-radius: 20px;
-    }
+  .form-box {
+    width: 100%;
+    border-radius: 20px;
+  }
 }
 
 @media (max-width: 600px) {
-    .form-box {
-        padding: 20px;
-    }
+  .form-box {
+    padding: 20px;
+  }
 
-    form .input-group input,
-    form .input-group button {
-        height: 44px;
-        font-size: 14px;
-    }
+  .two-columns {
+    flex-direction: column;
+  }
 
-    .form-box h2 {
-        font-size: 24px;
-    }
+  form .input-group input,
+  form .input-group select,
+  form button {
+    height: 44px;
+    font-size: 14px;
+  }
 
-    .role-selector {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
+  .form-box h2 {
+    font-size: 24px;
+  }
 
-    .role-btn {
-        width: 100%;
-        max-width: 300px;
-        text-align: center;
-    }
+  .role-selector {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .role-btn {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 400px) {
-    .form-box {
-        padding: 15px;
-    }
+  .form-box {
+    padding: 15px;
+  }
 
-    form .input-group input,
-    form .input-group button {
-        font-size: 13px;
-        padding: 12px;
-    }
+  form .input-group input,
+  form .input-group select,
+  form button {
+    font-size: 13px;
+    padding: 12px;
+  }
 
-    .form-box h2 {
-        font-size: 20px;
-    }
+  .form-box h2 {
+    font-size: 20px;
+  }
 
-    .role-btn {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
-}
-
-@media (max-width: 500px) {
-    .w50 {
-        width: 100%;
-        padding: 0;
-    }
+  .role-btn {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
 }
 
 /* Estilo para a logo */
@@ -253,25 +287,22 @@ form .input-group button {
   left: 20px;
   display: flex;
   align-items: center;
-  color: #ffffff;  /* marrom quente semelhante ao da imagem */
-  font-size: 10px;  /* ajustado para se parecer com o tamanho da imagem */
-  font-weight: 700;  /* mais peso para parecer com a fonte bold da imagem */
-  letter-spacing: 1px;  /* leve espaçamento */
-  text-transform: none;  /* remove o "uppercase" — a imagem mostra "iMenu", não "IMENU" */
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: none;
   cursor: pointer;
-  font-family: 'Merriweather', serif;  /* novo estilo serifado */
+  font-family: 'Merriweather', serif;
   transition: color 0.3s ease;
   text-decoration: none;
 }
 
-
 .logo:hover {
-  color:  #3b1d0f;  /* Cor de destaque (um tom dourado) quando o usuário passa o mouse */
+  color: #3b1d0f;
 }
 
-/* Caso a logo esteja dentro de um link <a> */
+/* Remove sublinhado de links */
 a {
-  text-decoration: none;  /* Remove a linha de qualquer link */
+  text-decoration: none;
 }
-
-

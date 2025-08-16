@@ -8,6 +8,7 @@
   <title>iMenu - Cadastro</title>
   <link rel="stylesheet" href="cadastro.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide-icons/dist/umd/lucide.min.js"></script>
 </head>
 
 <body>
@@ -36,29 +37,50 @@
       </div>
 
       <form id="formulario">
-        <div class="input-group">
-          <label for="nome">Nome Completo</label>
-          <input type="text" id="nome" placeholder="Digite o seu nome completo" required />
+        <div class="two-columns">
+          <div class="input-group">
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" placeholder="Digite o seu nome completo" required />
+          </div>
+          <div class="input-group">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" placeholder="(xx) xxxxx-xxxx" />
+          </div>
         </div>
 
-        <!-- Campo que só aparece se for Dono -->
+        <div class="two-columns">
+          <div class="input-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" placeholder="Digite o seu email" required />
+          </div>
+          <div class="input-group">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" placeholder="Digite sua senha" required />
+          </div>
+        </div>
+
+        <div class="two-columns">
+          <div class="input-group">
+            <label for="estado">Estado</label>
+            <select id="estado" required>
+              <option value="">Selecione seu estado</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="cidade">Cidade</label>
+            <select id="cidade" required>
+              <option value="">Selecione sua cidade</option>
+            </select>
+          </div>
+        </div>
+
         <div class="input-group" id="campo-restaurante" style="display: none;">
           <label for="restaurante">Nome do Restaurante</label>
           <input type="text" id="restaurante" placeholder="Digite o nome do restaurante" />
         </div>
 
         <div class="input-group">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" placeholder="Digite o seu email" required />
-        </div>
-
-        <div class="input-group">
-          <label for="senha">Senha</label>
-          <input type="password" id="senha" placeholder="Digite sua senha" required />
-        </div>
-
-        <div class="input-group">
-          <button type="button" class="buttons_normais" id="create">Cadastre-se</button>
+          <button type="button" id="create">Cadastre-se</button>
         </div>
       </form>
     </div>
@@ -70,7 +92,6 @@
       const checkbox = document.getElementById('dono');
       const buttons = document.querySelectorAll('.role-btn');
       const campoRestaurante = document.getElementById('campo-restaurante');
-
       checkbox.checked = isDono;
       buttons.forEach(btn => btn.classList.remove('active'));
       buttons[isDono ? 1 : 0].classList.add('active');
@@ -94,66 +115,114 @@
     }
 
     async function criaruser() {
-    const nome = document.getElementById("nome").value;
-    const restaurante = document.getElementById("restaurante").value.trim();
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-    const dono = document.getElementById("dono").checked;
-    const createBtn = document.getElementById('create');
+      const nome = document.getElementById("nome").value;
+      const restaurante = document.getElementById("restaurante").value.trim();
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+      const telefone = document.getElementById("telefone").value;
+      const estado = document.getElementById("estado").value; // ID numérico do estado
+      const cidade = document.getElementById("cidade").value;
+      const dono = document.getElementById("dono").checked;
+      const createBtn = document.getElementById('create');
 
-    if (!nome || !email || !senha) {
+      if (!nome || !email || !senha) {
         alert("Preencha todos os campos obrigatórios!");
         return;
-    }
+      }
 
-    if (dono && !restaurante) {
+      if (dono && !restaurante) {
         alert("Por favor, informe o nome do restaurante.");
         return;
-    }
+      }
 
-    try {
+      try {
         createBtn.disabled = true;
         createBtn.textContent = 'Cadastrando...';
 
         const fileInput = document.getElementById('profile-pic-upload');
         let fotoUrl = 'images/perfil.png';
         if (fileInput.files[0]) {
-            fotoUrl = await uploadProfilePicture(fileInput.files[0]);
+          fotoUrl = await uploadProfilePicture(fileInput.files[0]);
         }
 
         const novoUsuario = {
-            name: nome,
-            email,
-            password: senha,
-            dono,
-            foto: fotoUrl,
-            restaurante: dono ? restaurante : undefined // Envia apenas se for dono
+          name: nome,
+          email,
+          password: senha,
+          telefone,
+          estado,   // ID do estado
+          cidade,
+          dono,
+          foto: fotoUrl,
+          restaurante: dono ? restaurante : undefined
         };
 
         const response = await fetch(`${webservice}/create`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(novoUsuario)
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(novoUsuario)
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            alert("Usuário criado com sucesso!");
-            window.location.href = "./login.html";
+          alert("Usuário criado com sucesso!");
+          window.location.href = "./login.html";
         } else {
-            alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
+          alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
         }
-    } catch (err) {
+      } catch (err) {
         console.error("Erro:", err);
         alert("Ocorreu um erro ao processar sua requisição. Tente novamente mais tarde.");
-    } finally {
+      } finally {
         createBtn.disabled = false;
         createBtn.textContent = 'Cadastre-se';
+      }
     }
-}
 
+    // --------- ESTADO & CIDADE (IBGE) ---------
+    async function carregarEstados() {
+      try {
+        const response = await fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados");
+        const estados = await response.json();
+        const selectEstado = document.getElementById("estado");
+
+        estados.sort((a, b) => a.nome.localeCompare(b.nome));
+
+        estados.forEach(estado => {
+          const option = document.createElement("option");
+          option.value = estado.id;               // usa ID numérico
+          option.textContent = estado.nome;       // nome exibido
+          option.dataset.sigla = estado.sigla;    // se quiser guardar a sigla
+          selectEstado.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar estados:", error);
+      }
+    }
+
+    async function carregarCidades(estadoId) {
+      try {
+        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoId}/municipios`);
+        const cidades = await response.json();
+        const selectCidade = document.getElementById("cidade");
+
+        selectCidade.innerHTML = '<option value="">Selecione sua cidade</option>';
+
+        cidades.forEach(cidade => {
+          const option = document.createElement("option");
+          option.value = cidade.nome;
+          option.textContent = cidade.nome;
+          selectCidade.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar cidades:", error);
+      }
+    }
+
+    // --------- EVENTOS PRINCIPAIS ---------
     document.addEventListener('DOMContentLoaded', function () {
+      // Preview da foto
       document.getElementById('profile-pic-upload').addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file && file.type.startsWith('image/')) {
@@ -165,9 +234,20 @@
         }
       });
 
+      // Cadastro
       document.getElementById('create').addEventListener('click', criaruser);
+
+      // IBGE
+      carregarEstados();
+      document.getElementById("estado").addEventListener("change", (e) => {
+        if (e.target.value) {
+          carregarCidades(e.target.value);
+        }
+      });
+
+      // Lucide (se houver ícones)
+      lucide.createIcons();
     });
   </script>
 </body>
-
 </html>
