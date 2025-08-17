@@ -43,10 +43,10 @@
       <input type="text" id="nome-restaurante" class="form-control" />
     </div>
 
-<div class="mb-3">
-  <label for="email" class="form-label">Email</label>
-  <input type="email" id="email" class="form-control" readonly />
-</div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" class="form-control" readonly />
+    </div>
 
     <div class="mb-3">
       <label for="senha" class="form-label">Senha</label>
@@ -64,10 +64,26 @@
         <label class="form-label">Telefone</label>
         <input type="tel" id="telefone" class="form-control" placeholder="(00) 00000-0000">
       </div>
+
+      <div class="mb-3">
+        <label class="form-label">Estado</label>
+        <select id="estado" class="form-control">
+          <option value="">Selecione um estado</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Cidade</label>
+        <select id="cidade" class="form-control">
+          <option value="">Selecione uma cidade</option>
+        </select>
+      </div>
+
       <div class="mb-3 dono-only" style="display:none;">
         <label class="form-label">Endereço do Restaurante</label>
         <input type="text" id="endereco-restaurante" class="form-control">
       </div>
+
       <div class="mb-3 dono-only" style="display:none;">
         <label class="form-label">Horário de Funcionamento</label>
         <select id="horario-funcionamento" class="form-control">
@@ -79,21 +95,11 @@
           <option value="Personalizado">Personalizado</option>
         </select>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Notificações</label>
-        <select id="notificacoes" class="form-control">
-          <option value="todas">Receber todas</option>
-          <option value="importantes">Apenas importantes</option>
-          <option value="nenhuma">Nenhuma</option>
-        </select>
+
+      <div id="campo-horario-personalizado" class="mb-3 dono-only" style="display:none;">
+        <input type="text" id="horario-personalizado" class="form-control" placeholder="Digite seu horário...">
       </div>
-      <div class="mb-3">
-        <label class="form-label">Tema</label>
-        <select id="tema" class="form-control">
-          <option value="claro">Claro</option>
-          <option value="escuro">Escuro</option>
-        </select>
-      </div>
+
       <button type="button" class="btn-cancelar w-100">Excluir conta</button>
     </div>
 
@@ -114,7 +120,6 @@
   function toggleAvancadas() {
     const secao = document.getElementById("avancadas");
     const botao = document.querySelector(".btn-avancadas");
-
     if (secao.style.display === "none" || secao.style.display === "") {
       secao.style.display = "block";
       botao.innerHTML = "Configurações Avançadas ▲";
@@ -138,24 +143,61 @@
     });
   }
 
-  // Mostrar campo personalizado se for escolhido
-  document.getElementById('horario-funcionamento').addEventListener('change', function() {
-    let personalizado = document.getElementById('horario-personalizado');
-    if (this.value === "Personalizado") {
-      if (!personalizado) {
-        personalizado = document.createElement('input');
-        personalizado.type = 'text';
-        personalizado.id = 'horario-personalizado';
-        personalizado.placeholder = 'Digite seu horário...';
-        personalizado.className = 'form-control mt-2';
-        this.insertAdjacentElement('afterend', personalizado);
-      }
-    } else {
-      if (personalizado) personalizado.remove();
+  // --- IBGE: carregar estados e cidades ---
+  async function carregarEstados() {
+    try {
+      const res = await fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome");
+      const estados = await res.json();
+      const estadoSelect = document.getElementById("estado");
+
+      estados.forEach(uf => {
+        const opt = document.createElement("option");
+        opt.value = uf.sigla;
+        opt.textContent = uf.nome;
+        estadoSelect.appendChild(opt);
+      });
+    } catch (e) {
+      console.error("Erro ao carregar estados:", e);
+    }
+  }
+
+  document.getElementById("estado").addEventListener("change", async function () {
+    const sigla = this.value;
+    const cidadeSelect = document.getElementById("cidade");
+    cidadeSelect.innerHTML = '<option value="">Carregando...</option>';
+
+    if (!sigla) {
+      cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${sigla}/municipios`);
+      const cidades = await res.json();
+      cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+      cidades.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.nome;
+        opt.textContent = c.nome;
+        cidadeSelect.appendChild(opt);
+      });
+    } catch (e) {
+      console.error("Erro ao carregar cidades:", e);
+      cidadeSelect.innerHTML = '<option value="">Erro ao carregar</option>';
     }
   });
 
-async function carregarDadosUsuario() {
+  // --- Horário personalizado ---
+  document.getElementById('horario-funcionamento').addEventListener('change', function() {
+    const campo = document.getElementById('campo-horario-personalizado');
+    if (this.value === "Personalizado") {
+      campo.style.display = "block";
+    } else {
+      campo.style.display = "none";
+    }
+  });
+
+  async function carregarDadosUsuario() {
     const token = localStorage.getItem("auth_token");
     if (!token) {
         window.location.href = "login.html";
@@ -170,81 +212,38 @@ async function carregarDadosUsuario() {
 
       document.getElementById('nome').value = data.name || '';
       document.getElementById('email').value = data.email || '';
+      document.getElementById('telefone').value = data.telefone || '';
+      if (data.estado) document.getElementById('estado').value = data.estado;
+      if (data.cidade) {
+        // Carregar cidades do estado antes de setar
+        const resCidades = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${data.estado}/municipios`);
+        const cidades = await resCidades.json();
+        const cidadeSelect = document.getElementById("cidade");
+        cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+        cidades.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.nome;
+          opt.textContent = c.nome;
+          if (c.nome === data.cidade) opt.selected = true;
+          cidadeSelect.appendChild(opt);
+        });
+      }
       if (data.foto) {
         document.getElementById('profile-img').src = data.foto;
       }
 
-      // Se for dono, exibe campo de nome do restaurante
       if (data.dono) {
         document.getElementById('campo-restaurante-config').style.display = 'block';
         document.getElementById('nome-restaurante').value = data.restaurante || '';
+        exibirCamposDono();
       }
-
     } catch (e) {
       console.error("Erro ao carregar dados:", e);
     }
   }
 
-  async function editarFotoPerfil() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-
-    input.onchange = async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Imagem muito grande (máx 5MB)");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const webservicef = "https://imenu-back-files-c7ii.onrender.com";
-        const imgElement = document.getElementById('profile-img');
-        imgElement.src = 'data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==';
-
-        const uploadRes = await fetch(`${webservicef}/api/upload`, {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!uploadRes.ok) throw new Error("Erro no upload");
-
-        const uploadData = await uploadRes.json();
-        if (!uploadData.success || !uploadData.fileUrl) throw new Error("URL da imagem não recebida");
-
-        const token = localStorage.getItem("auth_token");
-        if (!token) throw new Error("Usuário não autenticado");
-
-        const updateRes = await fetch(`${webservice}/user/photo`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ foto: uploadData.fileUrl })
-        });
-
-        if (!updateRes.ok) throw new Error("Erro ao atualizar foto no perfil");
-
-        imgElement.src = uploadData.fileUrl;
-        alert("Foto atualizada com sucesso!");
-      } catch (e) {
-        console.error("Erro:", e);
-        alert("Erro ao enviar imagem: " + (e.message || "Tente novamente mais tarde"));
-      }
-    };
-
-    input.click();
-  }
-
-document.getElementById("form-config").addEventListener("submit", async (e) => {
+  document.getElementById("form-config").addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem("auth_token");
     if (!token) {
         alert("Você precisa estar logado para atualizar seus dados");
@@ -252,85 +251,74 @@ document.getElementById("form-config").addEventListener("submit", async (e) => {
         return;
     }
 
-    // Obter valores dos campos
     const nome = document.getElementById("nome").value.trim();
     const senha = document.getElementById("senha").value;
+    const telefone = document.getElementById("telefone").value.trim();
+    const estado = document.getElementById("estado").value;
+    const cidade = document.getElementById("cidade").value;
     const nomeRestaurante = document.getElementById("nome-restaurante")?.value.trim();
+    const horario = document.getElementById("horario-funcionamento").value;
+    const horarioPers = document.getElementById("horario-personalizado").value;
     const tokenData = parseJwt(token);
 
-    // Validação básica
     if (!nome) {
         alert("O nome é obrigatório");
         return;
     }
 
-    // Configurar botão de loading
     const btnSalvar = document.querySelector('.btn-salvar');
     try {
-        btnSalvar.disabled = true;
-        btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
+      btnSalvar.disabled = true;
+      btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
 
-        // Preparar dados para envio
-        const dadosAtualizacao = {
-            name: nome
-        };
-
-        // Adicionar senha se fornecida
-        if (senha && senha.trim() !== '') {
-            if (senha.length < 6) {
-                alert("Senha deve ter pelo menos 6 caracteres");
-                return;
-            }
-            dadosAtualizacao.password = senha;
+      const dadosAtualizacao = { name: nome };
+      if (senha && senha.trim() !== '') {
+        if (senha.length < 6) {
+          alert("Senha deve ter pelo menos 6 caracteres");
+          return;
         }
+        dadosAtualizacao.password = senha;
+      }
+      if (telefone) dadosAtualizacao.telefone = telefone;
+      if (estado) dadosAtualizacao.estado = estado;
+      if (cidade) dadosAtualizacao.cidade = cidade;
+      if (horario) dadosAtualizacao.horario = (horario === "Personalizado") ? horarioPers : horario;
+      if (tokenData.dono && nomeRestaurante !== undefined) {
+        dadosAtualizacao.restaurante = nomeRestaurante;
+      }
 
-        // Adicionar restaurante se for dono
-        if (tokenData.dono && nomeRestaurante !== undefined) {
-            dadosAtualizacao.restaurante = nomeRestaurante;
-        }
+      const response = await fetch(`${webservice}/user/update`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dadosAtualizacao)
+      });
 
-        // Enviar requisição
-        const response = await fetch(`${webservice}/user/update`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dadosAtualizacao)
-        });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || data.message || "Erro ao atualizar perfil");
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || data.message || "Erro ao atualizar perfil");
-        }
-
-        // Feedback de sucesso
-        alert("Configurações salvas com sucesso!");
-        
-        // Redirecionar após 1 segundo
-        setTimeout(() => {
-            window.location.href = "perfil.html";
-        }, 1000);
+      alert("Configurações salvas com sucesso!");
+      setTimeout(() => { window.location.href = "perfil.html"; }, 1000);
 
     } catch (error) {
-        console.error("Erro na atualização:", error);
-        alert(`Erro ao salvar configurações: ${error.message || "Tente novamente mais tarde"}`);
+      console.error("Erro na atualização:", error);
+      alert(`Erro ao salvar configurações: ${error.message || "Tente novamente mais tarde"}`);
     } finally {
-        // Restaurar botão
-        if (btnSalvar) {
-            btnSalvar.disabled = false;
-            btnSalvar.textContent = 'Salvar';
-        }
+      btnSalvar.disabled = false;
+      btnSalvar.textContent = 'Salvar';
     }
-});
+  });
 
   function logout() {
     localStorage.removeItem("auth_token");
     window.location.href = "login.html";
   }
 
-  window.onload = carregarDadosUsuario;
+  window.onload = () => {
+    carregarEstados().then(() => carregarDadosUsuario());
+  };
 </script>
 
 </body>

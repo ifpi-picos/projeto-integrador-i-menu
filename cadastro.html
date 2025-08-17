@@ -115,15 +115,22 @@
     }
 
     async function criaruser() {
-      const nome = document.getElementById("nome").value;
+      const nome = document.getElementById("nome").value.trim();
       const restaurante = document.getElementById("restaurante").value.trim();
-      const email = document.getElementById("email").value;
+      const email = document.getElementById("email").value.trim();
       const senha = document.getElementById("senha").value;
-      const telefone = document.getElementById("telefone").value;
-      const estado = document.getElementById("estado").value; // ID numérico do estado
-      const cidade = document.getElementById("cidade").value;
+      const telefone = document.getElementById("telefone").value.trim();
       const dono = document.getElementById("dono").checked;
       const createBtn = document.getElementById('create');
+
+      const selectEstado = document.getElementById("estado");
+      const selectCidade = document.getElementById("cidade");
+
+      const estadoId = selectEstado.value ? parseInt(selectEstado.value) : null;
+      const estadoNome = selectEstado.options[selectEstado.selectedIndex]?.textContent || null;
+
+      const cidadeId = selectCidade.selectedIndex > 0 ? parseInt(selectCidade.options[selectCidade.selectedIndex].dataset.id) : null;
+      const cidadeNome = selectCidade.value || null;
 
       if (!nome || !email || !senha) {
         alert("Preencha todos os campos obrigatórios!");
@@ -150,11 +157,13 @@
           email,
           password: senha,
           telefone,
-          estado,   // ID do estado
-          cidade,
           dono,
           foto: fotoUrl,
-          restaurante: dono ? restaurante : undefined
+          restaurante: dono ? restaurante : undefined,
+          estadoId,
+          estadoNome,
+          cidadeId,
+          cidadeNome
         };
 
         const response = await fetch(`${webservice}/create`, {
@@ -191,9 +200,9 @@
 
         estados.forEach(estado => {
           const option = document.createElement("option");
-          option.value = estado.id;               // usa ID numérico
-          option.textContent = estado.nome;       // nome exibido
-          option.dataset.sigla = estado.sigla;    // se quiser guardar a sigla
+          option.value = estado.id;               // ID numérico
+          option.textContent = estado.nome;
+          option.dataset.sigla = estado.sigla;
           selectEstado.appendChild(option);
         });
       } catch (error) {
@@ -213,6 +222,7 @@
           const option = document.createElement("option");
           option.value = cidade.nome;
           option.textContent = cidade.nome;
+          option.dataset.id = cidade.id;   // ID numérico da cidade
           selectCidade.appendChild(option);
         });
       } catch (error) {
@@ -222,7 +232,6 @@
 
     // --------- EVENTOS PRINCIPAIS ---------
     document.addEventListener('DOMContentLoaded', function () {
-      // Preview da foto
       document.getElementById('profile-pic-upload').addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file && file.type.startsWith('image/')) {
@@ -234,10 +243,8 @@
         }
       });
 
-      // Cadastro
       document.getElementById('create').addEventListener('click', criaruser);
 
-      // IBGE
       carregarEstados();
       document.getElementById("estado").addEventListener("change", (e) => {
         if (e.target.value) {
@@ -245,7 +252,6 @@
         }
       });
 
-      // Lucide (se houver ícones)
       lucide.createIcons();
     });
   </script>
