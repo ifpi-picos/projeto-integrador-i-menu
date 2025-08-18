@@ -254,12 +254,18 @@
     const nome = document.getElementById("nome").value.trim();
     const senha = document.getElementById("senha").value;
     const telefone = document.getElementById("telefone").value.trim();
-    const estado = document.getElementById("estado").value;
-    const cidade = document.getElementById("cidade").value;
+    const estadoSelect = document.getElementById("estado");
+    const cidadeSelect = document.getElementById("cidade");
     const nomeRestaurante = document.getElementById("nome-restaurante")?.value.trim();
-    const horario = document.getElementById("horario-funcionamento").value;
+    const horarioSelect = document.getElementById("horario-funcionamento");
     const horarioPers = document.getElementById("horario-personalizado").value;
-    const tokenData = parseJwt(token);
+    
+    // Obter valores corretamente
+    const estado = estadoSelect.value;
+    const estadoNome = estadoSelect.options[estadoSelect.selectedIndex]?.text || null;
+    const cidade = cidadeSelect.value;
+    const cidadeNome = cidadeSelect.options[cidadeSelect.selectedIndex]?.text || null;
+    const horario = horarioSelect.value === "Personalizado" ? horarioPers : horarioSelect.value;
 
     if (!nome) {
         alert("O nome é obrigatório");
@@ -268,48 +274,62 @@
 
     const btnSalvar = document.querySelector('.btn-salvar');
     try {
-      btnSalvar.disabled = true;
-      btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
 
-      const dadosAtualizacao = { name: nome };
-      if (senha && senha.trim() !== '') {
-        if (senha.length < 6) {
-          alert("Senha deve ter pelo menos 6 caracteres");
-          return;
+        const dadosAtualizacao = { 
+            name: nome,
+            telefone: telefone || null,
+            estadoNome: estadoNome,
+            cidadeNome: cidadeNome
+        };
+
+        // Adicionar estadoId e cidadeId se necessário (você precisará adaptar para pegar os IDs)
+        // dadosAtualizacao.estadoId = ...;
+        // dadosAtualizacao.cidadeId = ...;
+
+        if (senha && senha.trim() !== '') {
+            if (senha.length < 6) {
+                alert("Senha deve ter pelo menos 6 caracteres");
+                return;
+            }
+            dadosAtualizacao.password = senha;
         }
-        dadosAtualizacao.password = senha;
-      }
-      if (telefone) dadosAtualizacao.telefone = telefone;
-      if (estado) dadosAtualizacao.estado = estado;
-      if (cidade) dadosAtualizacao.cidade = cidade;
-      if (horario) dadosAtualizacao.horario = (horario === "Personalizado") ? horarioPers : horario;
-      if (tokenData.dono && nomeRestaurante !== undefined) {
-        dadosAtualizacao.restaurante = nomeRestaurante;
-      }
 
-      const response = await fetch(`${webservice}/user/update`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dadosAtualizacao)
-      });
+        // Se for dono, adicionar campos específicos
+        const tokenData = parseJwt(token);
+        if (tokenData.dono) {
+            if (nomeRestaurante !== undefined) {
+                dadosAtualizacao.restaurante = nomeRestaurante;
+            }
+            if (horario) {
+                dadosAtualizacao.horario = horario;
+            }
+        }
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || data.message || "Erro ao atualizar perfil");
+        const response = await fetch(`${webservice}/user/update`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dadosAtualizacao)
+        });
 
-      alert("Configurações salvas com sucesso!");
-      setTimeout(() => { window.location.href = "perfil.html"; }, 1000);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || data.message || "Erro ao atualizar perfil");
+
+        alert("Configurações salvas com sucesso!");
+        setTimeout(() => { window.location.href = "perfil.html"; }, 1000);
 
     } catch (error) {
-      console.error("Erro na atualização:", error);
-      alert(`Erro ao salvar configurações: ${error.message || "Tente novamente mais tarde"}`);
+        console.error("Erro na atualização:", error);
+        alert(`Erro ao salvar configurações: ${error.message || "Tente novamente mais tarde"}`);
     } finally {
-      btnSalvar.disabled = false;
-      btnSalvar.textContent = 'Salvar';
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = 'Salvar';
     }
-  });
+});
 
   function logout() {
     localStorage.removeItem("auth_token");

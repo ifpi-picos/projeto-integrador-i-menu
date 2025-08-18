@@ -138,54 +138,61 @@ async function criaruser() {
 async function logar() {
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
+    const errorElement = document.getElementById("login_ms");
 
-    const usuario = { email, password: senha };
+    if (!email || !senha) {
+        if (errorElement) {
+            errorElement.textContent = "Por favor, preencha todos os campos";
+            errorElement.style.color = "red";
+        }
+        return;
+    }
 
     try {
         const response = await fetch(`${webservice}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(usuario)
+            body: JSON.stringify({ email, password: senha })
         });
 
         const data = await response.json();
-
 
         if (response.ok) {
             localStorage.setItem('auth_token', data.token);
             window.location.href = "./index.html";
         } else {
-const errorElement = document.getElementById("login_ms");
-if (errorElement) {
-  errorElement.textContent = "Erro ao criar usuário: " + err.message;
-} else {
-  console.error("Elemento login_ms não encontrado");
-}
-            
+            if (errorElement) {
+                errorElement.textContent = data.message || "Erro ao fazer login";
+                errorElement.style.color = "red";
+                
+                // Adicione link para reenviar verificação se necessário
+                if (data.needsVerification) {
+                    errorElement.innerHTML += `<br><a href="#" onclick="reenviarEmailVerificacao()">Reenviar email de verificação</a>`;
+                }
+            }
         }
     } catch (err) {
-const errorElement = document.getElementById("login_ms");
-if (errorElement) {
-  errorElement.textContent = "Erro ao criar usuário: " + err.message;
-} else {
-  console.error("Elemento login_ms não encontrado");
-}
+        console.error("Erro:", err);
+        if (errorElement) {
+            errorElement.textContent = "Erro ao conectar com o servidor";
+            errorElement.style.color = "red";
+        }
     }
 }
 
 async function reenviarEmailVerificacao() {
-    const email = prompt("Digite seu e-mail cadastrado:");
+    const email = document.getElementById("email").value;
     if (!email) return;
 
     try {
-        const response = await fetch(`${webservice}/reenviar-verificacao`, {
+        const response = await fetch(`${webservice}/verifyagain`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email })
         });
 
         const data = await response.json();
-        alert(data.message || "E-mail de verificação reenviado!");
+        alert(data.message || "E-mail de verificação reenviado com sucesso!");
     } catch (err) {
         alert("Erro ao reenviar e-mail: " + err.message);
     }
