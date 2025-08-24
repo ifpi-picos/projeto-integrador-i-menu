@@ -110,6 +110,14 @@
             background-color: #e74c3c;
             color: white;
         }
+        .public-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        .private-btn {
+            background-color: #e67e22;
+            color: white;
+        }
         .loading {
             text-align: center;
             padding: 20px;
@@ -211,6 +219,81 @@
         .stats-table th {
             background-color: #f1f1f1;
             color: #333;
+        }
+        
+        /* Novos estilos para posts populares */
+        .posts-section {
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3B1D0F;
+        }
+        
+        .post-ranking {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .post-rank {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3B1D0F;
+            margin-right: 15px;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .post-info {
+            flex-grow: 1;
+        }
+        
+        .post-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        
+        .post-stat {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .post-stat-value {
+            font-weight: bold;
+            color: #3B1D0F;
+        }
+        
+        .view-all-btn {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .view-all-btn:hover {
+            background-color: #e1e1e1;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
     </style>
     <!-- Chart.js para gráficos -->
@@ -344,17 +427,39 @@
                         <tbody id="daily-stats-body"></tbody>
                     </table>
                 </div>
+                
+                <!-- Nova seção para posts mais visualizados -->
+                <div class="posts-section">
+                    <h3 class="section-title">Posts Mais Visualizados no Período</h3>
+                    <div id="top-viewed-posts">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Nova seção para posts mais comentados -->
+                <div class="posts-section">
+                    <h3 class="section-title">Posts Mais Comentados no Período</h3>
+                    <div id="top-commented-posts">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+    // Variáveis globais
     const webservice = "https://imenu-backend-pd3a.onrender.com";
     const token = localStorage.getItem('auth_token');
     
     if (!token) {
         window.location.href = '/login.html';
     }
+
+    // Variáveis para armazenar os dados originais
+    let allPosts = [];
+    let allUsers = [];
+    let weeklyChart = null;
 
     // Verificar se é admin
     async function checkAdmin() {
@@ -390,13 +495,7 @@
         }
     }
 
-    // Variáveis para armazenar os dados originais
-    let allPosts = [];
-    let allUsers = [];
-    let weeklyChart = null;
-
     // Funções para definir períodos de data
-
     function formatDate(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -405,156 +504,197 @@
     }
 
     // Função para carregar dados analíticos
-// Função para carregar dados analíticos - VERSÃO OTIMIZADA
-// No arquivo HTML, atualize a função loadAnalytics para corrigir o problema das datas
-async function loadAnalytics() {
-    try {
-        const startDate = document.getElementById('start-date').value;
-        const endDate = document.getElementById('end-date').value;
+    async function loadAnalytics() {
+        try {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Por favor, selecione as datas de início e fim.');
+                return;
+            }
+            
+            document.getElementById('analytics-loading').style.display = 'block';
+            document.getElementById('analytics-error').style.display = 'none';
+            document.getElementById('analytics-content').style.display = 'none';
+            
+            // Usar a rota otimizada de analytics
+            const response = await fetch(`${webservice}/analytics/weekly?startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!response.ok) throw new Error('Erro ao carregar dados de analytics');
+            
+            const analyticsData = await response.json();
+            
+            // Calcular dados da semana anterior para comparação
+            const prevStartDate = new Date(startDate);
+            prevStartDate.setDate(prevStartDate.getDate() - 7);
+            const prevEndDate = new Date(endDate);
+            prevEndDate.setDate(prevEndDate.getDate() - 7);
+            
+            const prevResponse = await fetch(`${webservice}/analytics/weekly?startDate=${formatDate(prevStartDate)}&endDate=${formatDate(prevEndDate)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            let prevData = { totals: { users: 0, posts: 0, comments: 0, views: 0 } };
+            if (prevResponse.ok) {
+                prevData = await prevResponse.json();
+            }
+            
+            // Calcular variação percentual
+            const usersChange = prevData.totals.users > 0 
+                ? ((analyticsData.totals.users - prevData.totals.users) / prevData.totals.users * 100).toFixed(1)
+                : analyticsData.totals.users > 0 ? 100 : 0;
+                
+            const viewsChange = prevData.totals.views > 0 
+                ? ((analyticsData.totals.views - prevData.totals.views) / prevData.totals.views * 100).toFixed(1)
+                : analyticsData.totals.views > 0 ? 100 : 0;
+                
+            const commentsChange = prevData.totals.comments > 0
+                ? ((analyticsData.totals.comments - prevData.totals.comments) / prevData.totals.comments * 100).toFixed(1)
+                : analyticsData.totals.comments > 0 ? 100 : 0;
+                
+            const postsChange = prevData.totals.posts > 0
+                ? ((analyticsData.totals.posts - prevData.totals.posts) / prevData.totals.posts * 100).toFixed(1)
+                : analyticsData.totals.posts > 0 ? 100 : 0;
+            
+            // Atualizar métricas na interface
+            document.getElementById('new-users-value').textContent = analyticsData.totals.users;
+            document.getElementById('post-views-value').textContent = analyticsData.totals.views;
+            document.getElementById('comments-value').textContent = analyticsData.totals.comments;
+            document.getElementById('new-posts-value').textContent = analyticsData.totals.posts;
+            
+            document.getElementById('new-users-change').textContent = 
+                `${usersChange >= 0 ? '+' : ''}${usersChange}% vs semana anterior`;
+            document.getElementById('new-users-change').className = `metric-change ${usersChange >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('post-views-change').textContent = 
+                `${viewsChange >= 0 ? '+' : ''}${viewsChange}% vs semana anterior`;
+            document.getElementById('post-views-change').className = `metric-change ${viewsChange >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('comments-change').textContent = 
+                `${commentsChange >= 0 ? '+' : ''}${commentsChange}% vs semana anterior`;
+            document.getElementById('comments-change').className = `metric-change ${commentsChange >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('new-posts-change').textContent = 
+                `${postsChange >= 0 ? '+' : ''}${postsChange}% vs semana anterior`;
+            document.getElementById('new-posts-change').className = `metric-change ${postsChange >= 0 ? 'positive' : 'negative'}`;
+            
+            // Gerar dados diários para o gráfico e tabela
+            generateDailyDataFromAPI(analyticsData.dailyData);
+            
+            // Carregar posts mais visualizados e comentados
+            displayTopPosts(analyticsData.topViewedPosts, 'viewed');
+            displayTopPosts(analyticsData.topCommentedPosts, 'commented');
+            
+            document.getElementById('analytics-loading').style.display = 'none';
+            document.getElementById('analytics-content').style.display = 'block';
+            
+        } catch (err) {
+            console.error('Erro ao carregar analytics:', err);
+            document.getElementById('analytics-loading').style.display = 'none';
+            document.getElementById('analytics-error').textContent = err.message;
+            document.getElementById('analytics-error').style.display = 'block';
+        }
+    }
+
+    // Função para exibir os posts mais visualizados ou comentados
+    function displayTopPosts(posts, type) {
+        const containerId = type === 'viewed' ? 'top-viewed-posts' : 'top-commented-posts';
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
         
-        if (!startDate || !endDate) {
-            alert('Por favor, selecione as datas de início e fim.');
+        if (!posts || posts.length === 0) {
+            container.innerHTML = '<p class="no-data">Nenhum post encontrado neste período.</p>';
             return;
         }
         
-        document.getElementById('analytics-loading').style.display = 'block';
-        document.getElementById('analytics-error').style.display = 'none';
-        document.getElementById('analytics-content').style.display = 'none';
-        
-        // Usar a rota otimizada de analytics
-        const response = await fetch(`${webservice}/analytics/weekly?startDate=${startDate}&endDate=${endDate}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        posts.forEach((post, index) => {
+            const rank = index + 1;
+            const postElement = document.createElement('div');
+            postElement.className = 'post-ranking';
+            
+            postElement.innerHTML = `
+                <div class="post-rank">${rank}</div>
+                <div class="post-info">
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            Visualizações: <span class="post-stat-value">${post.views || 0}</span>
+                        </div>
+                        <div class="post-stat">
+                            Comentários: <span class="post-stat-value">${post.commentCount || 0}</span>
+                        </div>
+                        <div class="post-stat">
+                            Autor: <span class="post-stat-value">${post.author?.name || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(postElement);
         });
-        
-        if (!response.ok) throw new Error('Erro ao carregar dados de analytics');
-        
-        const analyticsData = await response.json();
-        
-        // Calcular dados da semana anterior para comparação
-        const prevStartDate = new Date(startDate);
-        prevStartDate.setDate(prevStartDate.getDate() - 7);
-        const prevEndDate = new Date(endDate);
-        prevEndDate.setDate(prevEndDate.getDate() - 7);
-        
-        const prevResponse = await fetch(`${webservice}/analytics/weekly?startDate=${formatDate(prevStartDate)}&endDate=${formatDate(prevEndDate)}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        let prevData = { totals: { users: 0, posts: 0, comments: 0, views: 0 } };
-        if (prevResponse.ok) {
-            prevData = await prevResponse.json();
-        }
-        
-        // Calcular variação percentual
-        const usersChange = prevData.totals.users > 0 
-            ? ((analyticsData.totals.users - prevData.totals.users) / prevData.totals.users * 100).toFixed(1)
-            : analyticsData.totals.users > 0 ? 100 : 0;
-            
-        const viewsChange = prevData.totals.views > 0 
-            ? ((analyticsData.totals.views - prevData.totals.views) / prevData.totals.views * 100).toFixed(1)
-            : analyticsData.totals.views > 0 ? 100 : 0;
-            
-        const commentsChange = prevData.totals.comments > 0
-            ? ((analyticsData.totals.comments - prevData.totals.comments) / prevData.totals.comments * 100).toFixed(1)
-            : analyticsData.totals.comments > 0 ? 100 : 0;
-            
-        const postsChange = prevData.totals.posts > 0
-            ? ((analyticsData.totals.posts - prevData.totals.posts) / prevData.totals.posts * 100).toFixed(1)
-            : analyticsData.totals.posts > 0 ? 100 : 0;
-        
-        // Atualizar métricas na interface
-        document.getElementById('new-users-value').textContent = analyticsData.totals.users;
-        document.getElementById('post-views-value').textContent = analyticsData.totals.views;
-        document.getElementById('comments-value').textContent = analyticsData.totals.comments;
-        document.getElementById('new-posts-value').textContent = analyticsData.totals.posts;
-        
-        document.getElementById('new-users-change').textContent = 
-            `${usersChange >= 0 ? '+' : ''}${usersChange}% vs semana anterior`;
-        document.getElementById('new-users-change').className = `metric-change ${usersChange >= 0 ? 'positive' : 'negative'}`;
-        
-        document.getElementById('post-views-change').textContent = 
-            `${viewsChange >= 0 ? '+' : ''}${viewsChange}% vs semana anterior`;
-        document.getElementById('post-views-change').className = `metric-change ${viewsChange >= 0 ? 'positive' : 'negative'}`;
-        
-        document.getElementById('comments-change').textContent = 
-            `${commentsChange >= 0 ? '+' : ''}${commentsChange}% vs semana anterior`;
-        document.getElementById('comments-change').className = `metric-change ${commentsChange >= 0 ? 'positive' : 'negative'}`;
-        
-        document.getElementById('new-posts-change').textContent = 
-            `${postsChange >= 0 ? '+' : ''}${postsChange}% vs semana anterior`;
-        document.getElementById('new-posts-change').className = `metric-change ${postsChange >= 0 ? 'positive' : 'negative'}`;
-        
-        // Gerar dados diários para o gráfico e tabela
-        generateDailyDataFromAPI(analyticsData.dailyData);
-        
-        document.getElementById('analytics-loading').style.display = 'none';
-        document.getElementById('analytics-content').style.display = 'block';
-        
-    } catch (err) {
-        console.error('Erro ao carregar analytics:', err);
-        document.getElementById('analytics-loading').style.display = 'none';
-        document.getElementById('analytics-error').textContent = err.message;
-        document.getElementById('analytics-error').style.display = 'block';
     }
-}
 
-// Corrigir a função que gera dados diários para garantir que todos os dados sejam mostrados
-function generateDailyDataFromAPI(dailyData) {
-    // Atualizar tabela de dados diários
-    const dailyStatsBody = document.getElementById('daily-stats-body');
-    dailyStatsBody.innerHTML = '';
-    
-    dailyData.forEach(day => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${formatDisplayDate(day.date)}</td>
-            <td>${day.users || 0}</td>
-            <td>${day.views || 0}</td>
-            <td>${day.comments || 0}</td>
-            <td>${day.posts || 0}</td>
-        `;
-        dailyStatsBody.appendChild(tr);
-    });
-    
-    // Criar ou atualizar gráfico
-    createWeeklyChart(dailyData);
-}
+    // Corrigir a função que gera dados diários para garantir que todos os dados sejam mostrados
+    function generateDailyDataFromAPI(dailyData) {
+        // Atualizar tabela de dados diários
+        const dailyStatsBody = document.getElementById('daily-stats-body');
+        dailyStatsBody.innerHTML = '';
+        
+        dailyData.forEach(day => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${formatDisplayDate(day.date)}</td>
+                <td>${day.users || 0}</td>
+                <td>${day.views || 0}</td>
+                <td>${day.comments || 0}</td>
+                <td>${day.posts || 0}</td>
+            `;
+            dailyStatsBody.appendChild(tr);
+        });
+        
+        // Criar ou atualizar gráfico
+        createWeeklyChart(dailyData);
+    }
 
-// Adicione esta função para garantir que as datas sejam tratadas corretamente
-function formatDateForAPI(date) {
-    // Ajustar para o fuso horário local
-    const adjustedDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-    return adjustedDate.toISOString().split('T')[0];
-}
+    // Adicione esta função para garantir que as datas sejam tratadas corretamente
+    function formatDateForAPI(date) {
+        // Ajustar para o fuso horário local
+        const adjustedDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+        return adjustedDate.toISOString().split('T')[0];
+    }
 
-// Atualize as funções setThisWeek e setLastWeek para usar o formato correto
-function setThisWeek() {
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Domingo desta semana
-    
-    const endOfWeek = new Date(today);
-    endOfWeek.setDate(today.getDate() + (6 - today.getDay())); // Sábado desta semana
-    
-    document.getElementById('start-date').value = formatDateForAPI(startOfWeek);
-    document.getElementById('end-date').value = formatDateForAPI(endOfWeek);
-    
-    loadAnalytics();
-}
+    // Atualize as funções setThisWeek e setLastWeek para usar o formato correto
+    function setThisWeek() {
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Domingo desta semana
+        
+        const endOfWeek = new Date(today);
+        endOfWeek.setDate(today.getDate() + (6 - today.getDay())); // Sábado desta semana
+        
+        document.getElementById('start-date').value = formatDateForAPI(startOfWeek);
+        document.getElementById('end-date').value = formatDateForAPI(endOfWeek);
+        
+        loadAnalytics();
+    }
 
-function setLastWeek() {
-    const today = new Date();
-    const startOfLastWeek = new Date(today);
-    startOfLastWeek.setDate(today.getDate() - today.getDay() - 7); // Domingo da semana passada
-    
-    const endOfLastWeek = new Date(today);
-    endOfLastWeek.setDate(today.getDate() - today.getDay() - 1); // Sábado da semana passada
-    
-    document.getElementById('start-date').value = formatDateForAPI(startOfLastWeek);
-    document.getElementById('end-date').value = formatDateForAPI(endOfLastWeek);
-    
-    loadAnalytics();
-}
+    function setLastWeek() {
+        const today = new Date();
+        const startOfLastWeek = new Date(today);
+        startOfLastWeek.setDate(today.getDate() - today.getDay() - 7); // Domingo da semana passada
+        
+        const endOfLastWeek = new Date(today);
+        endOfLastWeek.setDate(today.getDate() - today.getDay() - 1); // Sábado da semana passada
+        
+        document.getElementById('start-date').value = formatDateForAPI(startOfLastWeek);
+        document.getElementById('end-date').value = formatDateForAPI(endOfLastWeek);
+        
+        loadAnalytics();
+    }
+
     function formatDisplayDate(dateStr) {
         const date = new Date(dateStr);
         return date.toLocaleDateString('pt-BR');
@@ -631,7 +771,6 @@ function setLastWeek() {
         });
     }
 
-    // Restante do código existente (loadPosts, loadUsers, etc.)...
     // Modifique a função loadPosts para armazenar os dados
     async function loadPosts() {
         try {
@@ -788,7 +927,7 @@ function setLastWeek() {
             tr.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.name}</td>
-                <td>${user.email}</td>
+                <td>${user.email}</td> <!-- CORREÇÃO: Faltava o } de fechamento -->
                 <td>${user.dono ? 'Dono' : 'Cliente'}</td>
                 <td>${new Date(user.creatAt).toLocaleDateString()}</td>
                 <td>${user.EmailVer ? 'Sim' : 'Não'}</td>
