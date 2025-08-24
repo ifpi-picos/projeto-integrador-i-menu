@@ -295,6 +295,167 @@
         .tab-content.active {
             display: block;
         }
+
+                /* Novos estilos para posts em destaque */
+        .post-ranking {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .post-ranking:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .post-rank {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3B1D0F;
+            margin-right: 20px;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .rank-1 .post-rank {
+            color: #FFD700; /* Ouro para 1º lugar */
+            font-size: 28px;
+        }
+        
+        .rank-2 .post-rank {
+            color: #C0C0C0; /* Prata para 2º lugar */
+            font-size: 26px;
+        }
+        
+        .rank-3 .post-rank {
+            color: #CD7F32; /* Bronze para 3º lugar */
+            font-size: 24px;
+        }
+        
+        .post-info {
+            flex-grow: 1;
+        }
+        
+        .post-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .post-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .stat-views {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .stat-comments {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .stat-author {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .stat-highlight {
+            font-weight: bold;
+            background-color: #fff3e0;
+            color: #f57c00;
+            border: 2px solid #ffb74d;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        
+        .post-difference {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .difference-positive {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .difference-negative {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .posts-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3B1D0F;
+        }
+        
+        .comparison-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #3B1D0F;
+        }
+        
+        .comparison-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .comparison-stat {
+            padding: 10px;
+            background-color: white;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .comparison-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3B1D0F;
+        }
+        
+        .comparison-label {
+            font-size: 12px;
+            color: #666;
+        }
     </style>
     <!-- Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -443,6 +604,12 @@
                         <!-- Conteúdo será preenchido via JavaScript -->
                     </div>
                 </div>
+                                <div class="posts-comparison" id="comparison-section" style="display: none;">
+                    <div class="comparison-title">📊 Comparação entre Visualizações e Comentários</div>
+                    <div class="comparison-stats" id="comparison-stats">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -496,13 +663,37 @@
     }
 
     // Funções para definir períodos de data
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
+// Substitua a função formatDate por esta versão corrigida
+function formatDate(date) {
+    // Ajustar para o fuso horário brasileiro (UTC-3)
+    const adjustedDate = new Date(date);
+    adjustedDate.setHours(adjustedDate.getHours() + 3); // Adiciona 3 horas para ajustar ao horário de Brasília
+    
+    const year = adjustedDate.getFullYear();
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(adjustedDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 
+// Adicione esta função para formatar a data para exibição
+function formatDisplayDate(dateStr) {
+    const date = new Date(dateStr);
+    // Ajustar para o fuso horário brasileiro
+    date.setHours(date.getHours() + 3);
+    return date.toLocaleDateString('pt-BR');
+}
+
+// Atualize a função isSameDay para usar datas ajustadas
+function isSameDay(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    
+    // Ajustar ambas as datas para o mesmo fuso horário
+    d1.setHours(0, 0, 0, 0);
+    d2.setHours(0, 0, 0, 0);
+    
+    return d1.getTime() === d2.getTime();
+}
     // Função para carregar dados analíticos
     async function loadAnalytics() {
         try {
@@ -526,6 +717,7 @@
             if (!response.ok) throw new Error('Erro ao carregar dados de analytics');
             
             const analyticsData = await response.json();
+            currentAnalyticsData = analyticsData;
             
             // Calcular dados da semana anterior para comparação
             const prevStartDate = new Date(startDate);
@@ -600,42 +792,54 @@
     }
 
     // Função para exibir os posts mais visualizados ou comentados
-    function displayTopPosts(posts, type) {
-        const containerId = type === 'viewed' ? 'top-viewed-posts' : 'top-commented-posts';
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
+    // Função para exibir os posts mais visualizados ou comentados
+function displayTopPosts(posts, type) {
+    const containerId = type === 'viewed' ? 'top-viewed-posts' : 'top-commented-posts';
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    
+    if (!posts || posts.length === 0) {
+        container.innerHTML = '<p class="no-data">Nenhum post encontrado neste período.</p>';
+        return;
+    }
+    
+    // Encontrar valores máximos para destacar
+    const maxViews = Math.max(...posts.map(p => p.views || 0));
+    const maxComments = Math.max(...posts.map(p => p.commentCount || 0));
+    
+    posts.forEach((post, index) => {
+        const rank = index + 1;
+        const postElement = document.createElement('div');
+        postElement.className = `post-ranking rank-${rank}`;
+        postElement.onclick = () => viewPost(post.id);
         
-        if (!posts || posts.length === 0) {
-            container.innerHTML = '<p class="no-data">Nenhum post encontrado neste período.</p>';
-            return;
-        }
+        // Calcular diferenças para destacar
+        const isTopViewed = post.views === maxViews && type === 'viewed';
+        const isTopCommented = post.commentCount === maxComments && type === 'commented';
         
-        posts.forEach((post, index) => {
-            const rank = index + 1;
-            const postElement = document.createElement('div');
-            postElement.className = 'post-ranking';
-            
-            postElement.innerHTML = `
-                <div class="post-rank">${rank}</div>
-                <div class="post-info">
-                    <div class="post-title">${post.title}</div>
-                    <div class="post-stats">
-                        <div class="post-stat">
-                            Visualizações: <span class="post-stat-value">${post.views || 0}</span>
-                        </div>
-                        <div class="post-stat">
-                            Comentários: <span class="post-stat-value">${post.commentCount || 0}</span>
-                        </div>
-                        <div class="post-stat">
-                            Autor: <span class="post-stat-value">${post.author?.name || 'N/A'}</span>
-                        </div>
+        postElement.innerHTML = `
+            <div class="post-rank">${rank}</div>
+            <div class="post-info">
+                <div class="post-title">${post.title}</div>
+                <div class="post-stats">
+                    <div class="post-stat stat-views ${isTopViewed ? 'stat-highlight' : ''}">
+                        👁️ Visualizações: <span class="stat-value">${post.views || 0}</span>
+                        ${isTopViewed ? '<span class="post-difference difference-positive">+ MAIS VISTO</span>' : ''}
+                    </div>
+                    <div class="post-stat stat-comments ${isTopCommented ? 'stat-highlight' : ''}">
+                        💬 Comentários: <span class="stat-value">${post.commentCount || 0}</span>
+                        ${isTopCommented ? '<span class="post-difference difference-positive">+ MAIS COMENTADO</span>' : ''}
+                    </div>
+                    <div class="post-stat stat-author">
+                        👤 Autor: <span class="stat-value">${post.author?.name || 'N/A'}</span>
                     </div>
                 </div>
-            `;
-            
-            container.appendChild(postElement);
-        });
-    }
+            </div>
+        `;
+        
+        container.appendChild(postElement);
+    });
+}
 
     // Corrigir a função que gera dados diários para garantir que todos os dados sejam mostrados
     function generateDailyDataFromAPI(dailyData) {
