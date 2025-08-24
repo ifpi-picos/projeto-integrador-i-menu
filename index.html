@@ -37,8 +37,6 @@
   </div>
 </div>
 
-
-
   <!-- Botão toggle da sidebar -->
   <button id="toggleSidebar" class="toggle-btn">☰</button>
 
@@ -67,9 +65,11 @@
   <section class="hero">
     <h1>Faça mercado no iMenu</h1>
     <div class="search-bar">
-      <input type="text" placeholder="Em qual endereço você está?" />
-      <button>Ver restaurantes próximos</button>
+      <input id="cidadeInput" type="text" placeholder="Digite sua cidade" />
+      <button onclick="buscarRestaurantes()">Ver restaurantes próximos</button>
     </div>
+    <!-- Lista de restaurantes encontrados -->
+    <ul id="lista-restaurantes"></ul>
   </section>
 
 <div class="categories">
@@ -102,9 +102,7 @@
     <h2>Cardápios criados recentemente</h2>
     <div class="posts-container">
     <button class="arrow left" onclick="scrollPosts(-1)">&#10094;</button>
-
     <div id="posts-recentes"></div>
-
     <button class="arrow right" onclick="scrollPosts(1)">&#10095;</button>
   </div>
 </section>
@@ -114,13 +112,10 @@
   <h2>Restaurantes Famosos</h2>
   <div class="posts-container">
     <button class="arrow left" onclick="scrollRestaurantes(-1)">&#10094;</button>
-
     <div class="carousel" id="restaurantes-populares"></div>
-
     <button class="arrow right" onclick="scrollRestaurantes(1)">&#10095;</button>
   </div>
 </section>
-
 
   <div id="footer-container"></div>
 
@@ -133,59 +128,49 @@
 
 <!-- Inicialização -->
 <script>
-  
   fetch('footer.html')
     .then(response => response.text())
     .then(data => {
       document.getElementById('footer-container').innerHTML = data;
     });
   
-
-    //PASSAR POSTS
-
-    function scrollPosts(direction) {
+  //PASSAR POSTS
+  function scrollPosts(direction) {
     const container = document.getElementById('posts-recentes');
-    const scrollAmount = container.clientWidth / 1.2; // Ajuste esse valor conforme necessário
+    const scrollAmount = container.clientWidth / 1.2;
     container.scrollBy({
         left: direction * scrollAmount,
         behavior: 'smooth'
     });
-}
+  }
 
-function scrollRestaurantes(direction) {
-  const container = document.getElementById('restaurantes-populares');
-  const scrollAmount = container.clientWidth / 1.2;
-  container.scrollBy({
-    left: direction * scrollAmount,
-    behavior: 'smooth'
-  });
-}
+  function scrollRestaurantes(direction) {
+    const container = document.getElementById('restaurantes-populares');
+    const scrollAmount = container.clientWidth / 1.2;
+    container.scrollBy({
+      left: direction * scrollAmount,
+      behavior: 'smooth'
+    });
+  }
 
-async function carregarRestaurantesPopulares() {
+  async function carregarRestaurantesPopulares() {
     const webservice = "https://imenu-backend-pd3a.onrender.com";
     try {
         const response = await fetch(`${webservice}/restaurantes/populares`);
-        
         if (!response.ok) {
             throw new Error(`Erro: ${response.status}`);
         }
-
         const restaurantes = await response.json();
         const carousel = document.getElementById('restaurantes-populares');
-
         if (!carousel) return;
-
         if (restaurantes.length === 0) {
             carousel.innerHTML = '<p>Nenhum restaurante popular encontrado</p>';
             return;
         }
-
         carousel.innerHTML = restaurantes.map(restaurante => {
             const restauranteId = restaurante.id;
             if (!restauranteId) return '';
-            
             const fotoUrl = restaurante.foto || 'https://img.freepik.com/vetores-premium/ilustracao-em-vetor-de-foto-de-perfil-minimalista_276184-161.jpg';
-            
             return `
                 <div class="carousel-item" onclick="abrirRestaurante('${restauranteId}')">
                     <img src="${fotoUrl}" 
@@ -211,35 +196,89 @@ async function carregarRestaurantesPopulares() {
             carousel.innerHTML = '<p>Não foi possível carregar os restaurantes no momento.</p>';
         }
     }
-}
+  }
 
-// Modifique a função abrirRestaurante para lidar com erros
-function abrirRestaurante(restauranteId) {
+  function abrirRestaurante(restauranteId) {
     try {
         if (!restauranteId || restauranteId === 'undefined') {
             throw new Error('ID do restaurante inválido');
         }
-        
         window.location.href = `perfil.html?userId=${restauranteId}`;
     } catch (error) {
         console.error('Erro ao abrir restaurante:', error);
         alert('Não foi possível abrir este restaurante no momento.');
     }
-}
+  }
+
+  // NOVA FUNÇÃO: Buscar restaurantes públicos via Overpass API
+  async function buscarRestaurantes() {
+    const cidade = document.getElementById("cidadeInput").value.trim();
+    const lista = document.getElementById("lista-restaurantes");
+    lista.innerHTML = "";
+
+    if (!cidade) {
+      alert("Digite uma cidade!");
+      return;
+    }
+
+    try {
+      lista.innerHTML = "<li>Carregando restaurantes...</li>";
+
+      // 1. Converte cidade em coordenadas
+      const geoResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(cidade)}&format=json&limit=1`
+      );
+      const geoData = await geoResponse.json();
+      if (geoData.length === 0) {
+        lista.innerHTML = "<li>Cidade não encontrada!</li>";
+        return;
+      }
+
+      const { lat, lon } = geoData[0];
+
+      // 2. Busca restaurantes no Overpass API
+      const query = `
+        [out:json];
+        node["amenity"="restaurant"](around:5000, ${lat}, ${lon});
+        out;
+      `;
+
+      const response = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "data=" + encodeURIComponent(query),
+      });
+
+      const data = await response.json();
+
+      if (!data.elements || data.elements.length === 0) {
+        lista.innerHTML = "<li>Nenhum restaurante encontrado.</li>";
+        return;
+      }
+
+      // 3. Mostra só os nomes
+      lista.innerHTML = "";
+      data.elements.forEach(r => {
+        const li = document.createElement("li");
+        li.textContent = r.tags?.name || "Restaurante sem nome";
+        lista.appendChild(li);
+      });
+
+    } catch (error) {
+      console.error("Erro:", error);
+      lista.innerHTML = "<li>Erro ao buscar restaurantes.</li>";
+    }
+  }
 
   document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggleSidebar");
-
     if (toggleButton) {
       toggleButton.addEventListener("click", function () {
         sidebar.classList.toggle("expanded");
       });
     }
-
     verificarToken();
-
-    // Agora que o DOM está pronto e o Lucide foi carregado
     lucide.createIcons();
   });
 </script>

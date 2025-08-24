@@ -235,6 +235,23 @@
         document.getElementById('campo-restaurante-config').style.display = 'block';
         document.getElementById('nome-restaurante').value = data.restaurante || '';
         exibirCamposDono();
+
+        // Preencher endereço
+        if (data.enderecoRestaurante) {
+          document.getElementById('endereco-restaurante').value = data.enderecoRestaurante;
+        }
+
+        // Preencher horário
+        if (data.horario) {
+          const horarioSelect = document.getElementById('horario-funcionamento');
+          if ([...horarioSelect.options].some(opt => opt.value === data.horario)) {
+            horarioSelect.value = data.horario;
+          } else {
+            horarioSelect.value = "Personalizado";
+            document.getElementById('campo-horario-personalizado').style.display = "block";
+            document.getElementById('horario-personalizado').value = data.horario;
+          }
+        }
       }
     } catch (e) {
       console.error("Erro ao carregar dados:", e);
@@ -256,10 +273,10 @@
     const estadoSelect = document.getElementById("estado");
     const cidadeSelect = document.getElementById("cidade");
     const nomeRestaurante = document.getElementById("nome-restaurante")?.value.trim();
+    const enderecoRestaurante = document.getElementById("endereco-restaurante")?.value.trim();
     const horarioSelect = document.getElementById("horario-funcionamento");
     const horarioPers = document.getElementById("horario-personalizado").value;
     
-    // Obter valores corretamente
     const estado = estadoSelect.value;
     const estadoNome = estadoSelect.options[estadoSelect.selectedIndex]?.text || null;
     const cidade = cidadeSelect.value;
@@ -283,10 +300,6 @@
             cidadeNome: cidadeNome
         };
 
-        // Adicionar estadoId e cidadeId se necessário (você precisará adaptar para pegar os IDs)
-        // dadosAtualizacao.estadoId = ...;
-        // dadosAtualizacao.cidadeId = ...;
-
         if (senha && senha.trim() !== '') {
             if (senha.length < 6) {
                 alert("Senha deve ter pelo menos 6 caracteres");
@@ -295,11 +308,13 @@
             dadosAtualizacao.password = senha;
         }
 
-        // Se for dono, adicionar campos específicos
         const tokenData = parseJwt(token);
         if (tokenData.dono) {
             if (nomeRestaurante !== undefined) {
                 dadosAtualizacao.restaurante = nomeRestaurante;
+            }
+            if (enderecoRestaurante !== undefined) {
+                dadosAtualizacao.enderecoRestaurante = enderecoRestaurante;
             }
             if (horario) {
                 dadosAtualizacao.horario = horario;
@@ -328,7 +343,7 @@
         btnSalvar.disabled = false;
         btnSalvar.textContent = 'Salvar';
     }
-});
+  });
 
   function logout() {
     localStorage.removeItem("auth_token");

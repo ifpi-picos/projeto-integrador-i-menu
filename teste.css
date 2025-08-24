@@ -824,3 +824,30 @@ header > div {
     width: 80vw;
   }
 }
+
+/* Lista de restaurantes buscados */
+#lista-restaurantes {
+  list-style: none;
+  margin: 1rem auto;
+  padding: 0;
+  max-width: 600px;   /* largura máxima */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow-y: auto;
+  max-height: 300px;  /* se vier muitos, vira scroll */
+}
+
+#lista-restaurantes li {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+  color: #4E2C1E;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#lista-restaurantes li:hover {
+  background: rgba(123, 63, 0, 0.1);
+}
+
