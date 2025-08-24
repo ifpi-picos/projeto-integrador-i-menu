@@ -11,14 +11,19 @@
 
   <div class="wrapper">
     <div class="container">
+
+      <!-- Upload da imagem de capa -->
       <label class="upload-box">
         <input type="file" accept="image/*" id="upload_card" onchange="previewFile(event)">
+        <i data-lucide="image" class="upload-icon"></i>
         <span id="upload-text">Imagem de Capa</span>
         <img id="preview" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
       </label>
 
-      <label class="upload-box" style="margin-top: 15px;">
+      <!-- Upload do arquivo do cardápio -->
+      <label class="upload-box">
         <input type="file" accept=".pdf,application/pdf,image/*" id="upload_arquivo" onchange="previewArquivo(event)">
+        <i data-lucide="file-text" class="upload-icon"></i>
         <span id="upload-text-arquivo">Escolha o arquivo do cardápio (PDF ou imagem)</span>
         <img id="preview-arquivo" src="" alt="" style="display:none; width:100%; height:100%; border-radius:10px;">
       </label>
@@ -37,16 +42,16 @@
         <label>Link</label>
         <input type="text" id="linksocial" placeholder="Adicione um link">
 
-        <!-- tags -->
-<label>Tags (Selecione até 3 categorias)</label>
-<div class="tags-container">
-  <label class="tag-option"><input type="checkbox" name="tags" value="bebidas"> Bebidas</label>
-  <label class="tag-option"><input type="checkbox" name="tags" value="refeicoes"> Refeições</label>
-  <label class="tag-option"><input type="checkbox" name="tags" value="sobremesas"> Sobremesas</label>
-  <label class="tag-option"><input type="checkbox" name="tags" value="lanches"> Lanches</label>
-  <label class="tag-option"><input type="checkbox" name="tags" value="sushi"> Sushi</label>
-  <label class="tag-option"><input type="checkbox" name="tags" value="vegetariano"> Vegetariano</label>
-</div>
+        <!-- Tags -->
+        <label>Tags (Selecione até 3 categorias)</label>
+        <div class="tags-container">
+          <label class="tag-option"><input type="checkbox" name="tags" value="bebidas"> Bebidas</label>
+          <label class="tag-option"><input type="checkbox" name="tags" value="refeicoes"> Refeições</label>
+          <label class="tag-option"><input type="checkbox" name="tags" value="sobremesas"> Sobremesas</label>
+          <label class="tag-option"><input type="checkbox" name="tags" value="lanches"> Lanches</label>
+          <label class="tag-option"><input type="checkbox" name="tags" value="sushi"> Sushi</label>
+          <label class="tag-option"><input type="checkbox" name="tags" value="vegetariano"> Vegetariano</label>
+        </div>
 
         <div class="radio-group">
           <label><input type="radio" name="privacidade" id="public" value="publico"> Público</label>
@@ -69,8 +74,7 @@
 
   <div id="footer-container"></div>
 
-
-  <!-- Ordem corrigida: server_script.js vem primeiro -->
+  <!-- Scripts -->
   <script src="js/server_script.js"></script>
   <script src="js/script.js"></script>
   <script src="js/cabecalho.js"></script>
@@ -86,11 +90,11 @@
         if (typeof initCabecalho === 'function') initCabecalho();
       });
 
-      fetch('footer.html')
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('footer-container').innerHTML = data;
-    });
+    fetch('footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('footer-container').innerHTML = data;
+      });
 
     let isSubmitting = false;
 
@@ -110,6 +114,7 @@
       const file = event.target.files[0];
       const preview = document.getElementById('preview');
       const uploadText = document.getElementById('upload-text');
+      const icon = event.target.parentElement.querySelector('.upload-icon'); // NOVO
 
       if (file) {
         if (file.size > 10 * 1024 * 1024) {
@@ -123,6 +128,7 @@
             preview.src = e.target.result;
             preview.style.display = 'block';
             uploadText.style.display = 'none';
+            if (icon) icon.style.display = 'none'; // NOVO
           };
           reader.readAsDataURL(file);
         } else {
@@ -132,7 +138,7 @@
       } else {
         preview.style.display = 'none';
         uploadText.style.display = 'block';
-        uploadText.textContent = 'Escolha uma imagem para capa';
+        if (icon) icon.style.display = 'block'; // NOVO
       }
     }
 
@@ -140,6 +146,7 @@
       const file = event.target.files[0];
       const preview = document.getElementById('preview-arquivo');
       const uploadText = document.getElementById('upload-text-arquivo');
+      const icon = event.target.parentElement.querySelector('.upload-icon'); // NOVO
 
       if (file) {
         const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
@@ -160,18 +167,21 @@
           preview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
           preview.style.display = 'block';
           uploadText.textContent = file.name;
+          if (icon) icon.style.display = 'none'; // NOVO
         } else {
           const reader = new FileReader();
           reader.onload = e => {
             preview.src = e.target.result;
             preview.style.display = 'block';
             uploadText.style.display = 'none';
+            if (icon) icon.style.display = 'none'; // NOVO
           };
           reader.readAsDataURL(file);
         }
       } else {
         preview.style.display = 'none';
         uploadText.style.display = 'block';
+        if (icon) icon.style.display = 'block'; // NOVO
       }
     }
 
@@ -210,26 +220,25 @@
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 180000);
 
-const res = await fetch(`${webservicef}/api/upload`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Origin': 'https://www.imenucorp.shop'
-  },
-  body: JSON.stringify({ file: fileBase64, fileType: file.type, isCardapio: inputId === 'upload_arquivo' }),
-  signal: controller.signal
-});
+      const res = await fetch(`${webservicef}/api/upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': 'https://www.imenucorp.shop'
+        },
+        body: JSON.stringify({ file: fileBase64, fileType: file.type, isCardapio: inputId === 'upload_arquivo' }),
+        signal: controller.signal
+      });
 
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `Erro ${res.status}: ${res.statusText}`);
-    }
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `Erro ${res.status}: ${res.statusText}`);
+      }
 
       const data = await res.json();
       progressBar.style.width = '100%';
       progressBar.style.backgroundColor = '#4CAF50';
-
 
       setTimeout(() => progressContainer.style.display = 'none', 2000);
       return data;

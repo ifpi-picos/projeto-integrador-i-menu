@@ -353,3 +353,34 @@ label.upload-box { display: grid !important; }
   display: grid !important;
   place-items: center !important;
 }
+
+/* Ícones dentro das caixas de upload */
+.upload-icon {
+  width: 48px;
+  height: 48px;
+  color: #f5d3c0; /* cor clarinha */
+  margin-bottom: 10px;
+  opacity: 0.9;
+  pointer-events: none; /* não atrapalha clique */
+  transition: transform 0.2s ease;
+}
+
+/* Efeito hover para deixar mais bonito */
+.upload-box:hover {
+  background: #4a2420;
+  transform: scale(1.02);
+  transition: all 0.2s ease-in-out;
+}
+
+.upload-box:hover .upload-icon {
+  transform: scale(1.15);
+  color: #fff;
+}
+
+
+/* Garante que imagens sem src não apareçam quebradas */
+.upload-box img[src=""],
+.upload-box img:not([src]) {
+  display: none !important;
+}
+
