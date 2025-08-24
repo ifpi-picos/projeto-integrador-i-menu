@@ -5,34 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Administração - iMenu</title>
     <style>
-
+        /* Estilos existentes mantidos */
         .search-container {
-    margin: 15px 0;
-    display: flex;
-    gap: 10px;
-}
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
 
-.search-input {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    flex-grow: 1;
-    font-size: 14px;
-}
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex-grow: 1;
+            font-size: 14px;
+        }
 
-.search-button {
-    padding: 8px 15px;
-    background-color: #3B1D0F;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
+        .search-button {
+            padding: 8px 15px;
+            background-color: #3B1D0F;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-.search-button:hover {
-    background-color: #2e160c;
-}
+        .search-button:hover {
+            background-color: #2e160c;
+        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -121,7 +121,100 @@
             text-align: center;
             padding: 20px;
         }
+        
+        /* Novos estilos para a seção de analytics */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .metric-title {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3B1D0F;
+        }
+        
+        .metric-change {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .positive {
+            color: #27ae60;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .date-input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            background-color: #3B1D0F;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .filter-btn:hover {
+            background-color: #2e160c;
+        }
+        
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .stats-table th {
+            background-color: #f1f1f1;
+            color: #333;
+        }
     </style>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -134,41 +227,44 @@
         <div class="tabs">
             <div class="tab active" onclick="switchTab('posts')">Posts</div>
             <div class="tab" onclick="switchTab('users')">Usuários</div>
+            <div class="tab" onclick="switchTab('analytics')">Controle de Uso</div>
         </div>
 
-<div id="posts-tab" class="tab-content active">
-    <h2>Todos os Posts</h2>
-    <div class="search-container">
-        <input type="text" id="search-posts" placeholder="Pesquisar posts..." class="search-input">
-        <button onclick="searchPosts()" class="search-button">Buscar</button>
-    </div>
-    <div id="posts-loading" class="loading">Carregando posts...</div>
-    <div id="posts-error" class="error" style="display: none;"></div>
-    <table id="posts-table" style="display: none;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Data</th>
-                <th>Visualizações</th>
-                <th>Visibilidade</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="posts-body"></tbody>
-    </table>
-</div>
+        <div id="posts-tab" class="tab-content active">
+            <!-- Conteúdo existente dos posts -->
+            <h2>Todos os Posts</h2>
+            <div class="search-container">
+                <input type="text" id="search-posts" placeholder="Pesquisar posts..." class="search-input">
+                <button onclick="searchPosts()" class="search-button">Buscar</button>
+            </div>
+            <div id="posts-loading" class="loading">Carregando posts...</div>
+            <div id="posts-error" class="error" style="display: none;"></div>
+            <table id="posts-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Data</th>
+                        <th>Visualizações</th>
+                        <th>Visibilidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="posts-body"></tbody>
+            </table>
+        </div>
 
-<div id="users-tab" class="tab-content">
-    <h2>Todos os Usuários</h2>
-    <div class="search-container">
-        <input type="text" id="search-users" placeholder="Pesquisar usuários..." class="search-input">
-        <button onclick="searchUsers()" class="search-button">Buscar</button>
-    </div>
-    <div id="users-loading" class="loading">Carregando usuários...</div>
-    <div id="users-error" class="error" style="display: none;"></div>
-    <table id="users-table" style="display: none;">
+        <div id="users-tab" class="tab-content">
+            <!-- Conteúdo existente dos usuários -->
+            <h2>Todos os Usuários</h2>
+            <div class="search-container">
+                <input type="text" id="search-users" placeholder="Pesquisar usuários..." class="search-input">
+                <button onclick="searchUsers()" class="search-button">Buscar</button>
+            </div>
+            <div id="users-loading" class="loading">Carregando usuários...</div>
+            <div id="users-error" class="error" style="display: none;"></div>
+            <table id="users-table" style="display: none;">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -182,6 +278,73 @@
                 </thead>
                 <tbody id="users-body"></tbody>
             </table>
+        </div>
+
+        <!-- Nova aba de Controle de Uso -->
+        <div id="analytics-tab" class="tab-content">
+            <h2>Controle de Uso Semanal</h2>
+            
+            <div class="date-filter">
+                <label for="start-date">De:</label>
+                <input type="date" id="start-date" class="date-input">
+                <label for="end-date">Até:</label>
+                <input type="date" id="end-date" class="date-input">
+                <button onclick="loadAnalytics()" class="filter-btn">Filtrar</button>
+                <button onclick="setLastWeek()" class="filter-btn">Última Semana</button>
+                <button onclick="setThisWeek()" class="filter-btn">Esta Semana</button>
+            </div>
+            
+            <div id="analytics-loading" class="loading">Carregando dados de uso...</div>
+            <div id="analytics-error" class="error" style="display: none;"></div>
+            
+            <div id="analytics-content" style="display: none;">
+                <div class="analytics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Novos Usuários</div>
+                        <div class="metric-value" id="new-users-value">0</div>
+                        <div class="metric-change" id="new-users-change">0% vs semana anterior</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Visualizações de Posts</div>
+                        <div class="metric-value" id="post-views-value">0</div>
+                        <div class="metric-change" id="post-views-change">0% vs semana anterior</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Comentários</div>
+                        <div class="metric-value" id="comments-value">0</div>
+                        <div class="metric-change" id="comments-change">0% vs semana anterior</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Novos Posts</div>
+                        <div class="metric-value" id="new-posts-value">0</div>
+                        <div class="metric-change" id="new-posts-change">0% vs semana anterior</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Evolução Semanal</div>
+                    <canvas id="weekly-chart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Detalhes por Dia</div>
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Novos Usuários</th>
+                                <th>Visualizações</th>
+                                <th>Comentários</th>
+                                <th>Novos Posts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-stats-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -218,106 +381,346 @@
 
             // Se chegou aqui, é admin - carrega os posts
             loadPosts();
+            
+            // Configura datas padrão para a semana atual
+            setThisWeek();
         } catch (err) {
             console.error('Erro ao verificar admin:', err);
             window.location.href = '/index.html';
         }
     }
 
-// Variáveis para armazenar os dados originais
-let allPosts = [];
-let allUsers = [];
+    // Variáveis para armazenar os dados originais
+    let allPosts = [];
+    let allUsers = [];
+    let weeklyChart = null;
 
-// Modifique a função loadPosts para armazenar os dados
-async function loadPosts() {
+    // Funções para definir períodos de data
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Função para carregar dados analíticos
+// Função para carregar dados analíticos - VERSÃO OTIMIZADA
+// No arquivo HTML, atualize a função loadAnalytics para corrigir o problema das datas
+async function loadAnalytics() {
     try {
-        document.getElementById('posts-loading').style.display = 'block';
-        document.getElementById('posts-error').style.display = 'none';
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
         
-        const response = await fetch(`${webservice}/posts/all`, {
+        if (!startDate || !endDate) {
+            alert('Por favor, selecione as datas de início e fim.');
+            return;
+        }
+        
+        document.getElementById('analytics-loading').style.display = 'block';
+        document.getElementById('analytics-error').style.display = 'none';
+        document.getElementById('analytics-content').style.display = 'none';
+        
+        // Usar a rota otimizada de analytics
+        const response = await fetch(`${webservice}/analytics/weekly?startDate=${startDate}&endDate=${endDate}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-
-        if (!response.ok) throw new Error('Erro ao carregar posts');
-
-        allPosts = await response.json();
-        displayPosts(allPosts);
-    } catch (err) {
-        document.getElementById('posts-loading').style.display = 'none';
-        document.getElementById('posts-error').textContent = err.message;
-        document.getElementById('posts-error').style.display = 'block';
-    }
-}
-
-// Modifique a função loadUsers para armazenar os dados
-async function loadUsers() {
-    try {
-        document.getElementById('users-loading').style.display = 'block';
-        document.getElementById('users-error').style.display = 'none';
         
-        const response = await fetch(`${webservice}/users/all`, {
+        if (!response.ok) throw new Error('Erro ao carregar dados de analytics');
+        
+        const analyticsData = await response.json();
+        
+        // Calcular dados da semana anterior para comparação
+        const prevStartDate = new Date(startDate);
+        prevStartDate.setDate(prevStartDate.getDate() - 7);
+        const prevEndDate = new Date(endDate);
+        prevEndDate.setDate(prevEndDate.getDate() - 7);
+        
+        const prevResponse = await fetch(`${webservice}/analytics/weekly?startDate=${formatDate(prevStartDate)}&endDate=${formatDate(prevEndDate)}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-
-        if (!response.ok) throw new Error('Erro ao carregar usuários');
-
-        allUsers = await response.json();
-        displayUsers(allUsers);
+        
+        let prevData = { totals: { users: 0, posts: 0, comments: 0, views: 0 } };
+        if (prevResponse.ok) {
+            prevData = await prevResponse.json();
+        }
+        
+        // Calcular variação percentual
+        const usersChange = prevData.totals.users > 0 
+            ? ((analyticsData.totals.users - prevData.totals.users) / prevData.totals.users * 100).toFixed(1)
+            : analyticsData.totals.users > 0 ? 100 : 0;
+            
+        const viewsChange = prevData.totals.views > 0 
+            ? ((analyticsData.totals.views - prevData.totals.views) / prevData.totals.views * 100).toFixed(1)
+            : analyticsData.totals.views > 0 ? 100 : 0;
+            
+        const commentsChange = prevData.totals.comments > 0
+            ? ((analyticsData.totals.comments - prevData.totals.comments) / prevData.totals.comments * 100).toFixed(1)
+            : analyticsData.totals.comments > 0 ? 100 : 0;
+            
+        const postsChange = prevData.totals.posts > 0
+            ? ((analyticsData.totals.posts - prevData.totals.posts) / prevData.totals.posts * 100).toFixed(1)
+            : analyticsData.totals.posts > 0 ? 100 : 0;
+        
+        // Atualizar métricas na interface
+        document.getElementById('new-users-value').textContent = analyticsData.totals.users;
+        document.getElementById('post-views-value').textContent = analyticsData.totals.views;
+        document.getElementById('comments-value').textContent = analyticsData.totals.comments;
+        document.getElementById('new-posts-value').textContent = analyticsData.totals.posts;
+        
+        document.getElementById('new-users-change').textContent = 
+            `${usersChange >= 0 ? '+' : ''}${usersChange}% vs semana anterior`;
+        document.getElementById('new-users-change').className = `metric-change ${usersChange >= 0 ? 'positive' : 'negative'}`;
+        
+        document.getElementById('post-views-change').textContent = 
+            `${viewsChange >= 0 ? '+' : ''}${viewsChange}% vs semana anterior`;
+        document.getElementById('post-views-change').className = `metric-change ${viewsChange >= 0 ? 'positive' : 'negative'}`;
+        
+        document.getElementById('comments-change').textContent = 
+            `${commentsChange >= 0 ? '+' : ''}${commentsChange}% vs semana anterior`;
+        document.getElementById('comments-change').className = `metric-change ${commentsChange >= 0 ? 'positive' : 'negative'}`;
+        
+        document.getElementById('new-posts-change').textContent = 
+            `${postsChange >= 0 ? '+' : ''}${postsChange}% vs semana anterior`;
+        document.getElementById('new-posts-change').className = `metric-change ${postsChange >= 0 ? 'positive' : 'negative'}`;
+        
+        // Gerar dados diários para o gráfico e tabela
+        generateDailyDataFromAPI(analyticsData.dailyData);
+        
+        document.getElementById('analytics-loading').style.display = 'none';
+        document.getElementById('analytics-content').style.display = 'block';
+        
     } catch (err) {
-        document.getElementById('users-loading').style.display = 'none';
-        document.getElementById('users-error').textContent = err.message;
-        document.getElementById('users-error').style.display = 'block';
+        console.error('Erro ao carregar analytics:', err);
+        document.getElementById('analytics-loading').style.display = 'none';
+        document.getElementById('analytics-error').textContent = err.message;
+        document.getElementById('analytics-error').style.display = 'block';
     }
 }
 
-// Função de pesquisa para posts
-function searchPosts() {
-    const searchTerm = document.getElementById('search-posts').value.toLowerCase();
+// Corrigir a função que gera dados diários para garantir que todos os dados sejam mostrados
+function generateDailyDataFromAPI(dailyData) {
+    // Atualizar tabela de dados diários
+    const dailyStatsBody = document.getElementById('daily-stats-body');
+    dailyStatsBody.innerHTML = '';
     
-    if (!searchTerm) {
-        displayPosts(allPosts);
-        return;
-    }
-
-    const filteredPosts = allPosts.filter(post => 
-        post.title.toLowerCase().includes(searchTerm) ||
-        (post.author?.name && post.author.name.toLowerCase().includes(searchTerm)) ||
-        (post.author?.email && post.author.email.toLowerCase().includes(searchTerm)) ||
-        post.id.toString().includes(searchTerm)
-    );
-
-    displayPosts(filteredPosts);
-}
-
-// Função de pesquisa para usuários
-function searchUsers() {
-    const searchTerm = document.getElementById('search-users').value.toLowerCase();
+    dailyData.forEach(day => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${formatDisplayDate(day.date)}</td>
+            <td>${day.users || 0}</td>
+            <td>${day.views || 0}</td>
+            <td>${day.comments || 0}</td>
+            <td>${day.posts || 0}</td>
+        `;
+        dailyStatsBody.appendChild(tr);
+    });
     
-    if (!searchTerm) {
-        displayUsers(allUsers);
-        return;
-    }
-
-    const filteredUsers = allUsers.filter(user => 
-        user.name.toLowerCase().includes(searchTerm) ||
-        user.email.toLowerCase().includes(searchTerm) ||
-        user.id.toString().includes(searchTerm) ||
-        (user.dono ? 'dono' : 'cliente').includes(searchTerm)
-    );
-
-    displayUsers(filteredUsers);
+    // Criar ou atualizar gráfico
+    createWeeklyChart(dailyData);
 }
 
-// Adicione evento de tecla Enter para os campos de pesquisa
-document.getElementById('search-posts').addEventListener('keyup', function(e) {
-    if (e.key === 'Enter') searchPosts();
-});
+// Adicione esta função para garantir que as datas sejam tratadas corretamente
+function formatDateForAPI(date) {
+    // Ajustar para o fuso horário local
+    const adjustedDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return adjustedDate.toISOString().split('T')[0];
+}
 
-document.getElementById('search-users').addEventListener('keyup', function(e) {
-    if (e.key === 'Enter') searchUsers();
-});
+// Atualize as funções setThisWeek e setLastWeek para usar o formato correto
+function setThisWeek() {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Domingo desta semana
+    
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + (6 - today.getDay())); // Sábado desta semana
+    
+    document.getElementById('start-date').value = formatDateForAPI(startOfWeek);
+    document.getElementById('end-date').value = formatDateForAPI(endOfWeek);
+    
+    loadAnalytics();
+}
 
-    // Exibir posts na tabela
+function setLastWeek() {
+    const today = new Date();
+    const startOfLastWeek = new Date(today);
+    startOfLastWeek.setDate(today.getDate() - today.getDay() - 7); // Domingo da semana passada
+    
+    const endOfLastWeek = new Date(today);
+    endOfLastWeek.setDate(today.getDate() - today.getDay() - 1); // Sábado da semana passada
+    
+    document.getElementById('start-date').value = formatDateForAPI(startOfLastWeek);
+    document.getElementById('end-date').value = formatDateForAPI(endOfLastWeek);
+    
+    loadAnalytics();
+}
+    function formatDisplayDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('pt-BR');
+    }
+
+    function createWeeklyChart(dailyData) {
+        const ctx = document.getElementById('weekly-chart').getContext('2d');
+        
+        // Destruir gráfico anterior se existir
+        if (weeklyChart) {
+            weeklyChart.destroy();
+        }
+        
+        // Preparar dados para o gráfico
+        const labels = dailyData.map(d => formatDisplayDate(d.date));
+        const usersData = dailyData.map(d => d.users);
+        const viewsData = dailyData.map(d => d.views);
+        const commentsData = dailyData.map(d => d.comments);
+        const postsData = dailyData.map(d => d.posts);
+        
+        weeklyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Novos Usuários',
+                        data: usersData,
+                        borderColor: 'rgb(59, 29, 15)',
+                        backgroundColor: 'rgba(59, 29, 15, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    },
+                    {
+                        label: 'Visualizações',
+                        data: viewsData,
+                        borderColor: 'rgb(52, 152, 219)',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    },
+                    {
+                        label: 'Comentários',
+                        data: commentsData,
+                        borderColor: 'rgb(46, 204, 113)',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    },
+                    {
+                        label: 'Novos Posts',
+                        data: postsData,
+                        borderColor: 'rgb(155, 89, 182)',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Atividade Diária'
+                    },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Restante do código existente (loadPosts, loadUsers, etc.)...
+    // Modifique a função loadPosts para armazenar os dados
+    async function loadPosts() {
+        try {
+            document.getElementById('posts-loading').style.display = 'block';
+            document.getElementById('posts-error').style.display = 'none';
+            
+            const response = await fetch(`${webservice}/posts/all`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Erro ao carregar posts');
+
+            allPosts = await response.json();
+            displayPosts(allPosts);
+        } catch (err) {
+            document.getElementById('posts-loading').style.display = 'none';
+            document.getElementById('posts-error').textContent = err.message;
+            document.getElementById('posts-error').style.display = 'block';
+        }
+    }
+
+    // Modifique a função loadUsers para armazenar os dados
+    async function loadUsers() {
+        try {
+            document.getElementById('users-loading').style.display = 'block';
+            document.getElementById('users-error').style.display = 'none';
+            
+            const response = await fetch(`${webservice}/users/all`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Erro ao carregar usuários');
+
+            allUsers = await response.json();
+            displayUsers(allUsers);
+        } catch (err) {
+            document.getElementById('users-loading').style.display = 'none';
+            document.getElementById('users-error').textContent = err.message;
+            document.getElementById('users-error').style.display = 'block';
+        }
+    }
+
+    // Função de pesquisa para posts
+    function searchPosts() {
+        const searchTerm = document.getElementById('search-posts').value.toLowerCase();
+        
+        if (!searchTerm) {
+            displayPosts(allPosts);
+            return;
+        }
+
+        const filteredPosts = allPosts.filter(post => 
+            post.title.toLowerCase().includes(searchTerm) ||
+            (post.author?.name && post.author.name.toLowerCase().includes(searchTerm)) ||
+            (post.author?.email && post.author.email.toLowerCase().includes(searchTerm)) ||
+            post.id.toString().includes(searchTerm)
+        );
+
+        displayPosts(filteredPosts);
+    }
+
+    // Função de pesquisa para usuários
+    function searchUsers() {
+        const searchTerm = document.getElementById('search-users').value.toLowerCase();
+        
+        if (!searchTerm) {
+            displayUsers(allUsers);
+            return;
+        }
+
+        const filteredUsers = allUsers.filter(user => 
+            user.name.toLowerCase().includes(searchTerm) ||
+            user.email.toLowerCase().includes(searchTerm) ||
+            user.id.toString().includes(searchTerm) ||
+            (user.dono ? 'dono' : 'cliente').includes(searchTerm)
+        );
+
+        displayUsers(filteredUsers);
+    }
+
+    // Adicione evento de tecla Enter para os campos de pesquisa
+    document.getElementById('search-posts').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') searchPosts();
+    });
+
+    document.getElementById('search-users').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') searchUsers();
+    });
+
     // Exibir posts na tabela (atualizada)
     function displayPosts(posts) {
         const tbody = document.getElementById('posts-body');
@@ -349,117 +752,119 @@ document.getElementById('search-users').addEventListener('keyup', function(e) {
     }
 
     // Função para alternar visibilidade do post
-async function togglePostVisibility(postId, isPublic) {
-    try {
-        const response = await fetch(`${webservice}/admin/posts/${postId}/visibility`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                public: !isPublic
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Erro ao alterar visibilidade');
-        }
-
-        alert('Visibilidade alterada com sucesso!');
-        loadPosts(); // Recarrega a lista de posts
-    } catch (err) {
-        console.error('Erro:', err);
-        alert('Erro: ' + err.message);
-    }
-}
-
-        // Exibir usuários na tabela
-        function displayUsers(users) {
-            const tbody = document.getElementById('users-body');
-            tbody.innerHTML = '';
-
-            users.forEach(user => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.dono ? 'Dono' : 'Cliente'}</td>
-                    <td>${new Date(user.creatAt).toLocaleDateString()}</td>
-                    <td>${user.EmailVer ? 'Sim' : 'Não'}</td>
-                    <td>
-                        <button class="action-btn delete-btn" onclick="deleteUser(${user.id})">Excluir</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+    async function togglePostVisibility(postId, isPublic) {
+        try {
+            const response = await fetch(`${webservice}/admin/posts/${postId}/visibility`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    public: !isPublic
+                })
             });
 
-            document.getElementById('users-loading').style.display = 'none';
-            document.getElementById('users-table').style.display = 'table';
-        }
-
-        // Excluir post (corrigido)
-async function deletePost(id) {
-    if (!confirm('Tem certeza que deseja excluir este post permanentemente?')) return;
-
-    try {
-        const response = await fetch(`${webservice}/posts/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Erro ao alterar visibilidade');
             }
+
+            alert('Visibilidade alterada com sucesso!');
+            loadPosts(); // Recarrega a lista de posts
+        } catch (err) {
+            console.error('Erro:', err);
+            alert('Erro: ' + err.message);
+        }
+    }
+
+    // Exibir usuários na tabela
+    function displayUsers(users) {
+        const tbody = document.getElementById('users-body');
+        tbody.innerHTML = '';
+
+        users.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${user.dono ? 'Dono' : 'Cliente'}</td>
+                <td>${new Date(user.creatAt).toLocaleDateString()}</td>
+                <td>${user.EmailVer ? 'Sim' : 'Não'}</td>
+                <td>
+                    <button class="action-btn delete-btn" onclick="deleteUser(${user.id})">Excluir</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
 
-        if (!response.ok) throw new Error('Erro ao excluir post');
-
-        alert('Post excluído com sucesso!');
-        loadPosts();
-    } catch (err) {
-        alert(err.message);
+        document.getElementById('users-loading').style.display = 'none';
+        document.getElementById('users-table').style.display = 'table';
     }
-}
 
-// Excluir usuário (corrigido)
-async function deleteUser(id) {
-    if (!confirm('Tem certeza que deseja excluir este usuário permanentemente? Todos os posts do usuário também serão excluídos.')) return;
+    // Excluir post (corrigido)
+    async function deletePost(id) {
+        if (!confirm('Tem certeza que deseja excluir este post permanentemente?')) return;
 
-    try {
-        const response = await fetch(`${webservice}/users/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        try {
+            const response = await fetch(`${webservice}/posts/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-        if (!response.ok) throw new Error('Erro ao excluir usuário');
+            if (!response.ok) throw new Error('Erro ao excluir post');
 
-        alert('Usuário excluído com sucesso!');
-        loadUsers();
-    } catch (err) {
-        alert(err.message);
-    }
-}
-
-        // Alternar entre abas
-        function switchTab(tab) {
-            // Atualizar guias
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
-
-            // Atualizar conteúdo
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`${tab}-tab`).classList.add('active');
-
-            // Carregar dados se necessário
-            if (tab === 'users' && document.getElementById('users-table').style.display === 'none') {
-                loadUsers();
-            }
+            alert('Post excluído com sucesso!');
+            loadPosts();
+        } catch (err) {
+            alert(err.message);
         }
+    }
 
-        // Inicializar
-        checkAdmin();
+    // Excluir usuário (corrigido)
+    async function deleteUser(id) {
+        if (!confirm('Tem certeza que deseja excluir este usuário permanentemente? Todos os posts do usuário também serão excluídos.')) return;
+
+        try {
+            const response = await fetch(`${webservice}/users/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) throw new Error('Erro ao excluir usuário');
+
+            alert('Usuário excluído com sucesso!');
+            loadUsers();
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    // Alternar entre abas
+    function switchTab(tab) {
+        // Atualizar guias
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+        // Atualizar conteúdo
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`${tab}-tab`).classList.add('active');
+
+        // Carregar dados se necessário
+        if (tab === 'users' && document.getElementById('users-table').style.display === 'none') {
+            loadUsers();
+        } else if (tab === 'analytics') {
+            loadAnalytics();
+        }
+    }
+
+    // Inicializar
+    checkAdmin();
     </script>
 </body>
 </html>
