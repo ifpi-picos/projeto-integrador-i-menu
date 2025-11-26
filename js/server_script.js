@@ -106,33 +106,6 @@ function gerarQRCode(postId, event) {
     }
 }
 
-// Criar usuário
-async function criaruser() {
-  try {
-    const response = await fetch(`${webservice}/create`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novoUsuario)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Erro desconhecido");
-    }
-
-    const data = await response.json();
-    alert(data.message);
-    window.location.href = "./login.html";
-    
-  } catch (err) {
-    const errorMsg = document.getElementById("login_ms");
-    if (errorMsg) {
-      errorMsg.textContent = err.message;
-      errorMsg.style.color = "red";
-    }
-    console.error("Erro detalhado:", err);
-  }
-}
 
 // Login
 async function logar() {
@@ -182,19 +155,372 @@ async function logar() {
 
 async function reenviarEmailVerificacao() {
     const email = document.getElementById("email").value;
-    if (!email) return;
+    
+    if (!email) {
+        alert("Por favor, insira seu email primeiro");
+        return;
+    }
 
     try {
+        console.log("Enviando solicitação para:", `${webservice}/verifyagain`);
+        
         const response = await fetch(`${webservice}/verifyagain`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
             body: JSON.stringify({ email })
         });
 
         const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || data.message || "Erro desconhecido");
+        }
+
         alert(data.message || "E-mail de verificação reenviado com sucesso!");
+        
     } catch (err) {
+        console.error("Erro completo:", err);
         alert("Erro ao reenviar e-mail: " + err.message);
+    }
+}
+
+// Função para editar foto de perfil
+// Função para editar foto de perfil (CORRIGIDA)
+async function editarFotoPerfil() {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+        alert("Você precisa estar logado para alterar a foto");
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Criar input file dinamicamente
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validar tipo de arquivo
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecione uma imagem válida');
+            return;
+        }
+
+        // Validar tamanho (máximo 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('A imagem deve ter no máximo 5MB');
+            return;
+        }
+
+        try {
+            // Mostrar loading
+            const profileImg = document.getElementById('profile-img');
+            const originalSrc = profileImg.src;
+            profileImg.style.opacity = '0.5';
+
+            // Criar FormData para upload - USANDO A ROTA CORRETA
+            const formData = new FormData();
+            formData.append('file', file); // Mudar de 'image' para 'file'
+
+            // Fazer upload da imagem - ROTA CORRIGIDA
+            console.log("Fazendo upload para:", `${webservicef}/api/upload`);
+            const uploadResponse = await fetch(`${webservicef}/api/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!uploadResponse.ok) {
+                const errorText = await uploadResponse.text();
+                console.error("Erro no upload:", errorText);
+                throw new Error(`Erro ao fazer upload: ${uploadResponse.status} ${uploadResponse.statusText}`);
+            }
+
+            const uploadResult = await uploadResponse.json();
+            
+            if (!uploadResult.success) {
+                throw new Error(uploadResult.error || 'Upload falhou');
+            }
+
+            const imageUrl = uploadResult.fileUrl;
+
+            // Atualizar foto no perfil do usuário
+            const updateResponse = await fetch(`${webservice}/user/photo`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ foto: imageUrl })
+            });
+
+            if (!updateResponse.ok) {
+                const errorData = await updateResponse.json();
+                throw new Error(errorData.error || 'Erro ao atualizar foto');
+            }
+
+            // Atualizar imagem na página
+            profileImg.src = imageUrl;
+            profileImg.style.opacity = '1';
+
+            // Atualizar também a foto no header se existir
+            const headerProfileImg = document.getElementById('perfil');
+            if (headerProfileImg) {
+                headerProfileImg.src = imageUrl;
+            }
+
+            alert('Foto atualizada com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao editar foto:', error);
+            alert('Erro ao alterar foto: ' + error.message);
+            
+            // Restaurar imagem original em caso de erro
+            const profileImg = document.getElementById('profile-img');
+            profileImg.style.opacity = '1';
+        }
+    };
+
+    // Disparar o input file
+    input.click();
+}
+
+// Função auxiliar para upload de arquivos
+// Função auxiliar para upload de arquivos (CORRIGIDA)
+async function uploadFile(file) {
+    const formData = new FormData();
+    formData.append('file', file); // Mudar para 'file'
+
+    try {
+        const response = await fetch(`${webservicef}/api/upload`, { // Rota corrigida
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro no upload: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error || 'Upload falhou');
+        }
+        
+        return data.fileUrl;
+    } catch (error) {
+        console.error('Erro no upload:', error);
+        throw new Error('Falha no upload do arquivo: ' + error.message);
+    }
+}
+
+// Função para carregar perfil de restaurante (usuário específico)
+async function carregarPerfilRestaurante(userId) {
+    try {
+        const token = localStorage.getItem("auth_token");
+        
+        // Buscar dados do usuário específico
+        const response = await fetch(`${webservice}/user/${userId}`, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao carregar perfil do restaurante');
+        }
+
+        const userData = await response.json();
+        
+        // Atualizar a UI com os dados do restaurante
+        const spanUser = document.getElementById("P-username");
+        const spanTipo = document.getElementById("tipo-conta");
+        const spanTel = document.getElementById("telefone");
+        const spanLoc = document.getElementById("localizacao");
+        const profileImg = document.getElementById("profile-img");
+
+        if (spanUser) {
+            spanUser.innerText = userData.restaurante || userData.name;
+        }
+        
+        if (spanTipo) {
+            spanTipo.innerText = userData.dono ? "Dono de Restaurante" : "Cliente";
+        }
+
+        if (spanTel) {
+            spanTel.innerText = userData.telefone 
+                ? `📞 ${userData.telefone}` 
+                : "📞 --";
+        }
+
+        if (spanLoc) {
+            const cidade = userData.cidadeNome || "---";
+            const estado = userData.estadoNome || "Brasil";
+            spanLoc.innerText = `📍 ${cidade} / ${estado}`;
+        }
+
+        if (profileImg && userData.foto) {
+            profileImg.src = userData.foto;
+        }
+
+        // Carregar posts públicos do usuário
+        await carregarPostsUsuario(userId);
+        
+        // Esconder seções que não fazem sentido para visitantes
+        document.getElementById("relatorio").style.display = "none";
+        document.querySelectorAll(".section:last-child").forEach(el => el.style.display = "none");
+
+    } catch (error) {
+        console.error("Erro ao carregar perfil do restaurante:", error);
+        alert("Erro ao carregar perfil do restaurante");
+        window.location.href = "perfil.html"; // Redireciona para o próprio perfil em caso de erro
+    }
+}
+
+// Função para carregar posts de um usuário específico
+async function carregarPostsUsuario(userId) {
+    try {
+        const token = localStorage.getItem("auth_token");
+        
+        const response = await fetch(`${webservice}/user/${userId}/posts`, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao carregar posts do usuário');
+        }
+
+        const posts = await response.json();
+        
+        // Atualizar a UI com os posts públicos
+        const postsContainer = document.getElementById("cards_user");
+        if (postsContainer) {
+            if (posts.length === 0) {
+                postsContainer.innerHTML = `
+                    <div class="no-posts">
+                        <p>Este restaurante ainda não publicou cardápios</p>
+                    </div>
+                `;
+            } else {
+                postsContainer.innerHTML = posts.map(post => `
+                    <div class="dono_card" onclick="abrirPost('${post.id}')">
+                        ${post.capa ? `<div class="dono_card_image" style="background-image: url('${post.capa}')"></div>` : ''}
+                        <div class="post-info">
+                            <h3>${post.title}</h3>
+                            <p>${post.content?.substring(0, 100)}...</p>
+                            <p>Visualizações: ${post.views || 0}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Esconder seção de posts privados para visitantes
+        document.getElementById("cards_user_p").style.display = "none";
+        document.querySelector('h4:contains("Cardápios privados")').closest('.section').style.display = "none";
+
+    } catch (error) {
+        console.error("Erro ao carregar posts do usuário:", error);
+    }
+}
+
+// Função para voltar à página anterior
+function voltar() {
+    if (document.referrer && document.referrer.includes(window.location.hostname)) {
+        window.history.back();
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+
+// Modifique também a função logar para melhor tratamento:
+async function logar() {
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const errorElement = document.getElementById("login_ms");
+
+    if (!email || !senha) {
+        if (errorElement) {
+            errorElement.textContent = "Por favor, preencha todos os campos";
+            errorElement.style.color = "red";
+        }
+        return;
+    }
+
+    try {
+        const response = await fetch(`${webservice}/login`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ email, password: senha })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('auth_token', data.token);
+            window.location.href = "./index.html";
+        } else {
+            if (errorElement) {
+                errorElement.textContent = data.message || "Erro ao fazer login";
+                errorElement.style.color = "red";
+                
+                // Link para reenviar verificação
+                if (data.needsVerification) {
+                    errorElement.innerHTML += `<br><a href="#" onclick="reenviarEmailVerificacao('${email}')" style="color: #007bff; text-decoration: underline;">Reenviar email de verificação</a>`;
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Erro:", err);
+        if (errorElement) {
+            errorElement.textContent = "Erro ao conectar com o servidor";
+            errorElement.style.color = "red";
+        }
+    }
+}
+
+// Versão alternativa que recebe email como parâmetro
+async function reenviarEmailVerificacao(email = null) {
+    const emailToUse = email || document.getElementById("email").value;
+    
+    if (!emailToUse) {
+        alert("Por favor, insira seu email primeiro");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${webservice}/verifyagain`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ email: emailToUse })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert("✅ " + (data.message || "E-mail de verificação reenviado com sucesso!"));
+        } else {
+            alert("❌ " + (data.error || data.message || "Erro ao reenviar e-mail"));
+        }
+        
+    } catch (err) {
+        console.error("Erro completo:", err);
+        alert("❌ Erro de conexão: " + err.message);
     }
 }
 

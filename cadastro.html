@@ -114,84 +114,98 @@
       }
     }
 
-    async function criaruser() {
-      const nome = document.getElementById("nome").value.trim();
-      const restaurante = document.getElementById("restaurante").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const senha = document.getElementById("senha").value;
-      const telefone = document.getElementById("telefone").value.trim();
-      const dono = document.getElementById("dono").checked;
-      const createBtn = document.getElementById('create');
+async function criaruser() {
+    const nome = document.getElementById("nome").value.trim();
+    const restaurante = document.getElementById("restaurante").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value;
+    const telefone = document.getElementById("telefone").value.trim();
+    const dono = document.getElementById("dono").checked;
+    const createBtn = document.getElementById('create');
 
-      const selectEstado = document.getElementById("estado");
-      const selectCidade = document.getElementById("cidade");
-
-      const estadoId = selectEstado.value ? parseInt(selectEstado.value) : null;
-      const estadoNome = selectEstado.options[selectEstado.selectedIndex]?.textContent || null;
-
-      const cidadeId = selectCidade.selectedIndex > 0 ? parseInt(selectCidade.options[selectCidade.selectedIndex].dataset.id) : null;
-      const cidadeNome = selectCidade.value || null;
-
-      if (!nome || !email || !senha) {
-        alert("Preencha todos os campos obrigatórios!");
+    // Validação básica
+    if (!nome || !email || !senha) {
+        alert("Por favor, preencha todos os campos obrigatórios!");
         return;
-      }
+    }
 
-      if (dono && !restaurante) {
+    if (senha.length < 6) {
+        alert("A senha deve ter pelo menos 6 caracteres");
+        return;
+    }
+
+    if (dono && !restaurante) {
         alert("Por favor, informe o nome do restaurante.");
         return;
-      }
+    }
 
-      try {
+    try {
         createBtn.disabled = true;
         createBtn.textContent = 'Cadastrando...';
 
         const fileInput = document.getElementById('profile-pic-upload');
         let fotoUrl = 'images/perfil.png';
+        
         if (fileInput.files[0]) {
-          fotoUrl = await uploadProfilePicture(fileInput.files[0]);
+            try {
+                fotoUrl = await uploadProfilePicture(fileInput.files[0]);
+            } catch (uploadError) {
+                console.warn("Erro no upload da foto, usando padrão:", uploadError);
+            }
         }
 
+        const estadoValue = document.getElementById("estado").value;
+        const estadoId = estadoValue ? parseInt(estadoValue) : undefined;
+
         const novoUsuario = {
-          name: nome,
-          email,
-          password: senha,
-          telefone: telefone,
-          dono,
-          foto: fotoUrl,
-          restaurante: dono ? restaurante : undefined,
-          estadoId,
-          estadoNome,
-          cidadeId,
-          cidadeNome
+            name: nome,
+            email: email,
+            password: senha,
+            telefone: telefone || "",
+            dono: dono,
+            foto: fotoUrl,
+            restaurante: dono ? restaurante : "",
+            estadoId: estadoId,
+            estadoNome: document.getElementById("estado").options[document.getElementById("estado").selectedIndex]?.text || "",
+            cidadeId: document.getElementById("cidade").selectedIndex > 0 ? 
+                parseInt(document.getElementById("cidade").options[document.getElementById("cidade").selectedIndex].dataset.id) : undefined,
+            cidadeNome: document.getElementById("cidade").value || ""
         };
 
         const response = await fetch(`${webservice}/create`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(novoUsuario)
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(novoUsuario)
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          alert("Usuário criado com sucesso!");
-          window.location.href = "./login.html";
+            if (data.needsVerification) {
+                alert("Cadastro realizado! Verifique seu email para ativar a conta.\n\nSe não receber o email, clique em 'Reenviar verificação' na página de login.");
+            } else {
+                alert("Cadastro realizado com sucesso! Você já pode fazer login.");
+            }
+            window.location.href = "./login.html";
         } else {
-          alert("Erro ao criar usuário: " + (data.message || "Erro desconhecido"));
+            const errorMessage = data.message || data.error || "Erro desconhecido";
+            alert(`Erro no cadastro: ${errorMessage}`);
         }
-      } catch (err) {
-        console.error("Erro:", err);
-        alert("Ocorreu um erro ao processar sua requisição. Tente novamente mais tarde.");
-      } finally {
+    } catch (err) {
+        console.error("Erro completo:", err);
+        alert("Erro de conexão. Verifique sua internet e tente novamente.");
+    } finally {
         createBtn.disabled = false;
         createBtn.textContent = 'Cadastre-se';
-      }
     }
+}
 
-    // --------- ESTADO & CIDADE (IBGE) ---------
+// --------- ESTADO & CIDADE (IBGE) ---------
     async function carregarEstados() {
-      try {
+    try {
         const response = await fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados");
         const estados = await response.json();
         const selectEstado = document.getElementById("estado");
@@ -199,16 +213,16 @@
         estados.sort((a, b) => a.nome.localeCompare(b.nome));
 
         estados.forEach(estado => {
-          const option = document.createElement("option");
-          option.value = estado.id;               // ID numérico
-          option.textContent = estado.nome;
-          option.dataset.sigla = estado.sigla;
-          selectEstado.appendChild(option);
+            const option = document.createElement("option");
+            option.value = Number(estado.id); // Garantir que seja número
+            option.textContent = estado.nome;
+            option.dataset.sigla = estado.sigla;
+            selectEstado.appendChild(option);
         });
-      } catch (error) {
+    } catch (error) {
         console.error("Erro ao carregar estados:", error);
-      }
     }
+}
 
     async function carregarCidades(estadoId) {
       try {
@@ -252,7 +266,11 @@
         }
       });
 
-      lucide.createIcons();
+        if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    } else {
+        console.warn('Lucide não carregado');
+    }
     });
   </script>
 </body>
