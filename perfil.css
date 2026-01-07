@@ -20,9 +20,6 @@
     100% { transform: rotate(360deg); }
 }
 
-#profile-img:hover{
-  cursor: pointer;
-}
 /* Corpo */
 body.bodyp {
   background-color: #f3f3f3;
